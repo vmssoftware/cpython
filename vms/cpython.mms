@@ -8,6 +8,7 @@ SOABI = cpython-310-ia64-openvms
 .ENDIF
 
 CC_QUALIFIERS = -
+/SWITCHES=NOCHECK-
 /FLOAT=IEEE_FLOAT/IEEE=DENORM-
 /NAMES=(AS_IS,SHORTENED)-
 /ACCEPT=NOVAXC_KEYWORDS-
@@ -149,6 +150,9 @@ X86_OSSDEF =
 .ENDIF
 
 .FIRST
+    set command work:[vorfolomeev.decc_xvxv]XVXV_GEMC.CLD
+    define decc$compiler work:[vorfolomeev.decc_xvxv]XVXV.DBG
+    set image /flag=nocall_debug work:[vorfolomeev.decc_xvxv]XVXV.DBG
     $(X86_START)
     $(X86_LIBDEF)
     $(X86_OSSDEF)
