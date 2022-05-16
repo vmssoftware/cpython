@@ -1,0 +1,14 @@
+Brotli==1.0.9
+awscli==1.19.50
+cffi==1.14.5
+cryptography==3.4.7
+cython==0.29.22
+httpbin==0.7.0
+perfdat==4.3.1
+pytest==6.2.4
+reportlab==3.5.66
+numpy==1.20.3
+psycopg2==2.8.6
+pandas==1.2.4
+pyrsistent==0.18.0
+pywebui==0.1
