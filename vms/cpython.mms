@@ -1,22 +1,43 @@
-! MMS/EXT/DESCR=Python3.mms/MACRO=("OUTDIR=OUT","CONFIG=DEBUG","P64")
+! build 32 bit version
+! MMS/EXT/DESCR=Python3.mms/MACRO=("OUTDIR=OUT","CONFIG=RELEASE")
+! build 64 bit version
+! MMS/EXT/DESCR=Python3.mms/MACRO=("OUTDIR=OUT","CONFIG=RELEASE64","P64=1")
+! build with native compiler
+! MMS/EXT/DESCR=Python3.mms/MACRO=("OUTDIR=OUT","CONFIG=RELEASE_X86_64","X86_64=1")
+! build with cross compiler
+! MMS/EXT/DESCR=Python3.mms/MACRO=("OUTDIR=OUT","CONFIG=RELEASEx86","X86_HOST=BALDER","X86_DISK=$172$DKA300","X86_USER=VORFOLOMEEV","X86_PASS=AAwf12jg%3kW","X86_FFIDEF=define libffi$root wrk_disk:[vorfolomeev.libffi.]","X86_SSLDEF=define ssl$shared wrk_disk:[vorfolomeev.ssl111_vms13.]")
+
 DYNLOAD_DIR = lib-dynload
 PLATFORM = OpenVMS
-.IF X86_HOST
+
+.IF X86_64
+LINK_ADD=/SEGMENT=CODE=P0
+X86_64_START=pipe set command work:[vorfolomeev.decc_xvxv]XVXV_GEMC.CLD ; define decc$compiler work:[vorfolomeev.decc_xvxv]XVXV.DBG ; set image /flag=nocall_debug work:[vorfolomeev.decc_xvxv]XVXV.DBG
+X86_FFIDEF=define libffi$root work:[vorfolomeev.libffi.]
+.ENDIF
+
+.IF X86_HOST .OR X86_64
 SOABI = cpython-310-x86_64-openvms
 .ELSE
 SOABI = cpython-310-ia64-openvms
 .ENDIF
 
 CC_QUALIFIERS = -
-/SWITCHES=NOCHECK-
 /FLOAT=IEEE_FLOAT/IEEE=DENORM-
 /NAMES=(AS_IS,SHORTENED)-
 /ACCEPT=NOVAXC_KEYWORDS-
 /REENTRANCY=MULTITHREAD
 
+.IF X86_64
+CC_QUALIFIERS=$(CC_QUALIFIERS)/SWITCHES=NOCHECK
+.ENDIF
+
 .IF X86_HOST
 CC_QUALIFIERS = $(CC_QUALIFIERS)-
 /WARNINGS=(WARNINGS=ALL, DISABLE=(EXTRASEMI,INCLUDEINFO,MAYLOSEDATA3))
+.ELSIF X86_64
+CC_QUALIFIERS = $(CC_QUALIFIERS)-
+/WARNINGS=(WARNINGS=ALL, DISABLE=(EXTRASEMI,MAYLOSEDATA3,UNDERFLOW))
 .ELSE
 CC_QUALIFIERS = $(CC_QUALIFIERS)-
 /WARNINGS=(WARNINGS=ALL, DISABLE=(EXTRASEMI,MAYLOSEDATA3))
@@ -48,6 +69,9 @@ OPT_SUFFIX = _32
 LIBGDBM = oss$root:[lib]libgdbm32.olb
 LIBFFI = libffi$root:[lib]libffi$shr.olb
 OPT_SUFFIX = _x86
+.ELSIF X86_64
+LIBGDBM = oss$root:[lib]libgdbm32.olb
+LIBFFI = libffi$root:[lib]libffi$shr.olb
 .ENDIF
 
 CC_DEFINES = -
@@ -71,6 +95,10 @@ MULTIARCH="""$(SOABI)""", -
 PLATFORM="""$(PLATFORM)""", -
 USE_SSL                         ! SSL
 
+.IF X86_64
+CC_DEFINES=$(CC_DEFINES),__NATIVE_C__
+.ENDIF
+
 ! define output folder
 .IF OUTDIR
 ! defined - ok
@@ -89,11 +117,15 @@ CONFIG = DEBUG
 
 .IF $(FINDSTRING DEBUG, $(CONFIG)) .EQ DEBUG
 ! debug
+.IF X86_64
+CC_QUALIFIERS = $(CC_QUALIFIERS)/DEBUG/NOOPTIMIZE/LIST=$(MMS$TARGET_NAME)/SHOW=EXP
+.ELSE
 CC_QUALIFIERS = $(CC_QUALIFIERS)/DEBUG/NOOPTIMIZE/LIST=$(MMS$TARGET_NAME)/SHOW=ALL
+.ENDIF
 CC_DEFINES = $(CC_DEFINES),_DEBUG
 OUT_DIR = $(OUTDIR).$(CONFIG)
 OBJ_DIR = $(OUT_DIR).OBJ
-LINK_FLAGS = /NODEBUG/MAP=[.$(OUT_DIR)]$(NOTDIR $(MMS$TARGET_NAME))/TRACE/DSF=[.$(OUT_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).DSF
+LINK_FLAGS = $(LINK_ADD)/NODEBUG/MAP=[.$(OUT_DIR)]$(NOTDIR $(MMS$TARGET_NAME))/TRACE/DSF=[.$(OUT_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).DSF
 PYTHON$SHR_OPT = PYTHON$SHR_DBG
 .ELSE
 ! release
@@ -101,7 +133,7 @@ CC_QUALIFIERS = $(CC_QUALIFIERS)/NODEBUG/OPTIMIZE/NOLIST
 CC_DEFINES = $(CC_DEFINES),_NDEBUG
 OUT_DIR = $(OUTDIR).$(CONFIG)
 OBJ_DIR = $(OUT_DIR).OBJ
-LINK_FLAGS = /NODEBUG/NOMAP/NOTRACEBACK
+LINK_FLAGS = $(LINK_ADD)/NODEBUG/NOMAP/NOTRACEBACK
 PYTHON$SHR_OPT = PYTHON$SHR
 .ENDIF
 
@@ -120,7 +152,7 @@ oss$root:[include], -
 dtr$library, -
 SSL111$ROOT:[INCLUDE]
 
-.IF X86_HOST
+.IF X86_HOST .OR X86_64
 CC_INCLUDES = $(CC_INCLUDES),-
 libffi$root:[vms.x86], -
 libffi$root:[include], -
@@ -150,9 +182,7 @@ X86_OSSDEF =
 .ENDIF
 
 .FIRST
-    set command work:[vorfolomeev.decc_xvxv]XVXV_GEMC.CLD
-    define decc$compiler work:[vorfolomeev.decc_xvxv]XVXV.DBG
-    set image /flag=nocall_debug work:[vorfolomeev.decc_xvxv]XVXV.DBG
+    $(X86_64_START)
     $(X86_START)
     $(X86_LIBDEF)
     $(X86_OSSDEF)
@@ -633,7 +663,7 @@ freeze_importlib : [.$(OUT_DIR).Programs]_freeze_importlib.exe
 
 [.$(OUT_DIR).Programs]_freeze_importlib.exe : [.$(OBJ_DIR).Programs]_freeze_importlib.obc [.$(OBJ_DIR).vms]vms_crtl_init.obc $(LIBRARY_OBJS_OMIT_FROZEN)
   @ pipe create/dir $(DIR $(MMS$TARGET)) | copy SYS$INPUT nl:
-    $(LINK)/NODEBUG/NOMAP/EXECUTABLE=python$build_out:[Programs]$(NOTDIR $(MMS$TARGET_NAME)).exe [.$(OBJ_DIR).vms]vms_crtl_init.obc,$(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
+    $(LINK)$(LINK_ADD)/NODEBUG/NOMAP/EXECUTABLE=python$build_out:[Programs]$(NOTDIR $(MMS$TARGET_NAME)).exe [.$(OBJ_DIR).vms]vms_crtl_init.obc,$(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
 
 [.$(OBJ_DIR).Programs]_freeze_importlib.obc : [.Programs]_freeze_importlib.c $(PYTHON_HEADERS)
 
@@ -921,9 +951,13 @@ LIBDYNLOAD_VMS = -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_sys.exe
 ! [.$(OUT_DIR).$(DYNLOAD_DIR)]_rec.exe
 .IF X86_HOST
+! skip _rdb
+.ELSIF X86_64
+! skip _rdb too
 .ELSE
 LIBDYNLOAD_VMS = $(LIBDYNLOAD_VMS) -
-[.$(OUT_DIR).$(DYNLOAD_DIR)]_rdb.exe
+[.$(OUT_DIR).$(DYNLOAD_DIR)]_rdb.exe -
+
 .ENDIF
 
 .IFDEF BUILD_DTR
@@ -936,7 +970,6 @@ $(LIBDYNLOAD_VMS) -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_asyncio.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_bisect.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_blake2.exe -
-[.$(OUT_DIR).$(DYNLOAD_DIR)]_bz2.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_codecs_cn.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_codecs_hk.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_codecs_iso2022.exe -
@@ -946,17 +979,13 @@ $(LIBDYNLOAD_VMS) -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_contextvars.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_crypt.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_csv.exe -
-[.$(OUT_DIR).$(DYNLOAD_DIR)]_ctypes.exe -
-[.$(OUT_DIR).$(DYNLOAD_DIR)]_ctypes_test.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_datetime.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_decimal.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_elementtree.exe -
-[.$(OUT_DIR).$(DYNLOAD_DIR)]_gdbm.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_hashlib.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_heapq.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_json.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_lsprof.exe -
-[.$(OUT_DIR).$(DYNLOAD_DIR)]_lzma.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_md5.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_multibytecodec.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_multiprocessing.exe -
@@ -971,7 +1000,6 @@ $(LIBDYNLOAD_VMS) -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_sha3.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_sha512.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_socket.exe -
-[.$(OUT_DIR).$(DYNLOAD_DIR)]_sqlite3.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_ssl.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_statistics.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_struct.exe -
@@ -985,20 +1013,33 @@ $(LIBDYNLOAD_VMS) -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_zoneinfo.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]array.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]audioop.exe -
-[.$(OUT_DIR).$(DYNLOAD_DIR)]binascii.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]cmath.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]fcntl.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]grp.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]math.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]mmap.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]pyexpat.exe -
-[.$(OUT_DIR).$(DYNLOAD_DIR)]readline.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]select.exe -
 - ! [.$(OUT_DIR).$(DYNLOAD_DIR)]spwd.exe
 [.$(OUT_DIR).$(DYNLOAD_DIR)]syslog.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]unicodedata.exe -
-[.$(OUT_DIR).$(DYNLOAD_DIR)]zlib.exe -
 [.$(OUT_DIR).$(DYNLOAD_DIR)]xxsubtype.exe
+
+!.IF X86_64
+! skip 
+!.ELSE
+LIBDYNLOAD=$(LIBDYNLOAD) -
+[.$(OUT_DIR).$(DYNLOAD_DIR)]_bz2.exe -
+[.$(OUT_DIR).$(DYNLOAD_DIR)]_ctypes.exe -
+[.$(OUT_DIR).$(DYNLOAD_DIR)]_ctypes_test.exe -
+[.$(OUT_DIR).$(DYNLOAD_DIR)]_gdbm.exe -
+[.$(OUT_DIR).$(DYNLOAD_DIR)]_lzma.exe -
+[.$(OUT_DIR).$(DYNLOAD_DIR)]_sqlite3.exe -
+[.$(OUT_DIR).$(DYNLOAD_DIR)]binascii.exe -
+[.$(OUT_DIR).$(DYNLOAD_DIR)]readline.exe -
+[.$(OUT_DIR).$(DYNLOAD_DIR)]zlib.exe -
+
+!.ENDIF
 
 LIB_DYNLOAD : $(LIBDYNLOAD)
     continue
@@ -1156,7 +1197,7 @@ LIB_DYNLOAD : $(LIBDYNLOAD)
 [.$(OBJ_DIR).Modules]_ssl.obm : [.Modules]_ssl.c [.Modules]socketmodule.h $(PYTHON_HEADERS)
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_ssl.exe : [.$(OBJ_DIR).Modules]_ssl.obm
     @ pipe create/dir $(DIR $(MMS$TARGET)) | copy SYS$INPUT nl:
-    $(LINK)$(LINK_FLAGS)/SHARE=python$build_out:[$(DYNLOAD_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).exe $(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME))$(OPT_SUFFIX).opt/OPT
+    - $(LINK)$(LINK_FLAGS)/SHARE=python$build_out:[$(DYNLOAD_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).exe $(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME))$(OPT_SUFFIX).opt/OPT
 
 # The crypt module is now disabled by default because it breaks builds
 # on many systems (where -lcrypt is needed), e.g. Linux (I believe).
@@ -1356,12 +1397,14 @@ BLAKE2_HEADERS = -
 [.$(OBJ_DIR).Modules]_gdbmmodule.obm : [.Modules]_gdbmmodule.c $(PYTHON_HEADERS)
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_gdbm.exe : [.$(OBJ_DIR).Modules]_gdbmmodule.obm
     @ pipe create/dir $(DIR $(MMS$TARGET)) | copy SYS$INPUT nl:
-    $(LINK)$(LINK_FLAGS)/SHARE=python$build_out:[$(DYNLOAD_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).exe $(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
+    - $(LINK)$(LINK_FLAGS)/SHARE=python$build_out:[$(DYNLOAD_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).exe $(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
 
 # Helper module for various ascii-encoders
 #binascii binascii.c
 [.$(OBJ_DIR).Modules]binascii.obm : [.Modules]binascii.c $(PYTHON_HEADERS)
 [.$(OUT_DIR).$(DYNLOAD_DIR)]binascii.exe : [.$(OBJ_DIR).Modules]binascii.obm
+    @ pipe create/dir $(DIR $(MMS$TARGET)) | copy SYS$INPUT nl:
+    - $(LINK)$(LINK_FLAGS)/SHARE=python$build_out:[$(DYNLOAD_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).exe $(MMS$SOURCE_LIST),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
 
 # Andrew Kuchling's zlib module.
 # This require zlib 1.1.3 (or later).
@@ -1370,7 +1413,7 @@ BLAKE2_HEADERS = -
 [.$(OBJ_DIR).Modules]zlibmodule.obm : [.Modules]zlibmodule.c $(PYTHON_HEADERS)
 [.$(OUT_DIR).$(DYNLOAD_DIR)]zlib.exe : [.$(OBJ_DIR).Modules]zlibmodule.obm
     @ pipe create/dir $(DIR $(MMS$TARGET)) | copy SYS$INPUT nl:
-    $(LINK)$(LINK_FLAGS)/SHARE=python$build_out:[$(DYNLOAD_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).exe $(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
+    - $(LINK)$(LINK_FLAGS)/SHARE=python$build_out:[$(DYNLOAD_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).exe $(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
 
 # Interface to the Expat XML parser
 # More information on Expat can be found at www.libexpat.org.
@@ -1461,7 +1504,7 @@ SQL_OBJ_LIST = -
 
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_sqlite3.exe : $(SQL_OBJ_LIST)
     @ pipe create/dir $(DIR $(MMS$TARGET)) | copy SYS$INPUT nl:
-    $(LINK)$(LINK_FLAGS)/SHARE=python$build_out:[$(DYNLOAD_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).exe $(MMS$SOURCE_LIST),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
+    - $(LINK)$(LINK_FLAGS)/SHARE=python$build_out:[$(DYNLOAD_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).exe $(MMS$SOURCE_LIST),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
 
 # Example -- included for reference only:
 # xx xxmodule.c
@@ -1486,7 +1529,7 @@ SQL_OBJ_LIST = -
 [.$(OBJ_DIR).Modules]_bz2module.obm : [.Modules]_bz2module.c $(PYTHON_HEADERS)
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_bz2.exe : [.$(OBJ_DIR).Modules]_bz2module.obm
     @ pipe create/dir $(DIR $(MMS$TARGET)) | copy SYS$INPUT nl:
-    $(LINK)$(LINK_FLAGS)/SHARE=python$build_out:[$(DYNLOAD_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).exe $(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
+    - $(LINK)$(LINK_FLAGS)/SHARE=python$build_out:[$(DYNLOAD_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).exe $(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
 
 # _ctypes
 CTYPES_OBJ_LIST = -
@@ -1567,7 +1610,7 @@ DECIMAL_HEADERS = -
 [.$(OBJ_DIR).Modules]_hashopenssl.obm : [.Modules]_hashopenssl.c [.Modules]hashlib.h $(PYTHON_HEADERS)
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_hashlib.exe : [.$(OBJ_DIR).Modules]_hashopenssl.obm
     @ pipe create/dir $(DIR $(MMS$TARGET)) | copy SYS$INPUT nl:
-    $(LINK)$(LINK_FLAGS)/SHARE=python$build_out:[$(DYNLOAD_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).exe $(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME))$(OPT_SUFFIX).opt/OPT
+    - $(LINK)$(LINK_FLAGS)/SHARE=python$build_out:[$(DYNLOAD_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).exe $(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME))$(OPT_SUFFIX).opt/OPT
 
 # _lsprof _lsprof rotatingtree
 [.$(OBJ_DIR).Modules]_lsprof.obm : [.Modules]_lsprof.c $(PYTHON_HEADERS)
@@ -1578,7 +1621,7 @@ DECIMAL_HEADERS = -
 [.$(OBJ_DIR).Modules]_lzmamodule.obm : [.Modules]_lzmamodule.c $(PYTHON_HEADERS)
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_lzma.exe : [.$(OBJ_DIR).Modules]_lzmamodule.obm
     @ pipe create/dir $(DIR $(MMS$TARGET)) | copy SYS$INPUT nl:
-    $(LINK)$(LINK_FLAGS)/SHARE=python$build_out:[$(DYNLOAD_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).exe $(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
+    - $(LINK)$(LINK_FLAGS)/SHARE=python$build_out:[$(DYNLOAD_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).exe $(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
 
 # _multiprocessing
 [.$(OBJ_DIR).Modules._multiprocessing]multiprocessing.obm : [.Modules._multiprocessing]multiprocessing.c [.Modules._multiprocessing]multiprocessing.h $(PYTHON_HEADERS)
@@ -1624,6 +1667,8 @@ DECIMAL_HEADERS = -
 # readline readline
 [.$(OBJ_DIR).Modules]readline.obm : [.Modules]readline.c $(PYTHON_HEADERS)
 [.$(OUT_DIR).$(DYNLOAD_DIR)]readline.exe : [.$(OBJ_DIR).Modules]readline.obm
+    @ pipe create/dir $(DIR $(MMS$TARGET)) | copy SYS$INPUT nl:
+    - $(LINK)$(LINK_FLAGS)/SHARE=python$build_out:[$(DYNLOAD_DIR)]$(NOTDIR $(MMS$TARGET_NAME)).exe $(MMS$SOURCE_LIST),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
 
 # _xxsubinterpreters _xxsubinterpretersmodule
 [.$(OBJ_DIR).Modules]_xxsubinterpretersmodule.obm : [.Modules]_xxsubinterpretersmodule.c $(PYTHON_HEADERS)
@@ -1804,7 +1849,11 @@ DECIMAL_HEADERS = -
 
 [.$(OUT_DIR)]python.exe : [.$(OBJ_DIR).Programs]python.obc [.$(OBJ_DIR).vms]vms_crtl_init.obc [.$(OUT_DIR)]python$shr.exe
    @ pipe create/dir $(DIR $(MMS$TARGET)) | copy SYS$INPUT nl:
+.IF X86_64
+    $(LINK)$(LINK_FLAGS)/EXECUTABLE=python$build_out:[000000]$(NOTDIR $(MMS$TARGET_NAME)).exe [.$(OBJ_DIR).vms]vms_crtl_init.obc,$(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
+.ELSE
     $(LINK)$(LINK_FLAGS)/THREADS/EXECUTABLE=python$build_out:[000000]$(NOTDIR $(MMS$TARGET_NAME)).exe [.$(OBJ_DIR).vms]vms_crtl_init.obc,$(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
+.ENDIF
 
 ############################################################################
 CLEAN :
