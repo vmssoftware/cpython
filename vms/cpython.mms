@@ -12,8 +12,7 @@ PLATFORM = OpenVMS
 
 .IF X86_64
 LINK_ADD=/SEGMENT=CODE=P0
-X86_64_START=pipe set command work:[vorfolomeev.decc_xvxv]XVXV_GEMC.CLD ; define decc$compiler work:[vorfolomeev.decc_xvxv]XVXV.DBG ; set image /flag=nocall_debug work:[vorfolomeev.decc_xvxv]XVXV.DBG
-X86_FFIDEF=define libffi$root work:[vorfolomeev.libffi.]
+X86_64_START=@decc$root:setup
 .ENDIF
 
 .IF X86_HOST .OR X86_64
