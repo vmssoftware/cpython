@@ -153,7 +153,7 @@ static int proceed_buf(fcntl_buf *pbuf) {
     // enter critical section
     pthread_mutex_lock(&_mutex);
 
-#if 1
+#ifndef __NATIVE_C__
     // prepare waiter
     pbuf->waiter = vms_waiter_init();
     vms_waiter_clr(pbuf->waiter);
