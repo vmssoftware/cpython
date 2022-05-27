@@ -13,10 +13,6 @@ int
 main(int argc, char **argv)
 {
 #ifdef __VMS
-#ifdef __NATIVE_C__
-    extern void vms_set_crtl_values(void);
-    vms_set_crtl_values();
-#endif
 #if __INITIAL_POINTER_SIZE == 64
     char **ppargv = malloc(argc * sizeof(char*));
     for(int i = 0; i < argc; ++i) {
