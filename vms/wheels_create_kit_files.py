@@ -126,7 +126,7 @@ end product;
 =prompt Python wheels collection for OpenVMS Python 3.10
 
 1 'PRODUCER
-=prompt VSI Software Inc.
+=prompt VMS Software Inc.
 
 1 'NOTICE
 =prompt (C) Copyright 2022 VMS Software Inc.

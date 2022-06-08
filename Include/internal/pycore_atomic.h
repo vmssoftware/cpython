@@ -534,26 +534,26 @@ typedef struct _Py_atomic_int {
 #define _Py_atomic_store_64bit(ATOMIC_VAL, NEW_VAL, ORDER) \
     switch (ORDER) { \
     case _Py_memory_order_acquire: \
-      __ATOMIC_EXCH_QUAD((__int64 volatile*)&((ATOMIC_VAL)->_value), (__int64)NEW_VAL); \
+      __ATOMIC_EXCH_QUAD((volatile void *)&((ATOMIC_VAL)->_value), (__int64)(NEW_VAL)); \
       break; \
     case _Py_memory_order_release: \
-      __ATOMIC_EXCH_QUAD((__int64 volatile*)&((ATOMIC_VAL)->_value), (__int64)NEW_VAL); \
+      __ATOMIC_EXCH_QUAD((volatile void *)&((ATOMIC_VAL)->_value), (__int64)(NEW_VAL)); \
       break; \
     default: \
-      __ATOMIC_EXCH_QUAD((__int64 volatile*)&((ATOMIC_VAL)->_value), (__int64)NEW_VAL); \
+      __ATOMIC_EXCH_QUAD((volatile void *)&((ATOMIC_VAL)->_value), (__int64)(NEW_VAL)); \
       break; \
   }
 
 #define _Py_atomic_store_32bit(ATOMIC_VAL, NEW_VAL, ORDER) \
     switch (ORDER) { \
     case _Py_memory_order_acquire: \
-      __ATOMIC_EXCH_LONG((__int64 volatile*)&((ATOMIC_VAL)->_value), (__int64)NEW_VAL); \
+      __ATOMIC_EXCH_LONG((volatile void *)&((ATOMIC_VAL)->_value), (int)(NEW_VAL)); \
       break; \
     case _Py_memory_order_release: \
-      __ATOMIC_EXCH_LONG((__int64 volatile*)&((ATOMIC_VAL)->_value), (__int64)NEW_VAL); \
+      __ATOMIC_EXCH_LONG((volatile void *)&((ATOMIC_VAL)->_value), (int)(NEW_VAL)); \
       break; \
     default: \
-      __ATOMIC_EXCH_LONG((__int64 volatile*)&((ATOMIC_VAL)->_value), (__int64)NEW_VAL); \
+      __ATOMIC_EXCH_LONG((volatile void *)&((ATOMIC_VAL)->_value), (int)(NEW_VAL)); \
       break; \
   }
 
