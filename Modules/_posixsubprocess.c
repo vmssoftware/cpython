@@ -503,15 +503,20 @@ subprocess_proc_status(
         }
     }
     unsigned int pid = PyLong_AsUnsignedLong(args[0]);
-    int status = -1;
-    unsigned int finished = 0;
-    int found = (-1 != vms_spawn_status(pid, &status, &finished, remove));
-    return Py_BuildValue("(NNi)", PyBool_FromLong(found), PyBool_FromLong(finished), status);
+    vms_spawn_state_t *pstate = vms_spawn_state(pid);
+    if (pstate && pstate->_spawned) {
+        PyObject* ret = Py_BuildValue("(NNi)", PyBool_FromLong(1), PyBool_FromLong(pstate->_finished), pstate->_status);
+        if (remove) {
+            vms_spawn_free(pstate);
+        }
+        return ret;
+    }
+    return Py_BuildValue("(NNi)", PyBool_FromLong(0), PyBool_FromLong(0), -1);
 }
 
 // set generation on child complete
 static void child_complete(int arg) {
-    vms_spawn_finish((unsigned int *)arg);
+    vms_spawn_finish((vms_spawn_state_t*)arg);
 }
 
 static int
@@ -567,24 +572,23 @@ exec_dcl(char *const argv[], int p2cread, int c2pwrite) {
     execute.dsc$w_length = strlen(execute_str);
     set_dsc_string(execute, execute_str);
 
-    unsigned int *ppid, *pfinished;
-    int *pstatus;
+    vms_spawn_state_t *pstate = vms_spawn_alloc();
 
-    if (vms_spawn_alloc(&ppid, &pstatus, &pfinished) != -1) {
+    if (pstate) {
         status = lib$spawn(
             &execute,
             input_ptr,
             output_ptr,
             &flags,
             NULL,
-            ppid,
-            pstatus,
+            &pstate->_pid,
+            &pstate->_status,
             &efn,
             &child_complete,
-            pfinished);
+            pstate);
 
         if ($VMS_STATUS_SUCCESS(status)) {
-            pid = (int)*ppid;
+            pid = (int)pstate->_pid;
         }
     }
 
@@ -829,6 +833,13 @@ egress:
     }
 
     if (pid > 0) {
+        vms_spawn_state_t *pstate = vms_spawn_alloc();
+        if (pstate) {
+            pstate->_pid = pid;
+            pstate->_stdout = c2pread;
+            pstate->_stderr = errread;
+            pstate->_spawned = 0;
+        }
         map_fd_to_child(c2pread, pid);
         map_fd_to_child(errread, pid);
     }
