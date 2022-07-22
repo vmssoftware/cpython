@@ -322,8 +322,6 @@ corresponding Unix manual entries for more information on calls.");
 #    include "vms/vms_spawn_helper.h"
 #    include "vms/vms_sleep.h"
 #    include "vms/vms_fcntl.h"
-#    include "vms/vms_select.h"
-#    include "vms/vms_mbx_util.h"
 #    include <time.h>
 #    define HAVE_EXECV      1
 #    define HAVE_GETEGID    1
@@ -8664,50 +8662,6 @@ Returns a tuple of information regarding the child process:
 The options argument is ignored on Windows.
 [clinic start generated code]*/
 
-
-#undef _DO_TRACE_WAITPID_
-// #define _DO_TRACE_WAITPID_
-#ifndef _DO_TRACE_WAITPID_
-#define _TRACE_LINE_(line)
-#define _TRACE_LINE_V_(line, ...)
-#else
-#include <fcntl.h>
-#include <unixlib.h>
-#define _TRACE_LINE_(line) \
-    do {    \
-        char name[64];  \
-        sprintf(name, "waitpid_%x.txt", getpid());   \
-        int fd = open(name, O_CREAT | O_APPEND | O_RDWR, 0600); \
-        if (fd) {   \
-            write(fd, line, strlen(line));  \
-            close(fd);  \
-        }   \
-    } while(0)
-
-#define _TRACE_LINE_V_(line, ...) \
-    do {    \
-        char buf[256];  \
-        sprintf(buf, line, __VA_ARGS__); \
-        _TRACE_LINE_(buf);  \
-    } while(0)
-#endif
-
-#ifdef __VMS
-int consume_pipe(int pipe) {
-    fd_set selectset;
-    FD_ZERO(&selectset);
-    FD_SET(pipe, &selectset);
-    struct timeval timeout = {0, 100000}; /* 0.1 seconds */
-    int has_input = vms_select(pipe + 1, &selectset, NULL, NULL, &timeout);
-    if (has_input) {
-        static char _consume_buf[256];
-        _Py_read(pipe, _consume_buf, sizeof(_consume_buf));
-        return 1;
-    }
-    return 0;
-}
-#endif
-
 static PyObject *
 os_waitpid_impl(PyObject *module, pid_t pid, int options)
 /*[clinic end generated code: output=5c37c06887a20270 input=0bf1666b8758fda3]*/
@@ -8719,72 +8673,29 @@ os_waitpid_impl(PyObject *module, pid_t pid, int options)
 
 #ifdef __VMS
     unsigned int finished = 0;
-    _TRACE_LINE_("os_waitpid_impl: start\n");
-    vms_spawn_state_t *pstate = vms_spawn_state(pid);
-    if (pstate) {
-        if (pstate->_spawned) {
-            // the child is spawned by lib$spawn
-            if (pstate->_finished) {
-                if (pstate->_status == -1) {
-                    _TRACE_LINE_("os_waitpid_impl: NULL 1\n");
-                    return NULL;
-                }
-                // status is set, return (pid, status)
-                _TRACE_LINE_("os_waitpid_impl: OK 1\n");
-                return Py_BuildValue("Ni", PyLong_FromPid(pid), WAIT_STATUS_INT(pstate->_status));
-            }
-            if (options & WNOHANG) {
-                // status is not set, return (0,0)
-                _TRACE_LINE_("os_waitpid_impl: OK 2\n");
-                return Py_BuildValue("Ni", PyLong_FromPid(0), 0);
-            }
-            while (pstate->_finished == 0) {
-                Py_BEGIN_ALLOW_THREADS
-                vms_sleep(100); // 100 microseconds
-                Py_END_ALLOW_THREADS
-            }
-            if (pstate->_status == -1) {
-                _TRACE_LINE_("os_waitpid_impl: NULL 2\n");
+    if (pid > 0 && (-1 != vms_spawn_status(pid, &status, &finished, 0))) {
+        // the child is spawned by lib$spawn
+        if (finished) {
+            if (status == -1) {
                 return NULL;
             }
-            _TRACE_LINE_("os_waitpid_impl: OK 3\n");
-            return Py_BuildValue("Ni", PyLong_FromPid(pid), WAIT_STATUS_INT(pstate->_status));
-        } else {
-            _TRACE_LINE_("os_waitpid_impl: not a spawned\n");
-            if (!(options & WNOHANG)) {
-                _TRACE_LINE_("os_waitpid_impl: may hang up\n");
-                // process may hang up if it writes EOF to the pipe,
-                // but system writes an error an waits while calling process reads from pipe
-                // so, wait with WNOHANG, check pipes for a data, clear pipes and so on
-                if (pstate->_stderr != -1 || pstate->_stdout != -1) {
-                    do {
-                        Py_BEGIN_ALLOW_THREADS
-                        res = waitpid(pid, &status, options | WNOHANG);
-                        Py_END_ALLOW_THREADS
-                        if (res == -1) {
-                            break;
-                        }
-                        if (res == 0) {
-                            if (pstate->_stdout != -1 && consume_mbx(pstate->_stdout)) {
-                                _TRACE_LINE_("os_waitpid_impl: has std output\n");
-                            }
-                            if (pstate->_stderr != -1 && consume_mbx(pstate->_stderr)) {
-                                _TRACE_LINE_("os_waitpid_impl: has err output\n");
-                            }
-                            continue;
-                        }
-                        if (res == pid) {
-                            break;
-                        }
-                    } while (1);
-                    _TRACE_LINE_V_("os_waitpid_impl: end not spawned %i, %i\n", res, status);
-                    if (res == -1)
-                        return (!async_err) ? posix_error() : NULL;
-
-                    return Py_BuildValue("Ni", PyLong_FromPid(res), status);
-                }
-            }
+            // status is set, return (pid, status)
+            return Py_BuildValue("Ni", PyLong_FromPid(pid), WAIT_STATUS_INT(status));
         }
+        if (options & WNOHANG) {
+            // status is not set, return (0,0)
+            return Py_BuildValue("Ni", PyLong_FromPid(0), 0);
+        }
+        while (finished == 0) {
+            Py_BEGIN_ALLOW_THREADS
+            vms_sleep(100); // 100 microseconds
+            Py_END_ALLOW_THREADS
+            vms_spawn_status(pid, &status, &finished, 0);
+        }
+        if (status == -1) {
+            return NULL;
+        }
+        return Py_BuildValue("Ni", PyLong_FromPid(pid), WAIT_STATUS_INT(status));
     }
 #endif
 
