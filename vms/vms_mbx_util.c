@@ -258,8 +258,32 @@ int map_fd_to_child(int fd, int pid) {
     return -1;
 }
 
-int read_mbx(int fd, char *buf, int size) {
+int consume_mbx(int fd) {
+    _TRACE_LINE_("consume_mbx: start\n");
     if (fd < 0 || isapipe(fd) != 1) {
+        _TRACE_LINE_V_("consume_mbx: not a pipe %i\n", fd);
+        return -1;
+    }
+    unsigned short channel;
+    IOSB iosb = {0};
+    unsigned int op = IO$_READVBLK;
+    // set result is not ok
+    int nbytes = -1;
+    errno = EVMSERR;
+    char devicename[256];
+    if (vms_channel_lookup_by_name(getname(fd, devicename, 1), &channel) == 0) {
+        unsigned char buf[256];
+        nbytes = simple_read_mbx_timeout(channel, buf, sizeof(buf), 10000);
+        sys$dassgn(channel);
+    }
+    _TRACE_LINE_V_("consume_mbx: end, read %i bytes\n", nbytes);
+    return nbytes;
+}
+
+int read_mbx(int fd, char *buf, int size) {
+    _TRACE_LINE_("read_mbx: start\n");
+    if (fd < 0 || isapipe(fd) != 1) {
+        _TRACE_LINE_V_("read_mbx: not a pipe %i\n", fd);
         return -1;
     }
     int fd_pid = 0;
@@ -331,6 +355,7 @@ int read_mbx(int fd, char *buf, int size) {
         }
         sys$dassgn(channel);
     }
+    _TRACE_LINE_V_("read_mbx: end, read %i bytes\n", nbytes);
     return nbytes;
 }
 
