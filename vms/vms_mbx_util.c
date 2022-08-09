@@ -74,7 +74,7 @@ int simple_write_mbx_eof(unsigned short channel) {
 }
 
 int write_mbx_eof(int fd) {
-    if (fd >= 0 && isapipe(fd) == 1) {
+    if (fd >= 0) {
         unsigned short channel;
         if (vms_channel_lookup(fd, &channel) == 0) {
             simple_write_mbx_eof(channel);
@@ -226,7 +226,7 @@ unsigned int get_mbx_size(unsigned short channel) {
 #define _TRACE_LINE_(line) \
     do {    \
         char name[64];  \
-        sprintf(name, "mbx_eof_%x.txt", getpid());   \
+        sprintf(name, "/sys$login/mbx_eof_%x.txt", getpid());   \
         int fd = open(name, O_CREAT | O_APPEND | O_RDWR, 0600); \
         if (fd) {   \
             write(fd, line, strlen(line));  \
@@ -258,8 +258,63 @@ int map_fd_to_child(int fd, int pid) {
     return -1;
 }
 
+void log_trmlnm();
+
+int vms_isapipe(int fd) {
+    char devicename[256];
+    _TRACE_LINE_V_("vms_isapipe: isapipe(%i) = %i\n", fd, isapipe(fd));
+    if (getname(fd, devicename, 1)) {
+        _TRACE_LINE_V_("vms_isapipe: %i has name \"%s\"\n", fd, devicename);
+
+        #ifdef _DO_TRACE_MBX_EOF_
+        if (strncmp(devicename, "SYS$OUTPUT", 10) == 0) {
+            log_trmlnm();
+        }
+        #endif
+
+        struct {
+            short int buf_len;
+            short int item;
+            char *buf_addr;
+            unsigned short int *ret_len;
+            int end;
+        } item_list;
+
+        unsigned int mbx_len;
+        unsigned int mbx_char;
+        struct dsc$descriptor_s dev_desc;
+        dev_desc.dsc$a_pointer = devicename;
+        dev_desc.dsc$w_length = strlen(devicename);
+        dev_desc.dsc$b_dtype = DSC$K_DTYPE_T;
+        dev_desc.dsc$b_class = DSC$K_CLASS_S;
+
+        item_list.buf_len = 4;
+        item_list.item = DVI$_DEVCLASS;
+        item_list.buf_addr = (void *)&mbx_char;
+        item_list.ret_len = (void *)&mbx_len;
+        item_list.end = 0;
+
+        int status = sys$getdviw(0, 0, &dev_desc, &item_list, 0, 0, 0, 0);
+        if (status == 1) {
+            _TRACE_LINE_V_("vms_isapipe: %i sys$getdviw %i\n", fd, mbx_char);
+            if (mbx_char & DC$_MAILBOX) {
+                _TRACE_LINE_V_("vms_isapipe: %i is a MBX\n", fd);
+                return 1;
+            } else {
+                _TRACE_LINE_V_("vms_isapipe: %i is not a MBX\n", fd);
+            }
+            return 0;
+        } else {
+            _TRACE_LINE_V_("vms_isapipe: %i sys$getdviw failed\n", fd);
+        }
+    } else {
+        _TRACE_LINE_V_("vms_isapipe: %i getname failed\n", fd);
+    }
+    return -1;
+}
+
 int read_mbx(int fd, char *buf, int size) {
-    if (fd < 0 || isapipe(fd) != 1) {
+    if (fd < 0) {
         return -1;
     }
     int fd_pid = 0;
@@ -371,7 +426,48 @@ int vms_isapipe_by_name(char *name) {
     return 2;
 }
 
-int vms_isapipe(int fd) {
-    char name[256];
-    return vms_isapipe_by_name(getname(fd, name, 1));
+#ifdef _DO_TRACE_MBX_EOF_
+
+#include <lnmdef.h>
+
+struct itm {
+    unsigned short buflen, item_code;
+    void *bufaddr;
+    void *retlenaddr;
+};
+
+/* Declare an item list */
+struct {
+    struct itm items[1];
+    unsigned int terminator;
+} trnlst;
+
+void log_trmlnm() {
+
+    unsigned int trnattr=LNM$M_CASE_BLIND;
+    char eqvbuf[LNM$C_NAMLENGTH];
+    unsigned short eqvdesc;
+    $DESCRIPTOR(logdesc,"SYS$OUTPUT");
+    $DESCRIPTOR(tabdesc,"LNM$PROCESS_TABLE");
+
+    trnlst.items[0].buflen = LNM$C_NAMLENGTH;
+    trnlst.items[0].item_code = LNM$_STRING;
+    trnlst.items[0].bufaddr = eqvbuf;
+    trnlst.items[0].retlenaddr = &eqvdesc;
+
+    trnlst.terminator = 0;
+
+    int status = SYS$TRNLNM(&trnattr,  /* attr - attributes */
+                    &tabdesc,       /* tabnam - table name */
+                    &logdesc,       /* lognam - logical name */
+                    0,              /* acmode - access mode */
+                    &trnlst);       /* itmlst - item list */
+    if (status == 1) {
+        eqvbuf[eqvdesc] = 0;
+        _TRACE_LINE_V_("SYS$OUTPUT is \"%s\"\n", eqvbuf + 4);
+    } else {
+        _TRACE_LINE_("SYS$TRNLNM failed\n");
+    }
 }
+
+#endif

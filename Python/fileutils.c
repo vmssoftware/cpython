@@ -1833,7 +1833,7 @@ _Py_read(int fd, void *buf, size_t count)
         char fd_name[256];
         getname(fd, fd_name, 1);
 #endif
-        if (isapipe(fd) == 1) {
+        if (isapipe(fd) == 1 || vms_isapipe(fd) == 1) {
             do {
                 n = read_mbx(fd, buf, count);
             } while(n == -1 && errno == EAGAIN);

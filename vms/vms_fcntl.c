@@ -27,6 +27,33 @@
 #define _TIMEOUT_MICROSEC 100000
 #endif
 
+#undef _DO_TRACE_MBX_EOF_
+// #define _DO_TRACE_MBX_EOF_
+#ifndef _DO_TRACE_MBX_EOF_
+#define _TRACE_LINE_(line)
+#define _TRACE_LINE_V_(line, ...)
+#else
+#include <fcntl.h>
+#include <unixlib.h>
+#define _TRACE_LINE_(line) \
+    do {    \
+        char name[64];  \
+        sprintf(name, "/sys$login/mbx_eof_%x.txt", getpid());   \
+        int fd = open(name, O_CREAT | O_APPEND | O_RDWR, 0600); \
+        if (fd) {   \
+            write(fd, line, strlen(line));  \
+            close(fd);  \
+        }   \
+    } while(0)
+
+#define _TRACE_LINE_V_(line, ...) \
+    do {    \
+        char buf[256];  \
+        sprintf(buf, line, __VA_ARGS__); \
+        _TRACE_LINE_(buf);  \
+    } while(0)
+#endif
+
 typedef struct {
     int fd;
     int fd2;
@@ -203,6 +230,7 @@ int vms_pipe_noinherit(int fds[2]) {
     if (proceed_buf(&buf) != -1) {
         fds[0] = buf.fd;
         fds[1] = buf.fd2;
+        _TRACE_LINE_V_("vms_pipe_noinherit: %i %i\n", fds[0], fds[1]);
         return 0;
     }
     return -1;
