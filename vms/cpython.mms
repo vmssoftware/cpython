@@ -1842,7 +1842,7 @@ DECIMAL_HEADERS = -
 [.$(OUT_DIR)]python.exe : [.$(OBJ_DIR).Programs]python.obc [.$(OBJ_DIR).vms]vms_crtl_init.obc [.$(OUT_DIR)]python$shr.exe
    @ pipe create/dir $(DIR $(MMS$TARGET)) | copy SYS$INPUT nl:
 .IF X86_64
-    $(LINK)$(LINK_FLAGS)/EXECUTABLE=python$build_out:[000000]$(NOTDIR $(MMS$TARGET_NAME)).exe [.$(OBJ_DIR).vms]vms_crtl_init.obc,$(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
+    $(LINK)$(LINK_FLAGS)/THREADS/EXECUTABLE=python$build_out:[000000]$(NOTDIR $(MMS$TARGET_NAME)).exe [.$(OBJ_DIR).vms]vms_crtl_init.obc,$(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
 .ELSE
     $(LINK)$(LINK_FLAGS)/THREADS/EXECUTABLE=python$build_out:[000000]$(NOTDIR $(MMS$TARGET_NAME)).exe [.$(OBJ_DIR).vms]vms_crtl_init.obc,$(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT
 .ENDIF
