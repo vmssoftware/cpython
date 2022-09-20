@@ -5,7 +5,7 @@
 ! build with native compiler
 ! MMS/EXT/DESCR=Python3.mms/MACRO=("OUTDIR=OUT","CONFIG=RELEASE_X86_64","X86_64=1")
 ! build with cross compiler
-! MMS/EXT/DESCR=Python3.mms/MACRO=("OUTDIR=OUT","CONFIG=RELEASEx86","X86_HOST=BALDER","X86_DISK=$172$DKA300","X86_USER=VORFOLOMEEV","X86_PASS=AAwf12jg%3kW","X86_FFIDEF=define libffi$root wrk_disk:[vorfolomeev.libffi.]","X86_SSLDEF=define ssl$shared wrk_disk:[vorfolomeev.ssl111_vms13.]")
+! MMS/EXT/DESCR=Python3.mms/MACRO=("OUTDIR=OUT","CONFIG=RELEASEx86","X86_HOST=BALDER","X86_DISK=$172$DKA300","X86_USER=<user>","X86_PASS=<pass>","X86_FFIDEF=define libffi$root wrk_disk:[vorfolomeev.libffi.]","X86_SSLDEF=define ssl$shared wrk_disk:[vorfolomeev.ssl111_vms13.]")
 
 DYNLOAD_DIR = lib-dynload
 PLATFORM = OpenVMS
