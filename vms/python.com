@@ -34,10 +34,10 @@ $ backup 'vms_py_pat'*.py python$root:[lib.python3^.10.vms]
 $ backup 'rdb_py_pat'*.py python$root:[lib.python3^.10]
 $ backup 'bld_pat'python$shr.exe python$root:[lib]
 $
-$ backup 'vms_pat'python$define_root.com python$root:[000000]
+$ !backup 'vms_pat'python$define_root.com python$root:[000000]
 $ backup 'vms_pat'python$pcsi_preconfigure.com python$root:[000000]
-$ backup 'vms_pat'python$startup.com python$root:[000000]
-$ backup 'vms_pat'python$shutdown.com python$root:[000000]
+$ !backup 'vms_pat'python$startup.com python$root:[000000]
+$ !backup 'vms_pat'python$shutdown.com python$root:[000000]
 $
 $ backup 'vms_pat'constraints.txt python$root:[lib]
 $

@@ -92,14 +92,14 @@ product VSI I64VMS PYTHWHLS64 {type}{major}.{minor}-{level}{edit} FULL ;
         "define/system/trans=concealed python_wheels$root 'root'",
         "define/system PIP_FIND_LINKS ""/python_wheels$root""",
         "define/system PIP_NO_INDEX 1",
-        "open/write fd sys$startup:python_wheels$startup.com",
+        "open/write fd sys$startup:python_wheels64$startup.com",
         "write fd ""$!Define logical names for Python wheels packages...""",
         "write fd ""$define/system/trans=concealed python_wheels$root ''root'""",
         "write fd ""$define/system PIP_FIND_LINKS """"/python_wheels$root""""",
         "write fd ""$define/system PIP_NO_INDEX 1""",
         "write fd ""$exit""",
         "close fd",
-        "set file /prot=(W:RE) sys$startup:python_wheels$startup.com"
+        "set file /prot=(W:RE) sys$startup:python_wheels64$startup.com"
      );
 
 --
@@ -136,7 +136,7 @@ end product;
 To define the Wheels for Python runtime at system boot time, add the
 following lines to SYS$MANAGER:SYSTARTUP_VMS.COM:
 
-    $ file := sys$startup:python_wheels$startup.com
+    $ file := sys$startup:python_wheels64$startup.com
     $ if f$search("''file'") .nes. "" then @'file'
 
 '''

@@ -97,7 +97,7 @@ product VSI I64VMS PYTHON64 {type}{major}.{minor}-{level}{edit} FULL ;
         "define/system python$shr python$root:[lib]python$shr.exe",
         "define/system PYTHONHOME ""/python$root""",
         "python :== $python$root:[bin]python.exe",
-        "open/write fd sys$startup:python$startup.com",
+        "open/write fd sys$startup:python64$startup.com",
         "write fd ""$!Define logical names for Python""",
         "write fd ""$python :== $python$root:[bin]python.exe""",
         "write fd ""$define/system/trans=concealed python$root ''root'""",
@@ -105,7 +105,7 @@ product VSI I64VMS PYTHON64 {type}{major}.{minor}-{level}{edit} FULL ;
         "write fd ""$define/system PYTHONHOME """"/python$root""""",
         "write fd ""$exit""",
         "close fd",
-        "set file /prot=(W:RE) sys$startup:python$startup.com"
+        "set file /prot=(W:RE) sys$startup:python64$startup.com"
      );
 
 --
@@ -154,7 +154,7 @@ This kit requires an ODS-5 disk to be correctly installed in this system.
 To define the Python runtime at system boot time, add the
 following lines to SYS$MANAGER:SYSTARTUP_VMS.COM:
 
-    $ file := SYS$STARTUP:PYTHON$STARTUP.COM
+    $ file := SYS$STARTUP:PYTHON64$STARTUP.COM
     $ if f$search("''file'") .nes. "" then @'file'
 
 '''
