@@ -10,11 +10,14 @@ cffi
 cryptography
 cython
 httpbin
-perfdat
-pytest==6.2.4
+# perfdat - missing
+pytest
 reportlab
 numpy
 psycopg2
 pandas
 pyrsistent
 pywebui
+# get the code from github, create tar and copy it to repository
+PyYAML
+

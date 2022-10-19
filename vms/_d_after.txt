@@ -1,7 +1,6 @@
 # Requires Cython and build on VILE
 # --no-deps
 # python -m pip wheel -w /pyth$whl --no-deps 
-PyYAML
 simplejson
 charset-normalizer
 backports.entry-points-selectable
