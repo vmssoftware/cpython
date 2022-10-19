@@ -10,3 +10,6 @@
 8.64 $ python create_kit_files64.py
 9. $ @make_kit.com
 9.64 $ @make_kit64.com
+
+1. install wheel: $ python -m pip install wheel
+2. see instruction in _[abcde]_*.txt

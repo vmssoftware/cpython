@@ -1,6 +1,6 @@
 # Requires repository and build on VILE
 --no-index
-# python -m pip wheel -w /pyth$whl -f /pyth$whl -f /pyth$rep --no-index --no-deps 
+# python -m pip wheel -w /pyth$whl -f /pyth$whl -f /pyth$rep --no-index --no-deps <NAME>
 Brotli
 Pillow
 awscli
