@@ -14,5 +14,5 @@ pywebui==0.1
 PyYAML==6.0
 reportlab==3.5.66
 setuptools-rust==0.12.1
-setuptools==57.4.0
+setuptools<=57.4.0
 simplejson==3.17.5

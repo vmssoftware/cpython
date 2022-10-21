@@ -1,3 +1,5 @@
+Creating python kit (do not forget change the version in create_kit_files.py if it is required)
+
 1. upload project
 2. select build type (release, release_64 ...)
 3. build
@@ -11,5 +13,13 @@
 9. $ @make_kit.com
 9.64 $ @make_kit64.com
 
+Creating wheels kit (do not forget change the version in wheels_create_kit_files[64].py if it is required)
+
+0. clear pip cache: $ python -m pip cache purge
 1. install wheel: $ python -m pip install wheel
 2. see instruction in _[abcde]_*.txt
+3. $ define /tran=conc python_wheels$root <wheels folder>
+4. $ python wheels_create_kit_files.py
+4.64 $ python wheels_create_kit_files64.py
+5. $ @wheels_make_kit.com
+5.64 $ @wheels_make_kit64.com
