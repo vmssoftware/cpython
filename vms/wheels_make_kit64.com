@@ -1,7 +1,7 @@
 $ set verify
 $
-$ delete/log/noconf vsi-i64vms-pythwhls*.pcsi;*
-$ delete/log/noconf vsi-i64vms-pythwhls*.pcsi$compressed;*
+$ delete/log/noconf vsi-i64vms-pythwhls64-*.pcsi;*
+$ delete/log/noconf vsi-i64vms-pythwhls64-*.pcsi$compressed;*
 $
 $ product package pythwhls64 -
         /source=pythwhls64.pcsi$desc -
