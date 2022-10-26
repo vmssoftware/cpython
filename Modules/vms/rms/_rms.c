@@ -212,7 +212,8 @@ static unsigned int _open(rms_file_t * self)
         return (status);
     }
 
-    if (self->pfab->fab$b_org != FAB$C_IDX) {
+    if (self->pfab->fab$b_org != FAB$C_IDX &&
+        self->pfab->fab$b_org != FAB$C_SEQ) {
         return (RMS$_ORG);
     }
 
@@ -260,6 +261,9 @@ static unsigned int _open(rms_file_t * self)
     self->prab->rab64$l_ubf = (__void_ptr32)-1;
     self->prab->rab64$pq_ubf = 0;
     self->prab->rab64$w_usz = 0;
+    if (self->pfab->fab$w_mrs == 0 && self->pfab->fab$b_org == FAB$C_SEQ) {
+        self->pfab->fab$w_mrs = 1024;
+    }
     self->prab->rab64$q_usz = self->pfab->fab$w_mrs;
 
     return (sys$connect((rab32_ptr32_t)self->prab));
@@ -312,6 +316,9 @@ static unsigned int _usekey(rms_file_t * self, int keynum)
 static int _put(rms_file_t * self, char *buf, int len)
 {
     self->prab->rab64$b_rac = RAB$C_KEY;
+    if (self->pfab->fab$b_org == FAB$C_SEQ) {
+        self->prab->rab64$b_rac = RAB$C_SEQ;
+    }
     self->prab->rab64$l_rbf = (__void_ptr32)-1;
     self->prab->rab64$pq_rbf = buf;
     self->prab->rab64$w_rsz = 0;
@@ -344,6 +351,7 @@ static unsigned int _fetch(rms_file_t * self, char *key, int len, char *buf, int
     }
 
     self->prab->rab64$pq_ubf = buf;
+    self->prab->rab64$q_usz = self->pfab->fab$w_mrs;
 
     status = sys$get((rab32_ptr32_t)self->prab);
 
@@ -729,7 +737,7 @@ static PyObject *RMS_fetch(rms_file_t * self, PyObject * args, PyObject * kwargs
     int retlen = 0;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, (char *) "|s#:fetch", kwnames, &keyval, &len)) {
-	return (NULL);
+	    return (NULL);
     }
 
     status = _fetch((rms_file_t *) self, keyval, len, buf, &retlen);
@@ -896,6 +904,25 @@ RMS_getorg(rms_file_t *self, void *closure)
     Py_RETURN_NONE;
 }
 
+static PyObject *
+RMS_getmrs(rms_file_t *self, void *closure)
+{
+    if (self->pfab) {
+        return PyLong_FromLong(self->pfab->fab$w_mrs);
+    }
+    Py_RETURN_NONE;
+}
+
+int RMS_setmrs(rms_file_t *self, PyObject *newMrs, void *closure) {
+    
+    unsigned short int mrs = PyLong_AsLong(newMrs);
+    if (PyErr_Occurred()) {
+        return -1;
+    }
+    self->pfab->fab$w_mrs = mrs;
+    return 0;
+}
+
 static PyGetSetDef tp_getset[] = {
     {"longname", (getter) RMS_getlongname, NULL,
      "long filename", NULL},
@@ -903,6 +930,8 @@ static PyGetSetDef tp_getset[] = {
      "number of keys", NULL},
     {"org", (getter) RMS_getorg, NULL,
      "file organization", NULL},
+    {"mrs", (getter) RMS_getmrs, (setter) RMS_setmrs,
+     "mrs", NULL},
     {NULL}  /* Sentinel */
 };
 
