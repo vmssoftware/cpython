@@ -14,10 +14,13 @@ import _ssdef as SSDEF
 class BaseTestCase(unittest.TestCase):
 
     def setUp(self):
+        
+        # prepare index file
         try:
             os.unlink('test.dat')
         except:
             pass
+
         if os.access('test.fdl', os.R_OK):
             os.system('CREATE/FDL=test.fdl test.dat')
         else:
@@ -72,10 +75,33 @@ class BaseTestCase(unittest.TestCase):
             (b'AA5AA', 15, b'X234567890A'),
         ]
 
+        # prepare sequential file
+        try:
+            os.unlink('test_seq.dat')
+        except:
+            pass
+
+        self.lines = [
+            b'1a',
+            b'2b',
+            b'3c',
+        ]
+
+        self.line_to_insert = b'4c'
+
+        with open('test_seq.dat', 'wb') as f:
+            for line in self.lines:
+                f.write(line)
+                f.write(b'\n')
+
 
     def tearDown(self):
         try:
             os.unlink('test.dat')
+        except:
+            pass
+        try:
+            os.unlink('test_seq.dat')
         except:
             pass
 
@@ -322,6 +348,104 @@ class BaseTestCase(unittest.TestCase):
             # print('%s [%o,%o]' % (lst[1], lst[3], lst[2]))
 
         f.close()
+
+    def test_demo_4(self):  # test for sequential file
+
+        acc = FABDEF.FAB_M_PUT + FABDEF.FAB_M_GET + FABDEF.FAB_M_DEL + FABDEF.FAB_M_UPD
+        shr = FABDEF.FAB_M_SHRPUT + FABDEF.FAB_M_SHRGET + FABDEF.FAB_M_SHRDEL + FABDEF.FAB_M_SHRUPD
+        f = RMS.file('test_seq.dat', fac=acc, shr=shr)
+
+        # Test lines inserted in setUp()
+        f.rewind()
+        for line_expected in self.lines:
+            s, line_from_file = f.fetch()
+            self.assertEqual(s, RMSDEF.RMS__NORMAL)
+            self.assertEqual(line_from_file, line_expected)
+
+        # Reopen the file
+        f.close()
+        f = RMS.file('test_seq.dat', fac=acc, shr=shr)
+
+        # Update all records
+        f.rewind()
+        while (f.find() != RMSDEF.RMS__EOF):
+            s, l = f.fetch()
+            s = f.update(l.upper()) # just uppercase
+            self.assertIn(s, (RMSDEF.RMS__NORMAL, RMSDEF.RMS__OK_DUP))
+
+        # Test updated lines
+        f.rewind()
+        for line_expected in self.lines:
+            s, line_from_file = f.fetch()
+            self.assertEqual(s, RMSDEF.RMS__NORMAL)
+            self.assertEqual(line_from_file, line_expected.upper())
+
+        # Reopen the file
+        f.close()
+        f = RMS.file('test_seq.dat', fac=acc, shr=shr)
+
+        # Test updated lines after reopening
+        f.rewind()
+        for line_expected in self.lines:
+            s, line_from_file = f.fetch()
+            self.assertEqual(s, RMSDEF.RMS__NORMAL)
+            self.assertEqual(line_from_file, line_expected.upper())
+
+        # Reopen the file
+        f.close()
+        f = RMS.file('test_seq.dat', fac=acc, shr=shr)
+
+        # Try deleting line - must be forbidden
+        f.rewind()
+        with self.assertRaises(RMS.error):
+            f.delete()
+
+        # Reopen the file
+        f.close()
+        f = RMS.file('test_seq.dat', fac=acc, shr=shr)
+
+        # Test reading when buffer is too small
+        f.rewind()
+        f.mrs = 1   # set maximum record size = 1
+        with self.assertRaises(RMS.error):
+            f.fetch()
+
+        # Reopen the file
+        f.close()
+        f = RMS.file('test_seq.dat', fac=acc, shr=shr)
+        self.assertNotEqual(f.mrs, 1)   # ensure MRS is updated
+
+        # Test putting new line not at the end - must be forbidden
+        f.rewind()
+        with self.assertRaises(RMS.error):
+            f.put(self.line_to_insert)
+        f.rewind()
+        f.find()
+        with self.assertRaises(RMS.error):
+            f.put(self.line_to_insert)
+
+        # Go to the end
+        f.rewind()
+        while (f.find() != RMSDEF.RMS__EOF):
+            pass
+        # Put new line
+        f.put(self.line_to_insert)
+
+        # Reopen the file
+        f.close()
+        f = RMS.file('test_seq.dat', fac=acc, shr=shr)
+
+        # Go to the last line
+        f.rewind()
+        while (f.find() != RMSDEF.RMS__EOF):
+            line = f.fetch()
+            self.assertEqual(s, RMSDEF.RMS__NORMAL)
+        # Test last line content
+        self.assertEqual(line[1], self.line_to_insert)
+
+        # Close the file
+        f.close()
+
 
 
 if __name__ == "__main__":
