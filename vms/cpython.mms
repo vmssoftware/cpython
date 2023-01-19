@@ -12,7 +12,7 @@ PLATFORM = OpenVMS
 
 .IF X86_64
 LINK_ADD=/SEGMENT=CODE=P0
-X86_64_START=@decc$root:setup
+X86_64_START=@sys$login:setup_compilers
 .ENDIF
 
 .IF X86_HOST .OR X86_64
@@ -26,10 +26,6 @@ CC_QUALIFIERS = -
 /NAMES=(AS_IS,SHORTENED)-
 /ACCEPT=NOVAXC_KEYWORDS-
 /REENTRANCY=MULTITHREAD
-
-.IF X86_64
-CC_QUALIFIERS=$(CC_QUALIFIERS)/SWITCHES=NOCHECK
-.ENDIF
 
 .IF X86_HOST
 CC_QUALIFIERS = $(CC_QUALIFIERS)-
@@ -73,7 +69,7 @@ LIBFFI = libffi$root:[lib]libffi$shr.olb
 OPT_SUFFIX = _x86
 .ELSIF X86_64
 LIBGDBM = oss$root:[lib]libgdbm32.olb
-LIBFFI = libffi$root:[lib]libffi$shr.olb
+LIBFFI = libffi$root:[out.RELEASE_X86_64]libffi$shr.olb
 .ENDIF
 
 CC_DEFINES = -

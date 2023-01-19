@@ -236,9 +236,9 @@ unsigned int get_mbx_size(unsigned short channel) {
 
 #define _TRACE_LINE_V_(line, ...) \
     do {    \
-        char buf[256];  \
-        sprintf(buf, line, __VA_ARGS__); \
-        _TRACE_LINE_(buf);  \
+        char _TRACE_LINE_V_buf[256];  \
+        sprintf(_TRACE_LINE_V_buf, line, __VA_ARGS__); \
+        _TRACE_LINE_(_TRACE_LINE_V_buf);  \
     } while(0)
 #endif
 
@@ -259,6 +259,7 @@ int map_fd_to_child(int fd, int pid) {
 }
 
 int read_mbx(int fd, char *buf, int size) {
+    _TRACE_LINE_V_("read_mbx: fd = %i\n", fd);
     if (fd < 0 || isapipe(fd) != 1) {
         return -1;
     }
@@ -274,6 +275,7 @@ int read_mbx(int fd, char *buf, int size) {
     errno = EVMSERR;
     char devicename[256];
     if (vms_channel_lookup_by_name(getname(fd, devicename, 1), &channel) == 0) {
+        _TRACE_LINE_V_("read_mbx: channel = %i\n", channel);
         unsigned short mbx_size = get_mbx_size(channel);
         if (mbx_size < size) {
             size = mbx_size;
@@ -297,6 +299,7 @@ int read_mbx(int fd, char *buf, int size) {
                     if ((fd_pid < -1 && iosb.iosb$l_pid != -fd_pid) ||
                         (fd_pid > 0 && iosb.iosb$l_pid != fd_pid)) {
                         // accept EOF only given pid
+                        // TODO: only if the child process is available
                         nbytes = -1;
                         errno = EAGAIN;
                         _TRACE_LINE_(" again\n");
@@ -311,7 +314,7 @@ int read_mbx(int fd, char *buf, int size) {
                 } else if (iosb.iosb$w_status == SS$_NORMAL) {
                     errno = 0;
                     nbytes = iosb.iosb$w_bcnt;
-                    _TRACE_LINE_V_("%i: \"%s\" data[%i] from 0x%x", fd, devicename, nbytes, iosb.iosb$l_pid);
+                    _TRACE_LINE_V_("%i: \"%s\" data[%i] from 0x%x \"%.*s\"", fd, devicename, nbytes, iosb.iosb$l_pid, nbytes, buf);
                     if (fd_pid < -1) {
                         // add LF to the end of each RECORD
                         buf[nbytes] = '\n';

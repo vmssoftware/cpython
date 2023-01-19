@@ -28,6 +28,35 @@
 #include "vms/vms_spawn_helper.h"
 #include "vms/vms_select.h"
 #include "vms/vms_sleep.h"
+#include "vms/vms_mbx_util.h"
+
+#undef _DO_TRACE_MBX_EOF_
+// #define _DO_TRACE_MBX_EOF_
+#ifndef _DO_TRACE_MBX_EOF_
+#define _TRACE_LINE_(line)
+#define _TRACE_LINE_V_(line, ...)
+#else
+#include <fcntl.h>
+#include <unixlib.h>
+#define _TRACE_LINE_(line) \
+    do {    \
+        char name[64];  \
+        sprintf(name, "mbx_eof_%x.txt", getpid());   \
+        int fd = open(name, O_CREAT | O_APPEND | O_RDWR, 0600); \
+        if (fd) {   \
+            write(fd, line, strlen(line));  \
+            close(fd);  \
+        }   \
+    } while(0)
+
+#define _TRACE_LINE_V_(line, ...) \
+    do {    \
+        char _TRACE_LINE_V_buf[256];  \
+        sprintf(_TRACE_LINE_V_buf, line, __VA_ARGS__); \
+        _TRACE_LINE_(_TRACE_LINE_V_buf);  \
+    } while(0)
+#endif
+
 
 int vms_channel_lookup_by_name(char* name, unsigned short *channel) {
     int status;
@@ -70,7 +99,7 @@ int vms_channel_free(unsigned short channel) {
 struct vms_pollfd_st {
     struct pollfd *fd_desc_ptr;
     unsigned short channel;
-    unsigned short pad;
+    // unsigned short pad;
 };
 
 static int select_terminal(const struct vms_pollfd_st *term_array, int ti) {
@@ -113,6 +142,8 @@ static int select_mbx(const struct vms_pollfd_st *pipe_array, int pi) {
     int ret_stat = 0;
     IOSB iosb;
 
+    static unsigned char buf[512];
+
     /* Loop through the pipes */
     for (int i = 0; i < pi; i++) {
         pipe_array[i].fd_desc_ptr->revents = 0;
@@ -124,6 +155,23 @@ static int select_mbx(const struct vms_pollfd_st *pipe_array, int pi) {
                 /* Got some information */
                 if (iosb.iosb$w_bcnt != 0) {
                     /* There is data to read */
+                    _TRACE_LINE_V_("N %i, ch %i, bcnt %i, bytes %i\n", i, pipe_array[i].channel, iosb.iosb$w_bcnt, iosb.iosb$l_dev_depend);
+                    if (iosb.iosb$w_bcnt == 1 && iosb.iosb$l_dev_depend == 1) {
+                        /* Special case - it is highly likely EOF */
+                        memset(&iosb, 0, sizeof(iosb));
+                        sys$qiow(EFN$C_ENF, pipe_array[i].channel, IO$_READVBLK | IO$M_NOW, &iosb, 0, 0, buf, sizeof(buf), 0, 0, 0, 0);
+                        if (iosb.iosb$l_pid == getpid()) {
+                            /* This is our own EOF, skip it */
+                            _TRACE_LINE_V_("our pid, ch %i \n", pipe_array[i].channel);
+                            --i;
+                            continue;
+                        } else {
+                            /* This is foreign EOF, pass it, but now with our own pid :( , so clear map */
+                            map_fd_to_child(pipe_array[i].fd_desc_ptr->fd, 0);
+                            _TRACE_LINE_V_("foreign pid, ch %i \n", pipe_array[i].channel);
+                            simple_write_mbx_eof(pipe_array[i].channel);
+                        }
+                    }
                     pipe_array[i].fd_desc_ptr->revents = pipe_array[i].fd_desc_ptr->events & POLL_IN;
                 } else {
                     /* Pipe is empty, ok to write */
