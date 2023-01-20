@@ -18,6 +18,34 @@ extern int winerror_to_errno(int);
 #  include <sys/stat.h>
 #  include "vms/vms_fcntl.h"
 #  include "vms/vms_mbx_util.h"
+
+#undef _DO_TRACE_FILE_
+// #define _DO_TRACE_FILE_ "MBX_"
+#ifndef _DO_TRACE_FILE_
+#define _TRACE_LINE_(line)
+#define _TRACE_LINE_V_(line, ...)
+#else
+#include <fcntl.h>
+#include <unixlib.h>
+#define _TRACE_LINE_(line) \
+    do {    \
+        char _TRACE_LINE_name[64];  \
+        sprintf(_TRACE_LINE_name, _DO_TRACE_FILE_ "%x.txt", getpid());   \
+        int _TRACE_LINE_fd = open(_TRACE_LINE_name, O_CREAT | O_APPEND | O_RDWR, 0600); \
+        if (_TRACE_LINE_fd) {   \
+            write(_TRACE_LINE_fd, (line), strlen((line)));  \
+            close(_TRACE_LINE_fd);  \
+        }   \
+    } while(0)
+
+#define _TRACE_LINE_V_(line, ...) \
+    do {    \
+        char _TRACE_LINE_V_buf[256];  \
+        sprintf(_TRACE_LINE_V_buf, (line), __VA_ARGS__); \
+        _TRACE_LINE_(_TRACE_LINE_V_buf);  \
+    } while(0)
+#endif
+
 #endif
 
 #ifdef HAVE_LANGINFO_H
@@ -1829,9 +1857,10 @@ _Py_read(int fd, void *buf, size_t count)
         Py_BEGIN_ALLOW_THREADS
         errno = 0;
 #ifdef __VMS
-#ifdef _DEBUG
+#ifdef _DO_TRACE_FILE_
         char fd_name[256];
         getname(fd, fd_name, 1);
+        _TRACE_LINE_V_("_Py_read from %i, name \"%s\", isapipe %i\n", fd, fd_name, isapipe(fd));
 #endif
         if (isapipe(fd) == 1) {
             do {

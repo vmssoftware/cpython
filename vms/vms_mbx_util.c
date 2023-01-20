@@ -23,6 +23,33 @@
 int vms_channel_lookup(int fd, unsigned short *channel);
 int vms_channel_lookup_by_name(char* name, unsigned short *channel);
 
+#undef _DO_TRACE_FILE_
+// #define _DO_TRACE_FILE_ "MBX_"
+#ifndef _DO_TRACE_FILE_
+#define _TRACE_LINE_(line)
+#define _TRACE_LINE_V_(line, ...)
+#else
+#include <fcntl.h>
+#include <unixlib.h>
+#define _TRACE_LINE_(line) \
+    do {    \
+        char _TRACE_LINE_name[64];  \
+        sprintf(_TRACE_LINE_name, _DO_TRACE_FILE_ "%x.txt", getpid());   \
+        int _TRACE_LINE_fd = open(_TRACE_LINE_name, O_CREAT | O_APPEND | O_RDWR, 0600); \
+        if (_TRACE_LINE_fd) {   \
+            write(_TRACE_LINE_fd, (line), strlen((line)));  \
+            close(_TRACE_LINE_fd);  \
+        }   \
+    } while(0)
+
+#define _TRACE_LINE_V_(line, ...) \
+    do {    \
+        char _TRACE_LINE_V_buf[256];  \
+        sprintf(_TRACE_LINE_V_buf, (line), __VA_ARGS__); \
+        _TRACE_LINE_(_TRACE_LINE_V_buf);  \
+    } while(0)
+#endif
+
 unsigned short simple_create_mbx(const char *name, int mbx_size) {
     unsigned short channel = 0;
     $DESCRIPTOR(dsc_name, "");
@@ -214,33 +241,6 @@ unsigned int get_mbx_size(unsigned short channel) {
     }
     return 0;
 }
-
-#undef _DO_TRACE_MBX_EOF_
-// #define _DO_TRACE_MBX_EOF_
-#ifndef _DO_TRACE_MBX_EOF_
-#define _TRACE_LINE_(line)
-#define _TRACE_LINE_V_(line, ...)
-#else
-#include <fcntl.h>
-#include <unixlib.h>
-#define _TRACE_LINE_(line) \
-    do {    \
-        char name[64];  \
-        sprintf(name, "mbx_eof_%x.txt", getpid());   \
-        int fd = open(name, O_CREAT | O_APPEND | O_RDWR, 0600); \
-        if (fd) {   \
-            write(fd, line, strlen(line));  \
-            close(fd);  \
-        }   \
-    } while(0)
-
-#define _TRACE_LINE_V_(line, ...) \
-    do {    \
-        char _TRACE_LINE_V_buf[256];  \
-        sprintf(_TRACE_LINE_V_buf, line, __VA_ARGS__); \
-        _TRACE_LINE_(_TRACE_LINE_V_buf);  \
-    } while(0)
-#endif
 
 #define _MAX_FD_TO_REGISTER_ 256
 
