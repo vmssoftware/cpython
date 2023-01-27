@@ -20,7 +20,7 @@ extern int winerror_to_errno(int);
 #  include "vms/vms_mbx_util.h"
 
 #undef _DO_TRACE_FILE_
-// #define _DO_TRACE_FILE_ "MBX_"
+// #define _DO_TRACE_FILE_ "PY_"
 #ifndef _DO_TRACE_FILE_
 #define _TRACE_LINE_(line)
 #define _TRACE_LINE_V_(line, ...)
@@ -1318,9 +1318,10 @@ get_inheritable(int fd, int raise)
 
     return (flags & HANDLE_FLAG_INHERIT);
 #elif defined(__VMS)
-#ifdef _DEBUG
-    char fd_name[256];
-    getname(fd, fd_name, 1);
+#ifdef _DO_TRACE_FILE_
+        char fd_name[256];
+        getname(fd, fd_name, 1);
+        _TRACE_LINE_V_("get_inheritable: %i, name \"%s\", isapipe %i\n", fd, fd_name, isapipe(fd));
 #endif
     int flags;
 
@@ -1460,9 +1461,10 @@ set_inheritable(int fd, int inheritable, int raise, int *atomic_flag_works)
 #endif
 
 #ifdef __VMS
-#ifdef _DEBUG
+#ifdef _DO_TRACE_FILE_
     char fd_name[256];
     getname(fd, fd_name, 1);
+    _TRACE_LINE_V_("set_inheritable: %i, name \"%s\", isapipe %i\n", fd, fd_name, isapipe(fd));
 #endif
     /* slow-path: fcntl() requires two syscalls */
     flags = vms_fcntl(fd, F_GETFD, 0);
@@ -1860,7 +1862,7 @@ _Py_read(int fd, void *buf, size_t count)
 #ifdef _DO_TRACE_FILE_
         char fd_name[256];
         getname(fd, fd_name, 1);
-        _TRACE_LINE_V_("_Py_read from %i, name \"%s\", isapipe %i\n", fd, fd_name, isapipe(fd));
+        _TRACE_LINE_V_("_Py_read: %i, name \"%s\", isapipe %i\n", fd, fd_name, isapipe(fd));
 #endif
         if (isapipe(fd) == 1) {
             do {

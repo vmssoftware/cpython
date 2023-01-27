@@ -10,6 +10,7 @@ perfdat==4.3.1
 psycopg2==2.8.6
 pyrsistent==0.18.0
 pytest==6.2.4
+pluggy<1.0.0a1,>=0.12
 pywebui==0.1
 PyYAML==6.0
 reportlab==3.5.66

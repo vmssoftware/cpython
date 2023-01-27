@@ -31,7 +31,7 @@
 #include "vms/vms_mbx_util.h"
 
 #undef _DO_TRACE_FILE_
-// #define _DO_TRACE_FILE_ "MBX_"
+// #define _DO_TRACE_FILE_ "PY_"
 #ifndef _DO_TRACE_FILE_
 #define _TRACE_LINE_(line)
 #define _TRACE_LINE_V_(line, ...)
