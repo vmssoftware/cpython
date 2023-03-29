@@ -14,7 +14,7 @@ decorator
 docutils
 execnet
 hypothesis
-idna<3,>=2.5
+idna
 iniconfig
 iso8601
 itsdangerous
@@ -32,14 +32,13 @@ pytest-forked
 pytest-xdist
 pytest_subtests
 python_dateutil
-python-interface
 python-magic
 pytz
 raven
 rsa
 s3transfer
 semantic_version
-setuptools<49.2.0
+setuptools
 setuptools_rust
 setuptools_scm
 six
