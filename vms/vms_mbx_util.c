@@ -101,7 +101,13 @@ int simple_write_mbx_eof(unsigned short channel) {
 }
 
 int write_mbx_eof(int fd) {
-    if (fd >= 0 && isapipe(fd) == 1) {
+    if (fd >= 0 && 
+#ifdef __x86_64
+        vms_isapipe(fd) > 0
+#else
+        isapipe(fd) == 1
+#endif
+    ) {
         unsigned short channel;
         if (vms_channel_lookup(fd, &channel) == 0) {
             simple_write_mbx_eof(channel);
@@ -260,7 +266,13 @@ int map_fd_to_child(int fd, int pid) {
 
 int read_mbx(int fd, char *buf, int size) {
     _TRACE_LINE_V_("read_mbx: fd = %i\n", fd);
-    if (fd < 0 || isapipe(fd) != 1) {
+    if (fd < 0 || 
+#ifdef __x86_64
+        vms_isapipe(fd) < 1
+#else
+        isapipe(fd) != 1
+#endif
+        ) {
         return -1;
     }
     int fd_pid = 0;
