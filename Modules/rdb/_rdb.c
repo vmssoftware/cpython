@@ -1875,10 +1875,7 @@ STMT_data(
         } else {
             switch (pVar->SQLTYPE) {
                 case SQLDA_VARCHAR:
-                    len = (vc_len_t) *pVar->SQLDATA;
-                    if (len < 0) {              /* Hack */
-                        len += 256;
-                    }
+                    len = *(vc_len_t*)pVar->SQLDATA;
                     pValue = PyUnicode_FromStringAndSize(pVar->SQLDATA + sizeof(vc_len_t), len);
                     break;
                 case SQLDA_CHAR:
