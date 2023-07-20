@@ -2,7 +2,7 @@
 
 /*
 **
-** © Copyright 2002 Hewlett-Packard Development Company, L.P.
+** ï¿½ Copyright 2002 Hewlett-Packard Development Company, L.P.
 **
 ** Hewlett-Packard and the Hewlett-Packard logo are trademarks
 ** of Hewlett-Packard Development Company L.P. in the U.S. and/or
