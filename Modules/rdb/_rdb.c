@@ -144,8 +144,8 @@ static volatile unsigned int global_cursor_id = 1;
 
 extern PyTypeObject STMT_Type;
 
-typedef long   vc_len_t;
-typedef short  sc_len_t;
+typedef unsigned long   vc_len_t;
+typedef unsigned short  sc_len_t;
 
 # define MAXVLEN 8192
 
@@ -1848,7 +1848,6 @@ STMT_data(
         return PyErr_NoMemory();
     }
 
-    vc_len_t len;
     PyObject *pValue;
     SQL_T_SQLVAR2 *pVar;
     long long long_long_value;
@@ -1874,13 +1873,11 @@ STMT_data(
             Py_INCREF(pValue);
         } else {
             switch (pVar->SQLTYPE) {
-                case SQLDA_VARCHAR:
-                    len = *(vc_len_t*)pVar->SQLDATA;
-                    pValue = PyUnicode_FromStringAndSize(pVar->SQLDATA + sizeof(vc_len_t), len);
+                case SQLDA_VARCHAR: 
+                    pValue = PyUnicode_FromStringAndSize(((vc_t*)pVar->SQLDATA)->data, ((vc_t*)pVar->SQLDATA)->dlen);
                     break;
                 case SQLDA_CHAR:
-                    len = pVar->SQLLEN;
-                    pValue = PyUnicode_FromStringAndSize(pVar->SQLDATA, len);
+                    pValue = PyUnicode_FromStringAndSize(pVar->SQLDATA, pVar->SQLLEN);
                     break;
                 case SQLDA_FLOAT:
                     if (pVar->SQLLEN == 8) {
