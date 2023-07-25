@@ -4,7 +4,7 @@
 Brotli
 Pillow
 awscli
-# $ define libffi_shr
+# $ define libffi$root?
 cffi
 # $ define CRYPTOGRAPHY_DONT_BUILD_RUST "1"
 cryptography

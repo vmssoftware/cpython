@@ -18,6 +18,7 @@ int simple_check_mbx(unsigned short channel);
 int map_fd_to_child(int fd, int pid);
 int read_mbx(int fd, char *buf, int size);
 int write_mbx_eof(int fd);
+int write_mbx(int fd, unsigned char *buf, int size);
 unsigned int get_mbx_size(unsigned short channel);
 int vms_isapipe(int fd);
 int vms_isapipe_by_name(char *name);

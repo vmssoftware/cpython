@@ -31,31 +31,8 @@
 #include "vms/vms_mbx_util.h"
 
 #undef _DO_TRACE_FILE_
-// #define _DO_TRACE_FILE_ "PY_"
-#ifndef _DO_TRACE_FILE_
-#define _TRACE_LINE_(line)
-#define _TRACE_LINE_V_(line, ...)
-#else
-#include <fcntl.h>
-#include <unixlib.h>
-#define _TRACE_LINE_(line) \
-    do {    \
-        char _TRACE_LINE_name[64];  \
-        sprintf(_TRACE_LINE_name, _DO_TRACE_FILE_ "%x.txt", getpid());   \
-        int _TRACE_LINE_fd = open(_TRACE_LINE_name, O_CREAT | O_APPEND | O_RDWR, 0600); \
-        if (_TRACE_LINE_fd) {   \
-            write(_TRACE_LINE_fd, (line), strlen((line)));  \
-            close(_TRACE_LINE_fd);  \
-        }   \
-    } while(0)
-
-#define _TRACE_LINE_V_(line, ...) \
-    do {    \
-        char _TRACE_LINE_V_buf[256];  \
-        sprintf(_TRACE_LINE_V_buf, (line), __VA_ARGS__); \
-        _TRACE_LINE_(_TRACE_LINE_V_buf);  \
-    } while(0)
-#endif
+// #define _DO_TRACE_FILE_ "SL_"
+#include "vms/trace.h"
 
 int vms_channel_lookup_by_name(char* name, unsigned short *channel) {
     int status;
@@ -151,23 +128,23 @@ static int select_mbx(const struct vms_pollfd_st *pipe_array, int pi) {
                 /* Got some information */
                 if (iosb.iosb$w_bcnt != 0) {
                     /* There is data to read */
-                    _TRACE_LINE_V_("N %i, ch %i, bcnt %i, bytes %i\n", i, pipe_array[i].channel, iosb.iosb$w_bcnt, iosb.iosb$l_dev_depend);
                     if (iosb.iosb$w_bcnt == 1 && iosb.iosb$l_dev_depend == 1) {
-                        /* Special case - it is highly likely last EOF */
-                        static unsigned char buf[512];
-                        memset(&iosb, 0, sizeof(iosb));
-                        sys$qiow(EFN$C_ENF, pipe_array[i].channel, IO$_READVBLK | IO$M_NOW, &iosb, 0, 0, buf, sizeof(buf), 0, 0, 0, 0);
-                        if (iosb.iosb$l_pid == getpid()) {
-                            /* This is our own EOF, skip it */
-                            _TRACE_LINE_V_("our pid - skip, ch %i \n", pipe_array[i].channel);
-                            --i;
-                            continue;
-                        } else {
-                            /* This is foreign EOF, pass it, but now with our own pid :( , so clear map */
-                            map_fd_to_child(pipe_array[i].fd_desc_ptr->fd, 0);
-                            _TRACE_LINE_V_("foreign pid %i - pass, ch %i \n", iosb.iosb$l_pid, pipe_array[i].channel);
-                            simple_write_mbx_eof(pipe_array[i].channel);
-                        }
+                        _TRACE_LINE_V_("N %i, ch %i, bcnt %i, bytes %i\n", i, pipe_array[i].channel, iosb.iosb$w_bcnt, iosb.iosb$l_dev_depend);
+                    //     /* Special case - it is highly likely last EOF */
+                    //     static unsigned char buf[512];
+                    //     memset(&iosb, 0, sizeof(iosb));
+                    //     sys$qiow(EFN$C_ENF, pipe_array[i].channel, IO$_READVBLK | IO$M_NOW, &iosb, 0, 0, buf, sizeof(buf), 0, 0, 0, 0);
+                    //     if (iosb.iosb$l_pid == getpid()) {
+                    //         /* This is our own EOF, skip it */
+                    //         _TRACE_LINE_V_("our pid - skip, ch %i \n", pipe_array[i].channel);
+                    //         --i;
+                    //         continue;
+                    //     } else {
+                    //         /* This is foreign EOF, pass it, but now with our own pid :( , so clear map */
+                    //         map_fd_to_child(pipe_array[i].fd_desc_ptr->fd, 0);
+                    //         _TRACE_LINE_V_("foreign pid %i - pass, ch %i \n", iosb.iosb$l_pid, pipe_array[i].channel);
+                    //         simple_write_mbx_eof(pipe_array[i].channel);
+                    //     }
                     }
                     pipe_array[i].fd_desc_ptr->revents = pipe_array[i].fd_desc_ptr->events & POLL_IN;
                 } else {
@@ -248,6 +225,8 @@ int vms_select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
         old_siif_value = decc$feature_set_value(siif_index, 1, 1);
     }
 
+    _TRACE_LINE_("vms_select start\n");
+
     if (nfds != 0) {
         struct pollfd *select_array;
         struct vms_pollfd_st *term_array;
@@ -302,6 +281,7 @@ int vms_select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
                 if (select_array[fd].events != 0) {
                     status = vms_channel_lookup(fd, &pipe_array[pi].channel);
                     if (status == 0) {
+                        _TRACE_LINE_V_("FD %i (ch %i) is a pipe\n", fd, pipe_array[pi].channel);
                         pi++;
                     }
                 }
@@ -359,6 +339,7 @@ int vms_select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
                         status = SYS$GETDVIW(EFN$C_ENF, pipe_array[pi].channel, 0, &item_list, 0, 0, 0, 0);
                         if ($VMS_STATUS_SUCCESS(status)) {
                             if ((mbx_char & DC$_MAILBOX) != 0) {
+                                _TRACE_LINE_V_("FD %i (ch %i) is a pipe\n", fd, pipe_array[pi].channel);
                                 pi++;
                             } else {
                                 xi++;
@@ -525,6 +506,8 @@ int vms_select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
     if (siif_index >= 0) {
         decc$feature_set_value(siif_index, 1, old_siif_value);
     }
+
+    _TRACE_LINE_("vms_select end\n");
 
     return ret_stat;
 }

@@ -25,30 +25,7 @@ int vms_channel_lookup_by_name(char* name, unsigned short *channel);
 
 #undef _DO_TRACE_FILE_
 // #define _DO_TRACE_FILE_ "MBX_"
-#ifndef _DO_TRACE_FILE_
-#define _TRACE_LINE_(line)
-#define _TRACE_LINE_V_(line, ...)
-#else
-#include <fcntl.h>
-#include <unixlib.h>
-#define _TRACE_LINE_(line) \
-    do {    \
-        char _TRACE_LINE_name[64];  \
-        sprintf(_TRACE_LINE_name, _DO_TRACE_FILE_ "%x.txt", getpid());   \
-        int _TRACE_LINE_fd = open(_TRACE_LINE_name, O_CREAT | O_APPEND | O_RDWR, 0600); \
-        if (_TRACE_LINE_fd) {   \
-            write(_TRACE_LINE_fd, (line), strlen((line)));  \
-            close(_TRACE_LINE_fd);  \
-        }   \
-    } while(0)
-
-#define _TRACE_LINE_V_(line, ...) \
-    do {    \
-        char _TRACE_LINE_V_buf[256];  \
-        sprintf(_TRACE_LINE_V_buf, (line), __VA_ARGS__); \
-        _TRACE_LINE_(_TRACE_LINE_V_buf);  \
-    } while(0)
-#endif
+#include "vms/trace.h"
 
 unsigned short simple_create_mbx(const char *name, int mbx_size) {
     unsigned short channel = 0;
@@ -113,6 +90,24 @@ int write_mbx_eof(int fd) {
             simple_write_mbx_eof(channel);
             simple_free_mbx(channel);
             return 0;
+        }
+    }
+    return -1;
+}
+
+int write_mbx(int fd, unsigned char *buf, int size) {
+    if (fd >= 0 && 
+#ifdef __x86_64
+        vms_isapipe(fd) > 0
+#else
+        isapipe(fd) == 1
+#endif
+    ) {
+        unsigned short channel;
+        if (vms_channel_lookup(fd, &channel) == 0) {
+            simple_write_mbx(channel, buf, size);
+            simple_free_mbx(channel);
+            return size;
         }
     }
     return -1;
@@ -312,9 +307,14 @@ int read_mbx(int fd, char *buf, int size) {
                         (fd_pid > 0 && iosb.iosb$l_pid != fd_pid)) {
                         // accept EOF only given pid
                         // TODO: only if the child process is available
+                    #if 0
                         nbytes = -1;
                         errno = EAGAIN;
                         _TRACE_LINE_(" again\n");
+                    #else
+                        buf[nbytes++] = '\n';
+                        _TRACE_LINE_(" EOL instead of EAGAIN\n");
+                    #endif
                     }
                     if (!nbytes) {
                         //we should prevent future reading/waiting already closed pipe
@@ -386,7 +386,97 @@ int vms_isapipe_by_name(char *name) {
     return 2;
 }
 
+#ifndef DEF_TABNAM
+#define DEF_TABNAM "LNM$FILE_DEV"
+#endif
+
+#include <vms_dsc.h>
+#include <lnmdef.h>
+
+static int first_trnlnm(const char *pname, char *buf, int *psize) {
+    char *tabnam = DEF_TABNAM;
+    size_t tabnam_size = sizeof(DEF_TABNAM) - 1;
+    unsigned char acmode = PSL$C_USER;
+
+    $DESCRIPTOR(tabnam_dsc, "");
+    tabnam_dsc.dsc$w_length = tabnam_size;
+    set_dsc_string(tabnam_dsc, tabnam);
+
+    $DESCRIPTOR(lognam_dsc, "");
+    lognam_dsc.dsc$w_length = strlen(pname);
+    set_dsc_string(lognam_dsc, pname);
+
+    ILE3 ile3[2];
+
+    unsigned short len = 0;
+
+    ile3[0].ile3$w_length = *psize;
+    ile3[0].ile3$w_code = LNM$_STRING;
+    ile3[0].ile3$ps_bufaddr = buf;
+    ile3[0].ile3$ps_retlen_addr = &len;
+    memset(&ile3[1], 0, sizeof(ile3[1]));
+
+    unsigned int attr = LNM$M_CASE_BLIND;
+    int status = sys$trnlnm(&attr, &tabnam_dsc, &lognam_dsc, &acmode, ile3);
+
+    *psize = len;
+    return status;
+}
+
 int vms_isapipe(int fd) {
     char name[256];
-    return vms_isapipe_by_name(getname(fd, name, 1));
+    int ret = -1;
+    if (0 <= fd && fd < 3) {
+        static int fd_0_isapipe = -1;
+        static int fd_1_isapipe = -1;
+        static int fd_2_isapipe = -1;
+        char *pname = NULL;
+        switch (fd) {
+            case 0:
+                if (fd_0_isapipe != -1) return fd_0_isapipe;
+                pname = "SYS$INPUT";
+                break;
+            case 1:
+                if (fd_1_isapipe != -1) return fd_1_isapipe;
+                pname = "SYS$OUTPUT";
+                break;
+            case 2:
+                if (fd_2_isapipe != -1) return fd_2_isapipe;
+                pname = "SYS$ERROR";
+                break;
+        }
+        if (pname) {
+            char buf[256];
+            int  len = 256;
+            if ($VMS_STATUS_SUCCESS(first_trnlnm(pname, buf, &len))) {
+                buf[len] = 0;
+                char *ptr = buf;
+                if (*ptr == 27) {
+                    _TRACE_LINE_("trnlnm was broken - ");
+                    for(int k = 0; k < 4; ++k) {
+                        _TRACE_LINE_V_("[%i]", *ptr);
+                        ++ptr;
+                    }
+                    _TRACE_LINE_(" - ");
+                }
+                _TRACE_LINE_V_("try trnlnm name \"%s\" of fd=%i ", ptr, fd);
+                ret = vms_isapipe_by_name(ptr);
+                _TRACE_LINE_V_("ret=%i\n", ret);
+            }
+        }
+        switch (fd) {
+            case 0:
+                fd_0_isapipe = ret;
+                break;
+            case 1:
+                fd_1_isapipe = ret;
+                break;
+            case 2:
+                fd_2_isapipe = ret;
+                break;
+        }
+    } else {
+        ret = vms_isapipe_by_name(getname(fd, name, 1));
+    }
+    return ret;
 }

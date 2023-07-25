@@ -20,31 +20,8 @@ extern int winerror_to_errno(int);
 #  include "vms/vms_mbx_util.h"
 
 #undef _DO_TRACE_FILE_
-// #define _DO_TRACE_FILE_ "PY_"
-#ifndef _DO_TRACE_FILE_
-#define _TRACE_LINE_(line)
-#define _TRACE_LINE_V_(line, ...)
-#else
-#include <fcntl.h>
-#include <unixlib.h>
-#define _TRACE_LINE_(line) \
-    do {    \
-        char _TRACE_LINE_name[64];  \
-        sprintf(_TRACE_LINE_name, _DO_TRACE_FILE_ "%x.txt", getpid());   \
-        int _TRACE_LINE_fd = open(_TRACE_LINE_name, O_CREAT | O_APPEND | O_RDWR, 0600); \
-        if (_TRACE_LINE_fd) {   \
-            write(_TRACE_LINE_fd, (line), strlen((line)));  \
-            close(_TRACE_LINE_fd);  \
-        }   \
-    } while(0)
-
-#define _TRACE_LINE_V_(line, ...) \
-    do {    \
-        char _TRACE_LINE_V_buf[256];  \
-        sprintf(_TRACE_LINE_V_buf, (line), __VA_ARGS__); \
-        _TRACE_LINE_(_TRACE_LINE_V_buf);  \
-    } while(0)
-#endif
+// #define _DO_TRACE_FILE_ "MBX_"
+#include "vms/trace.h"
 
 #endif
 
@@ -1839,6 +1816,8 @@ _Py_fopen_obj(PyObject *path, const char *mode)
 Py_ssize_t
 _Py_read(int fd, void *buf, size_t count)
 {
+    _TRACE_LINE_V_("_Py_read: start %i\n", fd);
+
     Py_ssize_t n;
     int err;
     int async_err = 0;
@@ -1862,7 +1841,7 @@ _Py_read(int fd, void *buf, size_t count)
 #ifdef _DO_TRACE_FILE_
         char fd_name[256];
         getname(fd, fd_name, 1);
-        _TRACE_LINE_V_("_Py_read: %i, name \"%s\", isapipe %i, vms_isapipe_by_name %i\n", fd, fd_name, isapipe(fd), vms_isapipe_by_name(fd_name));
+        _TRACE_LINE_V_("_Py_read: %i, name \"%s\", isapipe %i, vms_isapipe %i\n", fd, fd_name, isapipe(fd), vms_isapipe(fd));
 #endif
 #ifdef __x86_64
         if (vms_isapipe(fd) > 0) {
@@ -1887,6 +1866,8 @@ _Py_read(int fd, void *buf, size_t count)
             !(async_err = PyErr_CheckSignals()));
     _Py_END_SUPPRESS_IPH
 
+    _TRACE_LINE_V_("_Py_read: end %i\n", fd);
+
     if (async_err) {
         /* read() was interrupted by a signal (failed with EINTR)
          * and the Python signal handler raised an exception */
@@ -1906,6 +1887,8 @@ _Py_read(int fd, void *buf, size_t count)
 static Py_ssize_t
 _Py_write_impl(int fd, const void *buf, size_t count, int gil_held)
 {
+    _TRACE_LINE_V_("_Py_write_impl: start %i\n", fd);
+
     Py_ssize_t n;
     int err;
     int async_err = 0;
@@ -1928,6 +1911,20 @@ _Py_write_impl(int fd, const void *buf, size_t count, int gil_held)
         do {
             Py_BEGIN_ALLOW_THREADS
             errno = 0;
+#ifdef __VMS
+#ifdef _DO_TRACE_FILE_
+        char fd_name[256];
+        getname(fd, fd_name, 1);
+        _TRACE_LINE_V_("_Py_write_impl: %i, name \"%s\", isapipe %i, vms_isapipe %i\n", fd, fd_name, isapipe(fd), vms_isapipe(fd));
+#endif
+#ifdef __x86_64
+        if (vms_isapipe(fd) > 0) {
+#else
+        if (isapipe(fd) == 1) {
+#endif
+            n = write_mbx(fd, (unsigned char*)buf, count);
+        } else
+#endif
 #ifdef MS_WINDOWS
             n = write(fd, buf, (int)count);
 #else
@@ -1953,6 +1950,8 @@ _Py_write_impl(int fd, const void *buf, size_t count, int gil_held)
     }
     _Py_END_SUPPRESS_IPH
 
+    _TRACE_LINE_V_("_Py_write_impl: end %i\n", fd);
+    
     if (async_err) {
         /* write() was interrupted by a signal (failed with EINTR)
            and the Python signal handler raised an exception (if gil_held is
