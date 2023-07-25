@@ -74,6 +74,9 @@
 
 #undef _MAKE_INHERIT
 #ifdef __VMS
+#undef _DO_TRACE_FILE_
+// #define _DO_TRACE_FILE_ "MBX_"
+#include "vms/trace.h"
 #include "vms/vms_fcntl.h"
 #include "vms/vms_dsc.h"
 #define _IGNORE_FCNTL_BUSY
@@ -669,6 +672,17 @@ static PyObject* make_fds_non_inheritable(
     return py_fds_to_make_inherit;
 }
 
+#ifdef _DO_TRACE_FILE_
+static void trace_fd_name(int fd) {
+    if (fd > -1) {
+        char name[PATH_MAX + 1] = "";
+        if (getname(fd, name, 1)) {
+            _TRACE_LINE_V_("%s", name);
+        }
+    }
+}
+#endif
+
 static int
 vms_child_exec(
     char *const exec_array[],
@@ -691,6 +705,22 @@ vms_child_exec(
 {
     int pid = -1;
 
+#ifdef _DO_TRACE_FILE_
+    _TRACE_LINE_("execute command: ");
+    char **p = (char**)argv;
+    while(*p) {
+        _TRACE_LINE_V_(" %s", *p);
+        ++p;
+    }
+    _TRACE_LINE_("\n");
+    _TRACE_LINE_V_("%i[", p2cread); trace_fd_name(p2cread); _TRACE_LINE_("] -> ");
+    _TRACE_LINE_V_("%i[", p2cwrite); trace_fd_name(p2cwrite); _TRACE_LINE_("]\n");
+    _TRACE_LINE_V_("%i[", c2pread); trace_fd_name(c2pread); _TRACE_LINE_("] -> ");
+    _TRACE_LINE_V_("%i[", c2pwrite); trace_fd_name(c2pwrite); _TRACE_LINE_("]\n");
+    _TRACE_LINE_V_("%i[", errread); trace_fd_name(errread); _TRACE_LINE_("] -> ");
+    _TRACE_LINE_V_("%i[", errwrite); trace_fd_name(errwrite); _TRACE_LINE_("]\n");
+#endif
+
     if (argv && *argv && strcmp(*argv, "DCL") == 0) {
         pid = exec_dcl(argv, p2cread, c2pwrite);
         if (pid > 0) {
@@ -707,7 +737,7 @@ vms_child_exec(
     // we should always set CWD, even if it is NULL - to restore default value
     decc$set_child_default_dir(cwd);
 
-    int exec_error = 0;
+    volatile int exec_error = 0;
     PyObject *py_fds_to_make_inherit = NULL;
 
     if (make_inheritable(py_fds_to_keep, errpipe_write) < 0) {
@@ -737,6 +767,7 @@ vms_child_exec(
     __char_ptr_ptr32 argv32 = 0, envp32 = 0;
 #endif
     if (pid == 0) {
+        _TRACE_LINE_("vfork 0\n");
 #if defined(__VMS) && __INITIAL_POINTER_SIZE == 64
         int n = 0;
         while (argv[n]) {
@@ -765,6 +796,7 @@ vms_child_exec(
 #endif
         for (int i = 0; exec_array[i] != NULL; ++i) {
             const char *executable = exec_array[i];
+            _TRACE_LINE_V_("try exec \"%s\"\n", executable);
             if (envp) {
 #if defined(__VMS) && __INITIAL_POINTER_SIZE == 64
                 execve(executable, argv32, envp32);
@@ -778,6 +810,7 @@ vms_child_exec(
                 execv(executable, argv);
 #endif
             }
+            _TRACE_LINE_V_("after exec errno=%i\n", errno);
             if (errno != ENOENT && errno != ENOTDIR) {
                 break;
             }
@@ -786,6 +819,7 @@ vms_child_exec(
         if (!exec_error) {
             exec_error = -1;
         }
+        _TRACE_LINE_V_("exec failed errno=%i, exec_error=%i, pid=%x\n", errno, exec_error, pid);
         exit(EXIT_FAILURE);
     }
 
@@ -811,6 +845,7 @@ egress:
 #endif
 
     // Test if exec() is failed
+    _TRACE_LINE_V_("out exec_error=%i, pid=%x\n", exec_error, pid);
     if (exec_error) {
         if (pid > 0) {
             waitpid(pid, NULL, 0);
