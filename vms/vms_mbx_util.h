@@ -22,6 +22,7 @@ int write_mbx(int fd, unsigned char *buf, int size);
 unsigned int get_mbx_size(unsigned short channel);
 int vms_isapipe(int fd);
 int vms_isapipe_by_name(char *name);
+int vms_channel_is_a_mailbox(int channel);
 
 #ifdef __cplusplus
 }

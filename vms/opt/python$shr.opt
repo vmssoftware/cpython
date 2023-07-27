@@ -2171,6 +2171,7 @@ vms_channel_lookup_by_name=PROCEDURE,-
 vms_fcntl=PROCEDURE,-
 vms_isapipe=PROCEDURE,-
 vms_isapipe_by_name=PROCEDURE,-
+vms_channel_is_a_mailbox=PROCEDURE,-
 vms_pipe_noinherit=PROCEDURE,-
 vms_select=PROCEDURE,-
 vms_set_crtl_values=PROCEDURE,-

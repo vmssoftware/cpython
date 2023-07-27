@@ -386,6 +386,27 @@ int vms_isapipe_by_name(char *name) {
     return 2;
 }
 
+int vms_channel_is_a_mailbox(int channel) {
+    unsigned long  mbx_char;
+    unsigned short mbx_len;
+    ILE3 item_list[2];
+    item_list[0].ile3$w_length = 4;
+    item_list[0].ile3$w_code = DVI$_DEVCLASS;
+    item_list[0].ile3$ps_bufaddr = &mbx_char;
+    item_list[0].ile3$ps_retlen_addr = &mbx_len;
+    memset(item_list + 1, 0, sizeof(item_list[1]));
+
+    int status = SYS$GETDVIW(EFN$C_ENF, channel, 0, &item_list, 0, 0, 0, 0);
+    if ($VMS_STATUS_SUCCESS(status)) {
+        if ((mbx_char & DC$_MAILBOX) != 0) {
+            return 1;
+        }
+    } else {
+        return -1;
+    }
+    return 0;
+}
+
 #ifndef DEF_TABNAM
 #define DEF_TABNAM "LNM$FILE_DEV"
 #endif
@@ -426,6 +447,7 @@ static int first_trnlnm(const char *pname, char *buf, int *psize) {
 int vms_isapipe(int fd) {
     char name[256];
     int ret = -1;
+    unsigned short channel;
     if (0 <= fd && fd < 3) {
         static int fd_0_isapipe = -1;
         static int fd_1_isapipe = -1;
@@ -452,15 +474,14 @@ int vms_isapipe(int fd) {
                 buf[len] = 0;
                 char *ptr = buf;
                 if (*ptr == 27) {
-                    _TRACE_LINE_("trnlnm was broken - ");
-                    for(int k = 0; k < 4; ++k) {
-                        _TRACE_LINE_V_("[%i]", *ptr);
-                        ++ptr;
-                    }
-                    _TRACE_LINE_(" - ");
+                    // Header
+                    ptr += 4;
                 }
                 _TRACE_LINE_V_("try trnlnm name \"%s\" of fd=%i ", ptr, fd);
-                ret = vms_isapipe_by_name(ptr);
+                if (vms_channel_lookup_by_name(ptr, &channel) == 0) {
+                    ret = vms_channel_is_a_mailbox(channel);
+                    simple_free_mbx(channel);
+                }
                 _TRACE_LINE_V_("ret=%i\n", ret);
             }
         }
@@ -476,7 +497,16 @@ int vms_isapipe(int fd) {
                 break;
         }
     } else {
-        ret = vms_isapipe_by_name(getname(fd, name, 1));
+        _TRACE_LINE_V_("try getname of fd=%i\n", fd);
+        if (getname(fd, name, 1)) {
+            _TRACE_LINE_V_("try lookup_by_name of %p\n", name);
+            _TRACE_LINE_V_("try lookup_by_name of \"%s\"\n", name);
+            if (vms_channel_lookup_by_name(name, &channel) == 0) {
+                _TRACE_LINE_V_("try vms_channel_is_a_mailbox of channel =%i\n", channel);
+                ret = vms_channel_is_a_mailbox(channel);
+                simple_free_mbx(channel);
+            }
+        }
     }
     return ret;
 }
