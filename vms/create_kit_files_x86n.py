@@ -55,8 +55,8 @@ product VSI X86VMS PYTHON {type}{major}.{minor}-{level}{edit} FULL ;
 --
 --  Make sure appropriate VMS version is installed
 --
-    if ((not <software VSI X86VMS VMS version minimum E9.2>) and
-        (not <logical name IS_TEST_PLATFORM equals 0 table LNM$JOB>)) ;
+    if ((not <software VSI X86VMS VMS version minimum V9.2-1>) AND
+        (<logical name IS_TEST_PLATFORM equals 0 table LNM$JOB>)) ;
         error NO_MIN_VMS abort ;
     end if ;
 
