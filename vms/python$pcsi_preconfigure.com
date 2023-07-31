@@ -1,6 +1,7 @@
 $ verify = f$verify(0)
 $ set noon
 $
+$ define/job/nolog is_test_platform 0
 $ define/job/nolog python$ods5_avail 0
 $
 $ loop:
@@ -14,6 +15,8 @@ $       else
 $          goto loop
 $       endif
 $    endif
+$
+$ if f$match_wild(f$getsyi("version"),"%%%%-%%%") then define/job/nolog is_test_platform 1
 $
 $ verify = f$verify(verify)
 $ exit

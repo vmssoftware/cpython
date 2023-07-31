@@ -1,1 +1,1 @@
-print("böse")
+print("bï¿½se")
