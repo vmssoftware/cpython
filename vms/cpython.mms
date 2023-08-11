@@ -47,7 +47,7 @@ CC_QUALIFIERS = $(CC_QUALIFIERS) -
 /POINTER_SIZE=64  ! check 'SIZEOF_VOID_P': 8, in _sysconfigdata__OpenVMS_cpython-310-ia64-openvms.py
 LIBBZ2 = oss$root:[lib]libbz2_64.olb
 LIBFFI = oss$root:[lib]libffi64.olb
-LIBGDBM = wrk_disk:[vorfolomeev.gdbm.vms]libgdbm64.olb
+LIBGDBM = oss$root:[lib]libgdbm64.olb
 LIBLZMA = oss$root:[lib]liblzma64.olb
 LIBSQLITE = oss$root:[lib]libsqlite64.olb
 LIBZ = oss$root:[lib]libz64.olb
@@ -56,7 +56,7 @@ OPT_SUFFIX = _64
 .ELSE
 LIBBZ2 = oss$root:[lib]libbz2_32.olb
 LIBFFI = oss$root:[lib]libffi32.olb
-LIBGDBM = wrk_disk:[vorfolomeev.gdbm.vms]libgdbm32.olb
+LIBGDBM = oss$root:[lib]libgdbm32.olb
 LIBLZMA = oss$root:[lib]liblzma32.olb
 LIBSQLITE = oss$root:[lib]libsqlite32.olb
 LIBZ = oss$root:[lib]libz32.olb
@@ -1750,6 +1750,8 @@ DECIMAL_HEADERS = -
     sqlmod [.modules.rdb]sql.sqlmod
     rename sql.obj python$build_obj:[modules.rdb]
 [.$(OBJ_DIR).modules.rdb]_rdb.obm : [.modules.rdb]_rdb.c $(PYTHON_HEADERS)
+    @ pipe create/dir $(DIR $(MMS$TARGET)) | copy SYS$INPUT nl:
+    $(CC) $(CC_CORE_MODULE_CFLAGS)/LIST /OBJECT=$(MMS$TARGET) $(MMS$SOURCE)
 
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_accdef.exe : [.$(OBJ_DIR).modules.vms.accdef]_accdef.obm
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_acldef.exe : [.$(OBJ_DIR).modules.vms.acldef]_acldef.obm
