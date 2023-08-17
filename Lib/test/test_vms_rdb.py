@@ -6,7 +6,11 @@ import tempfile
 if sys.platform != 'OpenVMS':
     raise unittest.SkipTest('OpenVMS required')
 
-import _rdb
+try:
+    import _rdb
+except:
+    raise unittest.SkipTest('OpenVMS RDB required')
+
 import _decc
 
 class BaseTestCase(unittest.TestCase):
