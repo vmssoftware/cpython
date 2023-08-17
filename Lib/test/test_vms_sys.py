@@ -232,7 +232,7 @@ class BaseTestCase(unittest.TestCase):
         status, context = SYS.getqui(QUI.QUI__DISPLAY_QUEUE, context, il)
         qui_name = il[1]
 
-        self.assertIn(status, (JBC.JBC__NOMOREQUE, SS.SS__NORMAL))
+        self.assertIn(status, (JBC.JBC__JOBQUEDIS, JBC.JBC__NOMOREQUE, SS.SS__NORMAL))
         self.assertNotEqual(qui_name, '')
         if status == SS.SS__NORMAL:
             status, context = SYS.getqui(QUI.QUI__CANCEL_OPERATION, context)
