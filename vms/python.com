@@ -1,3 +1,6 @@
+$ original_style = f$getjpi("","parse_style_perm")
+$ SET PROCESS/PARSE_STYLE=EXTENDED
+$
 $ if "''P1'" .eqs. ""
 $ then
 $   CONFIG := DEBUG
@@ -44,3 +47,4 @@ $
 $ backup 'dyn_pat'*.* python$root:[lib.python3^.10.lib-dynload...]*.*
 $ backup 'vms_pat'_sysconfigdata__OpenVMS_cpython-310-ia64-openvms.py python$root:[lib.python3^.10]
 $
+$ SET PROCESS/PARSE_STYLE='original_style'

@@ -70,7 +70,7 @@ LIBFFI = libffi$root:[lib]libffi$shr.olb
 OPT_SUFFIX = _x86
 .ELSIF X86_64
 LIBGDBM = oss$root:[lib]libgdbm32.olb
-LIBFFI = libffi$root:[out.RELEASE_32]libffi$shr32.olb
+LIBFFI = libffi$root:[out.RELEASE_X86_64]libffi$shr.olb
 .ENDIF
 
 CC_DEFINES = -
@@ -181,6 +181,7 @@ X86_OSSDEF =
 .ENDIF
 
 .FIRST
+    SET PROCESS/PARSE_STYLE=EXTENDED
     $(X86_64_START)
     $(X86_START)
     $(X86_LIBDEF)
