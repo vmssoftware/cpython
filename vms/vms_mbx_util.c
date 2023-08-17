@@ -328,9 +328,11 @@ int read_mbx(int fd, char *buf, int size) {
                     nbytes = iosb.iosb$w_bcnt;
                     _TRACE_LINE_V_("%i: \"%s\" data[%i] from 0x%x \"%.*s\"", fd, devicename, nbytes, iosb.iosb$l_pid, nbytes, buf);
                     if (fd_pid < -1) {
-                        // add LF to the end of each RECORD
-                        buf[nbytes] = '\n';
-                        ++nbytes;
+                        // add LF to the end of each RECORD (if record does not have it)
+                        if (!nbytes || buf[nbytes-1] != '\n') {
+                            buf[nbytes] = '\n';
+                            ++nbytes;
+                        }
                         _TRACE_LINE_(" EOL added\n");
                     } else if (!nbytes) {
                         // somebody writes zero length buffer into the stream...

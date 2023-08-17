@@ -7,7 +7,11 @@ $ close test_names
 $ open test_names test_names.txt
 $ loop:
 $ read/end_of_file=file_end test_names name
-$ if do_tests .eq. 1 then $ python -m test -W 'name'
+$ if do_tests .eq. 1 
+$ then 
+$ show time
+$ python -m test -W 'name'
+$ endif
 $ ! skip all until failed test, do the next
 $ if F$EDIT("''P1'", "TRIM, UPCASE") .eqs. F$EDIT("''name'", "TRIM, UPCASE") then do_tests = 1
 $ goto loop

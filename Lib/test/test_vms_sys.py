@@ -259,7 +259,7 @@ class BaseTestCase(unittest.TestCase):
 
         self.assertEqual(status, SS.SS__NORMAL)
         self.assertNotEqual(arch_name, '')
-        self.assertIn(arch_type, (1,2,3))
+        self.assertIn(arch_type, (1,2,3,4))
 
     def test_gettim(self):
         """ test gettim """
