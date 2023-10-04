@@ -14,7 +14,9 @@ perfdat
 pytest
 reportlab
 numpy
+# not availible for x86
 psycopg2
+# not availible for x86 yet (long doubles)
 pandas
 pyrsistent
 pywebui

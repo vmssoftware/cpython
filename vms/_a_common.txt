@@ -1,4 +1,6 @@
 # Common modules
+# define pyth$whl work:[vorfolomeev.pyth$whl.]
+# define pyth$rep work:[vorfolomeev.pyth$rep.]
 # python -m pip wheel -w /pyth$whl --no-deps -r _a_common.txt -c constraints.txt
 Flask
 Jinja2

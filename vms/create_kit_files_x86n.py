@@ -43,7 +43,7 @@ def create_content(type, major, minor, level, edit):
                         file_.writelines(lines)
 
     kit_template = '''--
--- (C) Copyright 2022 VMS Software Inc.
+-- (C) Copyright 2023 VMS Software Inc.
 --
 product VSI X86VMS PYTHON {type}{major}.{minor}-{level}{edit} FULL ;
 
@@ -140,7 +140,7 @@ end product;
 =prompt VMS Software Inc.
 
 1 'NOTICE
-=prompt (C) Copyright 2022 VMS Software Inc.
+=prompt (C) Copyright 2023 VMS Software Inc.
 
 1 NO_MIN_VMS
 =prompt Minimum OpenVMS software version not found on this system, abort instalation
