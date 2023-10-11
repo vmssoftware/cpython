@@ -161,6 +161,8 @@ class OpenVMSCCompiler(CCompiler):
             cc_args += ["/NODEBUG/OPTIMIZE"]
         if VMS64:
             cc_args += ["/POINTER_SIZE=64"]
+        
+        cc_args += ["/L_DOUBLE_SIZE=64"]
 
         if before:
             cc_args[:0] = before
