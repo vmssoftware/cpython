@@ -17,6 +17,7 @@ X86_64_START= ! @sys$login:setup_compilers
 
 .IF X86_HOST .OR X86_64
 SOABI = cpython-310-x86_64-openvms
+P64 = 1
 .ELSE
 SOABI = cpython-310-ia64-openvms
 .ENDIF
@@ -32,8 +33,7 @@ CC_QUALIFIERS = $(CC_QUALIFIERS)-
 /WARNINGS=(WARNINGS=ALL, DISABLE=(EXTRASEMI,INCLUDEINFO,MAYLOSEDATA3))
 .ELSIF X86_64
 CC_QUALIFIERS = $(CC_QUALIFIERS)-
-/WARNINGS=(WARNINGS=ALL, DISABLE=(EXTRASEMI,MAYLOSEDATA3,UNDERFLOW,FUNCMIXPTR,MAYLOSEDATA2))-
-/POINTER=32/L_DOUBLE_SIZE=64
+/WARNINGS=(WARNINGS=ALL, DISABLE=(EXTRASEMI,MAYLOSEDATA3,UNDERFLOW,FUNCMIXPTR,MAYLOSEDATA2))/L_DOUBLE_SIZE=64
 .ELSIF P64
 CC_QUALIFIERS = $(CC_QUALIFIERS)-
 /WARNINGS=(WARNINGS=ALL, DISABLE=(EXTRASEMI,MAYLOSEDATA3,MAYLOSEDATA2))
@@ -44,7 +44,7 @@ CC_QUALIFIERS = $(CC_QUALIFIERS)-
 
 .IF P64
 CC_QUALIFIERS = $(CC_QUALIFIERS) -
-/POINTER_SIZE=64  ! check 'SIZEOF_VOID_P': 8, in _sysconfigdata__OpenVMS_cpython-310-ia64-openvms.py
+/POINTER_SIZE=64  ! check 'SIZEOF_VOID_P': 8, in _sysconfigdata__OpenVMS_cpython-310-(ia64|x86_64)-openvms.py
 LIBBZ2 = oss$root:[lib]libbz2_64.olb
 LIBFFI = oss$root:[lib]libffi64.olb
 LIBGDBM = oss$root:[lib]libgdbm64.olb
@@ -69,8 +69,8 @@ LIBGDBM = oss$root:[lib]libgdbm32.olb
 LIBFFI = libffi$root:[lib]libffi$shr.olb
 OPT_SUFFIX = _x86
 .ELSIF X86_64
-LIBGDBM = oss$root:[lib]libgdbm32.olb
-LIBFFI = libffi$root:[out]libffi$shr.olb
+LIBGDBM = oss$root:[lib]libgdbm64.olb
+LIBFFI = libffi$root:[out]libffi$shr64.olb
 .ENDIF
 
 CC_DEFINES = -
