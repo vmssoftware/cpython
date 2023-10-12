@@ -5994,7 +5994,7 @@ os_execv_impl(PyObject *module, path_t *path, PyObject *argv)
     for(int i = 0; i < argc; ++i) {
         argvlist32[i] = _strdup32(argvlist[i]);
     }
-    execv(path->narrow, argvlist32);
+    _execv32(path->narrow, argvlist32);
     for(int i = 0; i < argc; ++i) {
         free(argvlist32[i]);
     }
@@ -6090,7 +6090,7 @@ os_execve_impl(PyObject *module, path_t *path, PyObject *argv, PyObject *env)
         for(int i = 0; i < envc; ++i) {
             envlist32[i] = _strdup32(envlist[i]);
         }
-        execve(path->narrow, argvlist32, envlist32);
+        _execve32(path->narrow, argvlist32, envlist32);
         for(int i = 0; i < envc; ++i) {
             free(envlist32[i]);
         }

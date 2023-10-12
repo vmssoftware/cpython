@@ -799,13 +799,13 @@ vms_child_exec(
             _TRACE_LINE_V_("try exec \"%s\"\n", executable);
             if (envp) {
 #if defined(__VMS) && __INITIAL_POINTER_SIZE == 64
-                execve(executable, argv32, envp32);
+                _execve32(executable, argv32, envp32);
 #else
                 execve(executable, argv, envp);
 #endif
             } else {
 #if defined(__VMS) && __INITIAL_POINTER_SIZE == 64
-                execv(executable, argv32);
+                _execv32(executable, argv32);
 #else
                 execv(executable, argv);
 #endif
