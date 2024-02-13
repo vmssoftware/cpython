@@ -1,7 +1,8 @@
 # Requires repository and build on VILE
 --no-index
-# python -m pip wheel -w /pyth$whl -f /pyth$whl -f /pyth$rep --no-index --no-deps <NAME>
+# python -m pip wheel -w /pyth$whl -f /pyth$whl -f /pyth$rep --no-cache-dir --no-index --no-deps <NAME>
 Brotli
+# requires 64-bit libraries, valid oss$root
 Pillow
 awscli
 # $ define libffi$root?

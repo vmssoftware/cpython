@@ -1,6 +1,6 @@
 # Requires Cython and build on VILE
 # --no-deps
-# python -m pip wheel -w /pyth$whl --no-deps -r _d_after.txt -c constraints.txt
+# python -m pip wheel -w /pyth$whl --no-deps --no-cache-dir -r _d_after.txt -c constraints.txt
 simplejson
 charset-normalizer
 backports.entry-points-selectable

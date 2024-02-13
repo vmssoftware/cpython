@@ -12,14 +12,15 @@ PLATFORM = OpenVMS
 
 .IF X86_64
 LINK_ADD=/SEGMENT=CODE=P0
-X86_64_START= ! @sys$login:setup_compilers
+X86_64_START= @sys$login:setup_compilers
 .ENDIF
 
 .IF X86_HOST .OR X86_64
 SOABI = cpython-310-x86_64-openvms
-P64 = 1
+SYSCONFIGDATA = _sysconfigdata__OpenVMS_cpython-310-x86_64-openvms
 .ELSE
 SOABI = cpython-310-ia64-openvms
+SYSCONFIGDATA = _sysconfigdata__OpenVMS_cpython-310-ia64-openvms
 .ENDIF
 
 CC_QUALIFIERS = -
@@ -65,12 +66,22 @@ OPT_SUFFIX = _32
 .ENDIF
 
 .IF X86_HOST
+OPT_SUFFIX = _x86
+.IF P64
 LIBGDBM = oss$root:[lib]libgdbm32.olb
 LIBFFI = libffi$root:[lib]libffi$shr.olb
-OPT_SUFFIX = _x86
+.ELSE
+LIBGDBM = oss$root:[lib]libgdbm64.olb
+LIBFFI = libffi$root:[lib]libffi$shr64.olb
+.ENDIF
 .ELSIF X86_64
+.IF P64
 LIBGDBM = oss$root:[lib]libgdbm64.olb
 LIBFFI = libffi$root:[out]libffi$shr64.olb
+.ELSE
+LIBGDBM = oss$root:[lib]libgdbm32.olb
+LIBFFI = libffi$root:[out]libffi$shr32.olb
+.ENDIF
 .ENDIF
 
 CC_DEFINES = -
@@ -181,7 +192,12 @@ X86_OSSDEF =
 .ENDIF
 
 .FIRST
-    SET PROCESS/PARSE_STYLE=EXTENDED
+    ! Next lines must be in LOGIN.COM, else all names will be uppercased
+    ! SET PROCESS/PARSE_STYLE=EXTENDED
+    ! define DECC$ARGV_PARSE_STYLE ENABLE
+    ! define DECC$EFS_CASE_PRESERVE ENABLE
+    ! define DECC$EFS_CASE_SPECIAL TRUE
+    ! define DECC$EFS_CHARSET ENABLE
     $(X86_64_START)
     $(X86_START)
     $(X86_LIBDEF)
@@ -1843,7 +1859,25 @@ DECIMAL_HEADERS = -
 [.$(OBJ_DIR).vms]vms_crtl_init.obc : [.vms]vms_crtl_init.c
 [.$(OBJ_DIR).Programs]python.obc : [.Programs]python.c $(PYTHON_HEADERS)
 
-[.$(OUT_DIR)]python.exe : [.$(OBJ_DIR).Programs]python.obc [.$(OBJ_DIR).vms]vms_crtl_init.obc [.$(OUT_DIR)]python$shr.exe
+.IF X86_HOST .OR X86_64
+.IF P64
+[.$(OUT_DIR)]_sysconfigdata__OpenVMS_cpython-310-x86_64-openvms.py : [.vms]_sysconfigdata__OpenVMS_cpython-310-x86_64-openvms_64.py
+    copy $(MMS$SOURCE) $(MMS$TARGET)
+.ELSE
+[.$(OUT_DIR)]_sysconfigdata__OpenVMS_cpython-310-x86_64-openvms.py : [.vms]_sysconfigdata__OpenVMS_cpython-310-x86_64-openvms_32.py
+    copy $(MMS$SOURCE) $(MMS$TARGET)
+.ENDIF
+.ELSE
+.IF P64
+[.$(OUT_DIR)]_sysconfigdata__OpenVMS_cpython-310-ia64-openvms.py : [.vms]_sysconfigdata__OpenVMS_cpython-310-ia64-openvms_64.py
+    copy $(MMS$SOURCE) $(MMS$TARGET)
+.ELSE
+[.$(OUT_DIR)]_sysconfigdata__OpenVMS_cpython-310-ia64-openvms.py : [.vms]_sysconfigdata__OpenVMS_cpython-310-ia64-openvms_32.py
+    copy $(MMS$SOURCE) $(MMS$TARGET)
+.ENDIF
+.ENDIF
+
+[.$(OUT_DIR)]python.exe : [.$(OBJ_DIR).Programs]python.obc [.$(OBJ_DIR).vms]vms_crtl_init.obc [.$(OUT_DIR)]python$shr.exe [.$(OUT_DIR)]$(SYSCONFIGDATA).py
    @ pipe create/dir $(DIR $(MMS$TARGET)) | copy SYS$INPUT nl:
 .IF X86_64
     $(LINK)$(LINK_FLAGS)/EXECUTABLE=python$build_out:[000000]$(NOTDIR $(MMS$TARGET_NAME)).exe [.$(OBJ_DIR).vms]vms_crtl_init.obc,$(MMS$SOURCE),[.vms.opt]$(NOTDIR $(MMS$TARGET_NAME)).opt/OPT

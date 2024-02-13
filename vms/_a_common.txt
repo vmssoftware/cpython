@@ -1,7 +1,17 @@
 # Common modules
+#
+# @work:[vorfolomeev.cpython.vms]python^.def.com
+# - do not forget this after the build -
+# @work:[vorfolomeev.cpython.vms]python_x86.com release_x86_64
+# python -m ensurepip --default-pip
+# python -m pip install wheel
+# python -m compileall /python$root
+# 
+# - do not forget this before the wheels -
+# @work:[vorfolomeev.cpython.vms]python^.def.com
 # define pyth$whl work:[vorfolomeev.pyth$whl.]
 # define pyth$rep work:[vorfolomeev.pyth$rep.]
-# python -m pip wheel -w /pyth$whl --no-deps -r _a_common.txt -c constraints.txt
+# python -m pip wheel -w /pyth$whl --no-cache-dir --no-deps -r _a_common.txt -c constraints.txt
 Flask
 Jinja2
 Werkzeug
