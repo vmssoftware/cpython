@@ -8,6 +8,7 @@
 #include <starlet.h>
 #include <ssdef.h>
 #include <iledef.h>
+#include <alloca.h>
 
 #ifndef MIN
 #define MIN(a,b) ((a)<(b)?(a):(b))
@@ -135,7 +136,7 @@ ILE3_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             Py_DECREF(self);
             return NULL;
         }
-        init_item(self->plist);
+        init_item((ILE3*)self->plist);
     }
     return (PyObject *) self;
 }
@@ -288,7 +289,7 @@ ILE3_append(
     ILE3 *item = (ILE3*)self->plist + (self->size - 1);
 
     item->ile3$w_code = PyLong_AsLong(args[0]);
-    item->ile3$ps_retlen_addr = malloc_low(sizeof(short));
+    item->ile3$ps_retlen_addr = (__unsigned_short_ptr32)malloc_low(sizeof(short));
     if (item->ile3$ps_retlen_addr == NULL) {
         ILE3_decrement(self);
         PyErr_SetNone(PyExc_MemoryError);
@@ -338,7 +339,7 @@ ILE3_append(
         }
         if (nargs > 2) {
             if (PyLong_Check(args[2])) {
-                pvalue = alloca(size);
+                pvalue = (char*)alloca(size);
                 if (_PyLong_AsByteArray(
                         (PyLongObject*)args[2],
                         (unsigned char*)pvalue,
@@ -488,6 +489,11 @@ static struct PyModuleDef _module_definition = {
 
 PyMODINIT_FUNC PyInit__ile3(void)
 {
+    #define my_offset(a,b) (((unsigned long long)&a)-((unsigned long long)&b))
+
+    // printf("my_offset(tp_name, ILE3_Type) %lli = %s\n", my_offset(ILE3_Type.tp_name, ILE3_Type), ILE3_Type.tp_name);
+    // printf("my_offset(tp_base, ILE3_Type) %lli = %llx\n", my_offset(ILE3_Type.tp_base, ILE3_Type), ILE3_Type.tp_base);
+
     if (PyType_Ready(&ILE3_Type) < 0) {
         return NULL;
     }
