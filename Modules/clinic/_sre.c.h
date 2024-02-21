@@ -23,7 +23,7 @@ _sre_getcodesize(PyObject *module, PyObject *Py_UNUSED(ignored))
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromLong((long)_return_value);
+    return_value = PyLong_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -55,7 +55,7 @@ _sre_ascii_iscased(PyObject *module, PyObject *arg)
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -87,7 +87,7 @@ _sre_unicode_iscased(PyObject *module, PyObject *arg)
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -119,7 +119,7 @@ _sre_ascii_tolower(PyObject *module, PyObject *arg)
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromLong((long)_return_value);
+    return_value = PyLong_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -151,7 +151,7 @@ _sre_unicode_tolower(PyObject *module, PyObject *arg)
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromLong((long)_return_value);
+    return_value = PyLong_FromLong((int)_return_value);
 
 exit:
     return return_value;

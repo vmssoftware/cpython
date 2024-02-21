@@ -1520,7 +1520,7 @@ pysqlite_collation_callback(
     PyObject* string2 = 0;
     PyGILState_STATE gilstate;
     PyObject* retval = NULL;
-    long longval;
+    int longval;
     int result = 0;
     gilstate = PyGILState_Ensure();
 

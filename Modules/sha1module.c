@@ -78,8 +78,8 @@ typedef struct {
  */
 
 /* rotate the hard way (platform optimizations could be done) */
-#define ROL(x, y) ( (((unsigned long)(x)<<(unsigned long)((y)&31)) | (((unsigned long)(x)&0xFFFFFFFFUL)>>(unsigned long)(32-((y)&31)))) & 0xFFFFFFFFUL)
-#define ROLc(x, y) ( (((unsigned long)(x)<<(unsigned long)((y)&31)) | (((unsigned long)(x)&0xFFFFFFFFUL)>>(unsigned long)(32-((y)&31)))) & 0xFFFFFFFFUL)
+#define ROL(x, y) ( (((unsigned int)(x)<<(unsigned int)((y)&31)) | (((unsigned int)(x)&0xFFFFFFFFUL)>>(unsigned int)(32-((y)&31)))) & 0xFFFFFFFFUL)
+#define ROLc(x, y) ( (((unsigned int)(x)<<(unsigned int)((y)&31)) | (((unsigned int)(x)&0xFFFFFFFFUL)>>(unsigned int)(32-((y)&31)))) & 0xFFFFFFFFUL)
 
 /* Endian Neutral macros that work on all platforms */
 
@@ -88,10 +88,10 @@ typedef struct {
        (y)[2] = (unsigned char)(((x)>>8)&255); (y)[3] = (unsigned char)((x)&255); }
 
 #define LOAD32H(x, y)                            \
-     { x = ((unsigned long)((y)[0] & 255)<<24) | \
-           ((unsigned long)((y)[1] & 255)<<16) | \
-           ((unsigned long)((y)[2] & 255)<<8)  | \
-           ((unsigned long)((y)[3] & 255)); }
+     { x = ((unsigned int)((y)[0] & 255)<<24) | \
+           ((unsigned int)((y)[1] & 255)<<16) | \
+           ((unsigned int)((y)[2] & 255)<<8)  | \
+           ((unsigned int)((y)[3] & 255)); }
 
 #define STORE64H(x, y)                                                                     \
    { (y)[0] = (unsigned char)(((x)>>56)&255); (y)[1] = (unsigned char)(((x)>>48)&255);     \

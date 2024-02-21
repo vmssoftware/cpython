@@ -864,7 +864,7 @@ static PyObject *
 readline_get_current_history_length_impl(PyObject *module)
 /*[clinic end generated code: output=436b294f12ba1e3f input=9cb3f431a68d071f]*/
 {
-    return PyLong_FromLong((long)_py_get_history_length());
+    return PyLong_FromLong((int)_py_get_history_length());
 }
 
 /* Exported function to read the current line buffer */
@@ -1184,8 +1184,8 @@ flex_complete(const char *text, int start, int end)
 done:
     Py_XDECREF(readlinestate_global->begidx);
     Py_XDECREF(readlinestate_global->endidx);
-    readlinestate_global->begidx = PyLong_FromLong((long) start);
-    readlinestate_global->endidx = PyLong_FromLong((long) end);
+    readlinestate_global->begidx = PyLong_FromLong((int) start);
+    readlinestate_global->endidx = PyLong_FromLong((int) end);
     result = completion_matches((char *)text, *on_completion);
     PyGILState_Release(gilstate);
     return result;

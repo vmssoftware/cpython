@@ -1144,7 +1144,7 @@ sys_setswitchinterval_impl(PyObject *module, double interval)
                         "switch interval must be strictly positive");
         return NULL;
     }
-    _PyEval_SetSwitchInterval((unsigned long) (1e6 * interval));
+    _PyEval_SetSwitchInterval((unsigned int) (1e6 * interval));
     Py_RETURN_NONE;
 }
 

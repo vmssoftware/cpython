@@ -14,7 +14,7 @@ struct _warnings_runtime_state {
     PyObject *filters;  /* List */
     PyObject *once_registry;  /* Dict */
     PyObject *default_action; /* String */
-    long filters_version;
+    int filters_version;
 };
 
 extern int _PyWarnings_InitState(PyInterpreterState *interp);

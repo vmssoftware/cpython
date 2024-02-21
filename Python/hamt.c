@@ -458,7 +458,7 @@ _hamt_dump_ident(_PyUnicodeWriter *writer, int level)
         goto error;
     }
 
-    num = PyLong_FromLong((long)level);
+    num = PyLong_FromLong((int)level);
     if (num == NULL) {
         goto error;
     }

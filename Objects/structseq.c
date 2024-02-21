@@ -463,7 +463,7 @@ initialize_members(PyStructSequence_Desc *desc, PyMemberDef* members,
 
 int
 _PyStructSequence_InitType(PyTypeObject *type, PyStructSequence_Desc *desc,
-                           unsigned long tp_flags)
+                           unsigned int tp_flags)
 {
     PyMemberDef *members;
     Py_ssize_t n_members, n_unnamed_members;

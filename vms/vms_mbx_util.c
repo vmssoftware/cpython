@@ -389,7 +389,7 @@ int vms_isapipe_by_name(char *name) {
 }
 
 int vms_channel_is_a_mailbox(int channel) {
-    unsigned long  mbx_char;
+    unsigned int  mbx_char;
     unsigned short mbx_len;
     ILE3 item_list[2];
     item_list[0].ile3$w_length = 4;

@@ -359,7 +359,7 @@ _imp_exec_dynamic(PyObject *module, PyObject *mod)
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromLong((long)_return_value);
+    return_value = PyLong_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -389,7 +389,7 @@ _imp_exec_builtin(PyObject *module, PyObject *mod)
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromLong((long)_return_value);
+    return_value = PyLong_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -404,7 +404,7 @@ PyDoc_STRVAR(_imp_source_hash__doc__,
     {"source_hash", (PyCFunction)(void(*)(void))_imp_source_hash, METH_FASTCALL|METH_KEYWORDS, _imp_source_hash__doc__},
 
 static PyObject *
-_imp_source_hash_impl(PyObject *module, long key, Py_buffer *source);
+_imp_source_hash_impl(PyObject *module, int key, Py_buffer *source);
 
 static PyObject *
 _imp_source_hash(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames)
@@ -413,7 +413,7 @@ _imp_source_hash(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyOb
     static const char * const _keywords[] = {"key", "source", NULL};
     static _PyArg_Parser _parser = {NULL, _keywords, "source_hash", 0};
     PyObject *argsbuf[2];
-    long key;
+    int key;
     Py_buffer source = {NULL, NULL};
 
     args = _PyArg_UnpackKeywords(args, nargs, NULL, kwnames, &_parser, 2, 2, 0, argsbuf);

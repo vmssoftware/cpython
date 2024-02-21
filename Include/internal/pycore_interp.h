@@ -248,7 +248,7 @@ struct _is {
     PyObject *importlib;
 
     /* Used in Modules/_threadmodule.c. */
-    long num_threads;
+    int num_threads;
     /* Support for runtime thread stack size tuning.
        A value of 0 means using the platform's default stack size
        or the size specified by the THREAD_STACK_SIZE macro. */

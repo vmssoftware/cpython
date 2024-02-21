@@ -455,7 +455,7 @@ fp_setreadl(struct tok_state *tok, const char* enc)
     _Py_IDENTIFIER(open);
     _Py_IDENTIFIER(readline);
     int fd;
-    long pos;
+    int pos;
 
     fd = fileno(tok->fp);
     /* Due to buffering the file offset for fd can be different from the file

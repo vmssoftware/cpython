@@ -17,17 +17,17 @@ typedef enum PyLockStatus {
 } PyLockStatus;
 
 #ifndef Py_LIMITED_API
-#define PYTHREAD_INVALID_THREAD_ID ((unsigned long)-1)
+#define PYTHREAD_INVALID_THREAD_ID ((unsigned int)-1)
 #endif
 
 PyAPI_FUNC(void) PyThread_init_thread(void);
-PyAPI_FUNC(unsigned long) PyThread_start_new_thread(void (*)(void *), void *);
+PyAPI_FUNC(unsigned int) PyThread_start_new_thread(void (*)(void *), void *);
 PyAPI_FUNC(void) _Py_NO_RETURN PyThread_exit_thread(void);
-PyAPI_FUNC(unsigned long) PyThread_get_thread_ident(void);
+PyAPI_FUNC(unsigned int) PyThread_get_thread_ident(void);
 
 #if defined(__APPLE__) || defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(_WIN32) || defined(_AIX)
 #define PY_HAVE_THREAD_NATIVE_ID
-PyAPI_FUNC(unsigned long) PyThread_get_thread_native_id(void);
+PyAPI_FUNC(unsigned int) PyThread_get_thread_native_id(void);
 #endif
 
 PyAPI_FUNC(PyThread_type_lock) PyThread_allocate_lock(void);
@@ -131,7 +131,7 @@ typedef struct _Py_tss_t Py_tss_t;  /* opaque */
     /* In Windows, native TSS key type is DWORD,
        but hardcode the unsigned long to avoid errors for include directive.
     */
-#   define NATIVE_TSS_KEY_T     unsigned long
+#   define NATIVE_TSS_KEY_T     unsigned int
 #else
 #   error "Require native threads. See https://bugs.python.org/issue31370"
 #endif

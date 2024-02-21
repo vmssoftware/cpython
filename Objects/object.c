@@ -284,7 +284,7 @@ PyObject_Print(PyObject *op, FILE *fp, int flags)
                universally available */
             Py_BEGIN_ALLOW_THREADS
             fprintf(fp, "<refcnt %ld at %p>",
-                (long)Py_REFCNT(op), (void *)op);
+                (int)Py_REFCNT(op), (void *)op);
             Py_END_ALLOW_THREADS
         }
         else {
@@ -379,7 +379,7 @@ _PyObject_Dump(PyObject* op)
     fprintf(stderr, "object address  : %p\n", (void *)op);
     /* XXX(twouters) cast refcount to long until %zd is
        universally available */
-    fprintf(stderr, "object refcount : %ld\n", (long)Py_REFCNT(op));
+    fprintf(stderr, "object refcount : %ld\n", (int)Py_REFCNT(op));
     fflush(stderr);
 
     PyTypeObject *type = Py_TYPE(op);
@@ -1082,7 +1082,7 @@ _PyObject_GetDictPtr(PyObject *obj)
         }
         size_t size = _PyObject_VAR_SIZE(tp, tsize);
 
-        dictoffset += (long)size;
+        dictoffset += (int)size;
         _PyObject_ASSERT(obj, dictoffset > 0);
         _PyObject_ASSERT(obj, dictoffset % SIZEOF_VOID_P == 0);
     }

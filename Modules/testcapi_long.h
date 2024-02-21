@@ -104,7 +104,7 @@ TESTNAME(PyObject *error(const char*))
         UNBIND(x);
 
         /* Unsigned complains about 2**NBITS? */
-        y = PyLong_FromLong((long)NBITS);
+        y = PyLong_FromLong((int)NBITS);
         if (y == NULL)
             return error(
                 "unexpected NULL from PyLong_FromLong");

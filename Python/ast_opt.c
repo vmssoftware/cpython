@@ -151,7 +151,7 @@ safe_multiply(PyObject *v, PyObject *w)
         Py_ssize_t size = PyTuple_Check(w) ? PyTuple_GET_SIZE(w) :
                                              PySet_GET_SIZE(w);
         if (size) {
-            long n = PyLong_AsLong(v);
+            int n = PyLong_AsLong(v);
             if (n < 0 || n > MAX_COLLECTION_SIZE / size) {
                 return NULL;
             }
@@ -164,7 +164,7 @@ safe_multiply(PyObject *v, PyObject *w)
         Py_ssize_t size = PyUnicode_Check(w) ? PyUnicode_GET_LENGTH(w) :
                                                PyBytes_GET_SIZE(w);
         if (size) {
-            long n = PyLong_AsLong(v);
+            int n = PyLong_AsLong(v);
             if (n < 0 || n > MAX_STR_SIZE / size) {
                 return NULL;
             }

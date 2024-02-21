@@ -221,7 +221,7 @@ struct _typeobject {
     PyBufferProcs *tp_as_buffer;
 
     /* Flags to define presence of optional/expanded features */
-    unsigned long tp_flags;
+    unsigned int tp_flags;
 
     const char *tp_doc; /* Documentation string */
 

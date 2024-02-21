@@ -21,7 +21,7 @@
 #define NULL (void *)0
 #define assert(op) /* empty */
 typedef int sdigit;
-typedef long Py_ssize_t;
+typedef int Py_ssize_t;
 typedef unsigned short wchar_t;
 typedef struct {} PyObject;
 typedef struct {} grammar;
@@ -46,7 +46,7 @@ static PyObject *get_small_int(sdigit ival)
     return p;
 }
 
-PyObject *PyLong_FromLong(long ival)
+PyObject *PyLong_FromLong(int ival)
 {
     PyObject *p;
     int maybe;
@@ -64,12 +64,12 @@ PyObject *PyLong_FromLong(long ival)
 
 PyObject *PyLong_FromLongLong(long long ival)
 {
-    return PyLong_FromLong((long)ival);
+    return PyLong_FromLong((int)ival);
 }
 
 PyObject *PyLong_FromSsize_t(Py_ssize_t ival)
 {
-    return PyLong_FromLong((long)ival);
+    return PyLong_FromLong((int)ival);
 }
 
 /* tainted sinks
@@ -100,14 +100,14 @@ static Py_ssize_t r_string(char *s, Py_ssize_t n, RFILE *p)
     return 0;
 }
 
-static long r_long(RFILE *p)
+static int r_long(RFILE *p)
 {
-    long l;
+    int l;
     unsigned char buffer[4];
 
     r_string((char *)buffer, 4, p);
     __coverity_tainted_string_sanitize_content__(buffer);
-    l = (long)buffer;
+    l = (int)buffer;
     return l;
 }
 

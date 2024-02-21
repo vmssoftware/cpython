@@ -148,10 +148,10 @@ LeaveNonRecursiveMutex(PNRMUTEX mutex)
 }
 #endif /* _PY_USE_CV_LOCKS */
 
-unsigned long PyThread_get_thread_ident(void);
+unsigned int PyThread_get_thread_ident(void);
 
 #ifdef PY_HAVE_THREAD_NATIVE_ID
-unsigned long PyThread_get_thread_native_id(void);
+unsigned int PyThread_get_thread_native_id(void);
 #endif
 
 /*
@@ -184,7 +184,7 @@ bootstrap(void *call)
     return 0;
 }
 
-unsigned long
+unsigned int
 PyThread_start_new_thread(void (*func)(void *), void *arg)
 {
     HANDLE hThread;
@@ -229,7 +229,7 @@ PyThread_start_new_thread(void (*func)(void *), void *arg)
  * Return the thread Id instead of a handle. The Id is said to uniquely identify the
  * thread in the system
  */
-unsigned long
+unsigned int
 PyThread_get_thread_ident(void)
 {
     if (!initialized)
@@ -244,7 +244,7 @@ PyThread_get_thread_ident(void)
  * The native ID of a thread is valid and guaranteed to be unique system-wide
  * from the time the thread is created until the thread has been terminated.
  */
-unsigned long
+unsigned int
 PyThread_get_thread_native_id(void)
 {
     if (!initialized) {
@@ -253,7 +253,7 @@ PyThread_get_thread_native_id(void)
 
     DWORD native_id;
     native_id = GetCurrentThreadId();
-    return (unsigned long) native_id;
+    return (unsigned int) native_id;
 }
 #endif
 

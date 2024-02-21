@@ -308,7 +308,7 @@ PyBytes_FromFormatV(const char *format, va_list vargs)
 
         case 'd':
             if (longflag) {
-                sprintf(buffer, "%ld", va_arg(vargs, long));
+                sprintf(buffer, "%ld", va_arg(vargs, int));
             }
             else if (size_tflag) {
                 sprintf(buffer, "%"PY_FORMAT_SIZE_T"d", va_arg(vargs, Py_ssize_t));
@@ -322,7 +322,7 @@ PyBytes_FromFormatV(const char *format, va_list vargs)
 
         case 'u':
             if (longflag) {
-                sprintf(buffer, "%lu", va_arg(vargs, unsigned long));
+                sprintf(buffer, "%lu", va_arg(vargs, unsigned int));
             }
             else if (size_tflag) {
                 sprintf(buffer, "%"PY_FORMAT_SIZE_T"u", va_arg(vargs, size_t));
@@ -528,7 +528,7 @@ byte_converter(PyObject *arg, char *p)
     }
     else {
         int overflow;
-        long ival = PyLong_AsLongAndOverflow(arg, &overflow);
+        int ival = PyLong_AsLongAndOverflow(arg, &overflow);
         if (ival == -1 && PyErr_Occurred()) {
             if (PyErr_ExceptionMatches(PyExc_TypeError)) {
                 goto onError;

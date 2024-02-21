@@ -1132,7 +1132,7 @@ get_native_fmtchar(char *result, const char *fmt)
     case 'c': case 'b': case 'B': size = sizeof(char); break;
     case 'h': case 'H': size = sizeof(short); break;
     case 'i': case 'I': size = sizeof(int); break;
-    case 'l': case 'L': size = sizeof(long); break;
+    case 'l': case 'L': size = sizeof(int); break;
     case 'q': case 'Q': size = sizeof(long long); break;
     case 'n': case 'N': size = sizeof(Py_ssize_t); break;
     case 'f': size = sizeof(float); break;
@@ -1581,11 +1581,11 @@ fix_error_int(const char *fmt)
 }
 
 /* Accept integer objects or objects with an __index__() method. */
-static long
+static int
 pylong_as_ld(PyObject *item)
 {
     PyObject *tmp;
-    long ld;
+    int ld;
 
     tmp = _PyNumber_Index(item);
     if (tmp == NULL)
@@ -1596,15 +1596,15 @@ pylong_as_ld(PyObject *item)
     return ld;
 }
 
-static unsigned long
+static unsigned int
 pylong_as_lu(PyObject *item)
 {
     PyObject *tmp;
-    unsigned long lu;
+    unsigned int lu;
 
     tmp = _PyNumber_Index(item);
     if (tmp == NULL)
-        return (unsigned long)-1;
+        return (unsigned int)-1;
 
     lu = PyLong_AsUnsignedLong(tmp);
     Py_DECREF(tmp);
@@ -1688,10 +1688,10 @@ static inline PyObject *
 unpack_single(const char *ptr, const char *fmt)
 {
     unsigned long long llu;
-    unsigned long lu;
+    unsigned int lu;
     size_t zu;
     long long lld;
-    long ld;
+    int ld;
     Py_ssize_t zd;
     double d;
     unsigned char uc;
@@ -1704,7 +1704,7 @@ unpack_single(const char *ptr, const char *fmt)
     case 'b': ld =   *((const signed char *)ptr); goto convert_ld;
     case 'h': UNPACK_SINGLE(ld, ptr, short); goto convert_ld;
     case 'i': UNPACK_SINGLE(ld, ptr, int); goto convert_ld;
-    case 'l': UNPACK_SINGLE(ld, ptr, long); goto convert_ld;
+    case 'l': UNPACK_SINGLE(ld, ptr, int); goto convert_ld;
 
     /* boolean */
     case '?': UNPACK_SINGLE(ld, ptr, _Bool); goto convert_bool;
@@ -1712,7 +1712,7 @@ unpack_single(const char *ptr, const char *fmt)
     /* unsigned integers */
     case 'H': UNPACK_SINGLE(lu, ptr, unsigned short); goto convert_lu;
     case 'I': UNPACK_SINGLE(lu, ptr, unsigned int); goto convert_lu;
-    case 'L': UNPACK_SINGLE(lu, ptr, unsigned long); goto convert_lu;
+    case 'L': UNPACK_SINGLE(lu, ptr, unsigned int); goto convert_lu;
 
     /* native 64-bit */
     case 'q': UNPACK_SINGLE(lld, ptr, long long); goto convert_lld;
@@ -1778,10 +1778,10 @@ static int
 pack_single(char *ptr, PyObject *item, const char *fmt)
 {
     unsigned long long llu;
-    unsigned long lu;
+    unsigned int lu;
     size_t zu;
     long long lld;
-    long ld;
+    int ld;
     Py_ssize_t zd;
     double d;
     void *p;
@@ -1803,14 +1803,14 @@ pack_single(char *ptr, PyObject *item, const char *fmt)
             if (ld < INT_MIN || ld > INT_MAX) goto err_range;
             PACK_SINGLE(ptr, ld, int); break;
         default: /* 'l' */
-            PACK_SINGLE(ptr, ld, long); break;
+            PACK_SINGLE(ptr, ld, int); break;
         }
         break;
 
     /* unsigned integers */
     case 'B': case 'H': case 'I': case 'L':
         lu = pylong_as_lu(item);
-        if (lu == (unsigned long)-1 && PyErr_Occurred())
+        if (lu == (unsigned int)-1 && PyErr_Occurred())
             goto err_occurred;
         switch (fmt[0]) {
         case 'B':
@@ -1823,7 +1823,7 @@ pack_single(char *ptr, PyObject *item, const char *fmt)
             if (lu > UINT_MAX) goto err_range;
             PACK_SINGLE(ptr, lu, unsigned int); break;
         default: /* 'L' */
-            PACK_SINGLE(ptr, lu, unsigned long); break;
+            PACK_SINGLE(ptr, lu, unsigned int); break;
         }
         break;
 
@@ -2723,7 +2723,7 @@ unpack_cmp(const char *p, const char *q, char fmt,
     case 'b': return *((const signed char *)p) == *((const signed char *)q);
     case 'h': CMP_SINGLE(p, q, short); return equal;
     case 'i': CMP_SINGLE(p, q, int); return equal;
-    case 'l': CMP_SINGLE(p, q, long); return equal;
+    case 'l': CMP_SINGLE(p, q, int); return equal;
 
     /* boolean */
     case '?': CMP_SINGLE(p, q, _Bool); return equal;
@@ -2731,7 +2731,7 @@ unpack_cmp(const char *p, const char *q, char fmt,
     /* unsigned integers */
     case 'H': CMP_SINGLE(p, q, unsigned short); return equal;
     case 'I': CMP_SINGLE(p, q, unsigned int); return equal;
-    case 'L': CMP_SINGLE(p, q, unsigned long); return equal;
+    case 'L': CMP_SINGLE(p, q, unsigned int); return equal;
 
     /* native 64-bit */
     case 'q': CMP_SINGLE(p, q, long long); return equal;

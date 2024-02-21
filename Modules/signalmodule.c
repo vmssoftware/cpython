@@ -396,7 +396,7 @@ signal_handler(int sig_num)
 #ifdef HAVE_ALARM
 
 /*[clinic input]
-signal.alarm -> long
+signal.alarm -> int
 
     seconds: int
     /
@@ -404,12 +404,12 @@ signal.alarm -> long
 Arrange for SIGALRM to arrive after the given number of seconds.
 [clinic start generated code]*/
 
-static long
+static int
 signal_alarm_impl(PyObject *module, int seconds)
 /*[clinic end generated code: output=144232290814c298 input=0d5e97e0e6f39e86]*/
 {
     /* alarm() returns the number of seconds remaining */
-    return (long)alarm(seconds);
+    return (int)alarm(seconds);
 }
 
 #endif
@@ -1142,19 +1142,19 @@ fill_siginfo(siginfo_t *si)
     if (!result)
         return NULL;
 
-    PyStructSequence_SET_ITEM(result, 0, PyLong_FromLong((long)(si->si_signo)));
-    PyStructSequence_SET_ITEM(result, 1, PyLong_FromLong((long)(si->si_code)));
+    PyStructSequence_SET_ITEM(result, 0, PyLong_FromLong((int)(si->si_signo)));
+    PyStructSequence_SET_ITEM(result, 1, PyLong_FromLong((int)(si->si_code)));
 #ifdef __VXWORKS__
     PyStructSequence_SET_ITEM(result, 2, PyLong_FromLong(0L));
     PyStructSequence_SET_ITEM(result, 3, PyLong_FromLong(0L));
     PyStructSequence_SET_ITEM(result, 4, PyLong_FromLong(0L));
     PyStructSequence_SET_ITEM(result, 5, PyLong_FromLong(0L));
 #else
-    PyStructSequence_SET_ITEM(result, 2, PyLong_FromLong((long)(si->si_errno)));
+    PyStructSequence_SET_ITEM(result, 2, PyLong_FromLong((int)(si->si_errno)));
     PyStructSequence_SET_ITEM(result, 3, PyLong_FromPid(si->si_pid));
     PyStructSequence_SET_ITEM(result, 4, _PyLong_FromUid(si->si_uid));
     PyStructSequence_SET_ITEM(result, 5,
-                                PyLong_FromLong((long)(si->si_status)));
+                                PyLong_FromLong((int)(si->si_status)));
 #endif
 #ifdef HAVE_SIGINFO_T_SI_BAND
     PyStructSequence_SET_ITEM(result, 6, PyLong_FromLong(si->si_band));
@@ -1287,7 +1287,7 @@ Send a signal to a thread.
 [clinic start generated code]*/
 
 static PyObject *
-signal_pthread_kill_impl(PyObject *module, unsigned long thread_id,
+signal_pthread_kill_impl(PyObject *module, unsigned int thread_id,
                          int signalnum)
 /*[clinic end generated code: output=7629919b791bc27f input=1d901f2c7bb544ff]*/
 {

@@ -483,7 +483,7 @@ _io__WindowsConsoleIO_readable_impl(winconsoleio *self)
 {
     if (self->fd == -1)
         return err_closed();
-    return PyBool_FromLong((long) self->readable);
+    return PyBool_FromLong((int) self->readable);
 }
 
 /*[clinic input]
@@ -498,7 +498,7 @@ _io__WindowsConsoleIO_writable_impl(winconsoleio *self)
 {
     if (self->fd == -1)
         return err_closed();
-    return PyBool_FromLong((long) self->writable);
+    return PyBool_FromLong((int) self->writable);
 }
 
 static DWORD
@@ -1080,13 +1080,13 @@ static PyMethodDef winconsoleio_methods[] = {
 static PyObject *
 get_closed(winconsoleio *self, void *closure)
 {
-    return PyBool_FromLong((long)(self->fd == -1));
+    return PyBool_FromLong((int)(self->fd == -1));
 }
 
 static PyObject *
 get_closefd(winconsoleio *self, void *closure)
 {
-    return PyBool_FromLong((long)(self->closefd));
+    return PyBool_FromLong((int)(self->closefd));
 }
 
 static PyObject *

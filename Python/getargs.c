@@ -672,7 +672,7 @@ convertsimple(PyObject *arg, const char **p_format, va_list *p_va, int flags,
 
     case 'b': { /* unsigned byte -- very short int */
         char *p = va_arg(*p_va, char *);
-        long ival = PyLong_AsLong(arg);
+        int ival = PyLong_AsLong(arg);
         if (ival == -1 && PyErr_Occurred())
             RETURN_ERR_OCCURRED;
         else if (ival < 0) {
@@ -693,8 +693,8 @@ convertsimple(PyObject *arg, const char **p_format, va_list *p_va, int flags,
     case 'B': {/* byte sized bitfield - both signed and unsigned
                   values allowed */
         char *p = va_arg(*p_va, char *);
-        unsigned long ival = PyLong_AsUnsignedLongMask(arg);
-        if (ival == (unsigned long)-1 && PyErr_Occurred())
+        unsigned int ival = PyLong_AsUnsignedLongMask(arg);
+        if (ival == (unsigned int)-1 && PyErr_Occurred())
             RETURN_ERR_OCCURRED;
         else
             *p = (unsigned char) ival;
@@ -703,7 +703,7 @@ convertsimple(PyObject *arg, const char **p_format, va_list *p_va, int flags,
 
     case 'h': {/* signed short int */
         short *p = va_arg(*p_va, short *);
-        long ival = PyLong_AsLong(arg);
+        int ival = PyLong_AsLong(arg);
         if (ival == -1 && PyErr_Occurred())
             RETURN_ERR_OCCURRED;
         else if (ival < SHRT_MIN) {
@@ -724,8 +724,8 @@ convertsimple(PyObject *arg, const char **p_format, va_list *p_va, int flags,
     case 'H': { /* short int sized bitfield, both signed and
                    unsigned allowed */
         unsigned short *p = va_arg(*p_va, unsigned short *);
-        unsigned long ival = PyLong_AsUnsignedLongMask(arg);
-        if (ival == (unsigned long)-1 && PyErr_Occurred())
+        unsigned int ival = PyLong_AsUnsignedLongMask(arg);
+        if (ival == (unsigned int)-1 && PyErr_Occurred())
             RETURN_ERR_OCCURRED;
         else
             *p = (unsigned short) ival;
@@ -734,7 +734,7 @@ convertsimple(PyObject *arg, const char **p_format, va_list *p_va, int flags,
 
     case 'i': {/* signed int */
         int *p = va_arg(*p_va, int *);
-        long ival = PyLong_AsLong(arg);
+        int ival = PyLong_AsLong(arg);
         if (ival == -1 && PyErr_Occurred())
             RETURN_ERR_OCCURRED;
         else if (ival > INT_MAX) {
@@ -755,8 +755,8 @@ convertsimple(PyObject *arg, const char **p_format, va_list *p_va, int flags,
     case 'I': { /* int sized bitfield, both signed and
                    unsigned allowed */
         unsigned int *p = va_arg(*p_va, unsigned int *);
-        unsigned long ival = PyLong_AsUnsignedLongMask(arg);
-        if (ival == (unsigned long)-1 && PyErr_Occurred())
+        unsigned int ival = PyLong_AsUnsignedLongMask(arg);
+        if (ival == (unsigned int)-1 && PyErr_Occurred())
             RETURN_ERR_OCCURRED;
         else
             *p = (unsigned int) ival;
@@ -779,8 +779,8 @@ convertsimple(PyObject *arg, const char **p_format, va_list *p_va, int flags,
         break;
     }
     case 'l': {/* long int */
-        long *p = va_arg(*p_va, long *);
-        long ival = PyLong_AsLong(arg);
+        int *p = va_arg(*p_va, int *);
+        int ival = PyLong_AsLong(arg);
         if (ival == -1 && PyErr_Occurred())
             RETURN_ERR_OCCURRED;
         else
@@ -789,8 +789,8 @@ convertsimple(PyObject *arg, const char **p_format, va_list *p_va, int flags,
     }
 
     case 'k': { /* long sized bitfield */
-        unsigned long *p = va_arg(*p_va, unsigned long *);
-        unsigned long ival;
+        unsigned int *p = va_arg(*p_va, unsigned int *);
+        unsigned int ival;
         if (PyLong_Check(arg))
             ival = PyLong_AsUnsignedLongMask(arg);
         else
@@ -2485,8 +2485,8 @@ skipitem(const char **p_format, va_list *p_va, int flags)
     case 'H': /* short int as bitfield */
     case 'i': /* int */
     case 'I': /* int sized bitfield */
-    case 'l': /* long int */
-    case 'k': /* long int sized bitfield */
+    case 'l': /* int int */
+    case 'k': /* int int sized bitfield */
     case 'L': /* long long */
     case 'K': /* long long sized bitfield */
     case 'n': /* Py_ssize_t */

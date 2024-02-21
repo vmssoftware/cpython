@@ -245,7 +245,7 @@ pythread_wrapper(void *arg)
     return NULL;
 }
 
-unsigned long
+unsigned int
 PyThread_start_new_thread(void (*func)(void *), void *arg)
 {
     pthread_t th;
@@ -309,9 +309,9 @@ PyThread_start_new_thread(void (*func)(void *), void *arg)
     pthread_detach(th);
 
 #if SIZEOF_PTHREAD_T <= SIZEOF_LONG
-    return (unsigned long) th;
+    return (unsigned int) th;
 #else
-    return (unsigned long) *(unsigned long *) &th;
+    return (unsigned int) *(unsigned int *) &th;
 #endif
 }
 
@@ -321,18 +321,18 @@ PyThread_start_new_thread(void (*func)(void *), void *arg)
      - The cast to unsigned long is inherently unsafe.
      - It is not clear that the 'volatile' (for AIX?) are any longer necessary.
 */
-unsigned long
+unsigned int
 PyThread_get_thread_ident(void)
 {
     volatile pthread_t threadid;
     if (!initialized)
         PyThread_init_thread();
     threadid = pthread_self();
-    return (unsigned long) threadid;
+    return (unsigned int) threadid;
 }
 
 #ifdef PY_HAVE_THREAD_NATIVE_ID
-unsigned long
+unsigned int
 PyThread_get_thread_native_id(void)
 {
     if (!initialized)
@@ -356,7 +356,7 @@ PyThread_get_thread_native_id(void)
     lwpid_t native_id;
     native_id = _lwp_self();
 #endif
-    return (unsigned long) native_id;
+    return (unsigned int) native_id;
 }
 #endif
 

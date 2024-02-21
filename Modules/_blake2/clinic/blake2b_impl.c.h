@@ -14,7 +14,7 @@ PyDoc_STRVAR(py_blake2b_new__doc__,
 static PyObject *
 py_blake2b_new_impl(PyTypeObject *type, PyObject *data, int digest_size,
                     Py_buffer *key, Py_buffer *salt, Py_buffer *person,
-                    int fanout, int depth, unsigned long leaf_size,
+                    int fanout, int depth, unsigned int leaf_size,
                     unsigned long long node_offset, int node_depth,
                     int inner_size, int last_node, int usedforsecurity);
 
@@ -35,7 +35,7 @@ py_blake2b_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
     Py_buffer person = {NULL, NULL};
     int fanout = 1;
     int depth = 1;
-    unsigned long leaf_size = 0;
+    unsigned int leaf_size = 0;
     unsigned long long node_offset = 0;
     int node_depth = 0;
     int inner_size = 0;

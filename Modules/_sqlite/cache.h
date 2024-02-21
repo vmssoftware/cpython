@@ -34,7 +34,7 @@ typedef struct _pysqlite_Node
     PyObject_HEAD
     PyObject* key;
     PyObject* data;
-    long count;
+    int count;
     struct _pysqlite_Node* prev;
     struct _pysqlite_Node* next;
 } pysqlite_Node;

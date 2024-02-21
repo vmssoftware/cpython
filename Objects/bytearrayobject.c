@@ -22,7 +22,7 @@ static int
 _getbytevalue(PyObject* arg, int *value)
 {
     int overflow;
-    long face_value = PyLong_AsLongAndOverflow(arg, &overflow);
+    int face_value = PyLong_AsLongAndOverflow(arg, &overflow);
 
     if (face_value == -1 && PyErr_Occurred()) {
         *value = -1;

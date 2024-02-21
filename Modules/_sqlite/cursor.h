@@ -38,7 +38,7 @@ typedef struct
     PyObject* row_cast_map;
     int arraysize;
     PyObject* lastrowid;
-    long rowcount;
+    int rowcount;
     PyObject* row_factory;
     pysqlite_Statement* statement;
     int closed;

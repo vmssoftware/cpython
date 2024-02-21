@@ -129,7 +129,7 @@ ILE3_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
             Py_DECREF(self);
             return NULL;
         }
-        self->ptypes = malloc_low(1 * sizeof(long));
+        self->ptypes = malloc_low(1 * sizeof(int));
         if (self->ptypes == NULL) {
             free(self->plist);
             self->plist = NULL;
@@ -151,9 +151,9 @@ static PyObject *ILE3_iter(ILE3Object *self)
 static PyObject *
 _value_from_item(
     ILE3 *item,
-    long type)
+    int type)
 {
-    long size = 0;
+    int size = 0;
     if (type == DSC$K_DTYPE_T) {
         size = *(item->ile3$ps_retlen_addr);
         return PyUnicode_FromStringAndSize((char*)item->ile3$ps_bufaddr, size);
@@ -176,11 +176,11 @@ _value_from_item(
 static PyObject *
 ILE3_getat_c(
     ILE3Object *self,
-    long pos)
+    int pos)
 {
     if ((unsigned int)pos < self->size) {
         ILE3 *item = (ILE3*)self->plist + pos;
-        long type = *((long*)self->ptypes + pos);
+        int type = *((int*)self->ptypes + pos);
         PyObject *pValue = _value_from_item(item, type);
         if (pValue) {
             return Py_BuildValue("(H,i,O)", item->ile3$w_code, type, pValue);
@@ -193,10 +193,10 @@ ILE3_getat_c(
 
 static PyObject *ILE3_getat(ILE3Object *self, PyObject *args) {
     if (!PyLong_Check(args)) {
-        _PyArg_BadArgument("getat", "args", "long", args);
+        _PyArg_BadArgument("getat", "args", "int", args);
         return NULL;
     }
-    long pos = PyLong_AsLong(args);
+    int pos = PyLong_AsLong(args);
     return ILE3_getat_c(self, pos);
 }
 
@@ -205,11 +205,11 @@ static PyObject *ILE3_getat_bytes(ILE3Object *self, PyObject *args) {
         _PyArg_BadArgument("getat", "args", "long", args);
         return NULL;
     }
-    long pos = PyLong_AsLong(args);
+    int pos = PyLong_AsLong(args);
     if ((unsigned int)pos < self->size) {
         ILE3 *item = (ILE3*)self->plist + pos;
-        long type = *((long*)self->ptypes + pos);
-        long size = *(item->ile3$ps_retlen_addr);
+        int type = *((int*)self->ptypes + pos);
+        int size = *(item->ile3$ps_retlen_addr);
         PyObject *pValue = PyBytes_FromStringAndSize((char*)item->ile3$ps_bufaddr, size);
         if (pValue) {
             return Py_BuildValue("(H,i,O)", item->ile3$w_code, type, pValue);
@@ -239,7 +239,7 @@ static int ILE3_increment(ILE3Object *self) {
     if (self->size >= self->allocated) {
         self->allocated *= 2;
         self->plist = realloc_low(self->plist, self->allocated * sizeof(ILE3));
-        self->ptypes = realloc_low(self->ptypes, self->allocated * sizeof(long));
+        self->ptypes = realloc_low(self->ptypes, self->allocated * sizeof(int));
     }
     if (self->plist && self->ptypes) {
         init_item((ILE3*)self->plist + self->size);
@@ -296,7 +296,7 @@ ILE3_append(
         return NULL;
     }
 
-    long type = DSC$K_DTYPE_Z;
+    int type = DSC$K_DTYPE_Z;
     if (!PyLong_Check(args[1])) {
         _PyArg_BadArgument("append", "args[1]", "long", args[1]);
         ILE3_decrement(self);
@@ -388,7 +388,7 @@ ILE3_append(
             memset(item->ile3$ps_bufaddr, 0, size);
         }
     }
-    *((long*)self->ptypes + (self->size - 1)) = type;
+    *((int*)self->ptypes + (self->size - 1)) = type;
     Py_RETURN_NONE;
 }
 
@@ -399,7 +399,7 @@ ILE3_item(
 {
     if ((size_t)i < self->size) {
         ILE3 *item = (ILE3*)self->plist + i;
-        long type = *((long*)self->ptypes + i);
+        int type = *((int*)self->ptypes + i);
         return _value_from_item(item, type);
     }
     PyErr_SetNone(PyExc_IndexError);
@@ -489,10 +489,22 @@ static struct PyModuleDef _module_definition = {
 
 PyMODINIT_FUNC PyInit__ile3(void)
 {
-    #define my_offset(a,b) (((unsigned long long)&a)-((unsigned long long)&b))
+    // #define my_offset(a,b) (((unsigned long long)&a)-((unsigned long long)&b))
+
+    // printf("my_offset(m_name, _module_definition) %lli = %s\n", my_offset(_module_definition.m_name, _module_definition), _module_definition.m_name);
+    // printf("my_offset(m_doc, _module_definition) %lli = %s\n", my_offset(_module_definition.m_doc, _module_definition), _module_definition.m_doc);
+    // printf("my_offset(m_methods, _module_definition) %lli = %llx\n", my_offset(_module_definition.m_methods, _module_definition), _module_definition.m_methods);
 
     // printf("my_offset(tp_name, ILE3_Type) %lli = %s\n", my_offset(ILE3_Type.tp_name, ILE3_Type), ILE3_Type.tp_name);
+    // printf("my_offset(tp_weaklistoffset, ILE3_Type) %lli = %llx\n", my_offset(ILE3_Type.tp_weaklistoffset, ILE3_Type), ILE3_Type.tp_weaklistoffset);
     // printf("my_offset(tp_base, ILE3_Type) %lli = %llx\n", my_offset(ILE3_Type.tp_base, ILE3_Type), ILE3_Type.tp_base);
+    // printf("my_offset(tp_vectorcall, ILE3_Type) %lli = %llx\n", my_offset(ILE3_Type.tp_vectorcall, ILE3_Type), ILE3_Type.tp_vectorcall);
+    // printf("sizeof(int) %lli\n", sizeof(int));
+    // printf("sizeof(long) %lli\n", sizeof(long));
+    // printf("sizeof(long long) %lli\n", sizeof(long long));
+    // printf("sizeof(ssize_t) %lli\n", sizeof(ssize_t));
+
+    // printf("sizeof(pthread_t) %lli\n", sizeof(pthread_t));
 
     if (PyType_Ready(&ILE3_Type) < 0) {
         return NULL;

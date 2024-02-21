@@ -1276,7 +1276,7 @@ float_fromhex(PyTypeObject *type, PyObject *string)
 {
     PyObject *result;
     double x;
-    long exp, top_exp, lsb, key_digit;
+    int exp, top_exp, lsb, key_digit;
     const char *s, *coeff_start, *s_store, *coeff_end, *exp_start, *s_end;
     int half_eps, digit, round_up, negate=0;
     Py_ssize_t length, ndigits, fdigits, i;
@@ -1423,10 +1423,10 @@ float_fromhex(PyTypeObject *type, PyObject *string)
         goto overflow_error;
 
     /* Adjust exponent for fractional part. */
-    exp = exp - 4*((long)fdigits);
+    exp = exp - 4*((int)fdigits);
 
     /* top_exp = 1 more than exponent of most sig. bit of coefficient */
-    top_exp = exp + 4*((long)ndigits - 1);
+    top_exp = exp + 4*((int)ndigits - 1);
     for (digit = HEX_DIGIT(ndigits-1); digit != 0; digit /= 2)
         top_exp++;
 
@@ -1440,7 +1440,7 @@ float_fromhex(PyTypeObject *type, PyObject *string)
 
     /* lsb = exponent of least significant bit of the *rounded* value.
        This is top_exp - DBL_MANT_DIG unless result is subnormal. */
-    lsb = Py_MAX(top_exp, (long)DBL_MIN_EXP) - DBL_MANT_DIG;
+    lsb = Py_MAX(top_exp, (int)DBL_MIN_EXP) - DBL_MANT_DIG;
 
     x = 0.0;
     if (exp >= lsb) {

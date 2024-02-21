@@ -308,10 +308,10 @@ do_mkvalue(const char **p_format, va_list *p_va, int flags)
         case 'B':
         case 'h':
         case 'i':
-            return PyLong_FromLong((long)va_arg(*p_va, int));
+            return PyLong_FromLong((int)va_arg(*p_va, int));
 
         case 'H':
-            return PyLong_FromLong((long)va_arg(*p_va, unsigned int));
+            return PyLong_FromLong((int)va_arg(*p_va, unsigned int));
 
         case 'I':
         {
@@ -326,12 +326,12 @@ do_mkvalue(const char **p_format, va_list *p_va, int flags)
 #endif
             /* Fall through from 'n' to 'l' if Py_ssize_t is long */
         case 'l':
-            return PyLong_FromLong(va_arg(*p_va, long));
+            return PyLong_FromLong(va_arg(*p_va, int));
 
         case 'k':
         {
-            unsigned long n;
-            n = va_arg(*p_va, unsigned long);
+            unsigned int n;
+            n = va_arg(*p_va, unsigned int);
             return PyLong_FromUnsignedLong(n);
         }
 
@@ -677,7 +677,7 @@ PyModule_AddObject(PyObject *mod, const char *name, PyObject *value)
 }
 
 int
-PyModule_AddIntConstant(PyObject *m, const char *name, long value)
+PyModule_AddIntConstant(PyObject *m, const char *name, int value)
 {
     PyObject *obj = PyLong_FromLong(value);
     if (!obj) {
@@ -689,7 +689,7 @@ PyModule_AddIntConstant(PyObject *m, const char *name, long value)
 }
 
 int
-PyModule_AddUnsignedLongConstant(PyObject *m, const char *name, unsigned long value)
+PyModule_AddUnsignedLongConstant(PyObject *m, const char *name, unsigned int value)
 {
     PyObject *obj = PyLong_FromUnsignedLong(value);
     if (!obj) {

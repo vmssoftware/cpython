@@ -52,16 +52,16 @@ extern void eib$$db_detach(void *);
 extern void eib$$db_commit(void *);
 extern void eib$$db_rollback(void *);
 extern void eib$$db_exec_immediate(void *, char *);
-extern void eib$$db_exec(void *, long *, void *, void *);
+extern void eib$$db_exec(void *, int *, void *, void *);
 extern void eib$$db_set_readonly(void *);
 extern void eib$$db_set_readwrite(void *);
-extern void eib$$db_release(void *, long *);
-extern void eib$$db_prepare(void *, long *, char *);
+extern void eib$$db_release(void *, int *);
+extern void eib$$db_prepare(void *, int *, char *);
 extern void eib$$db_open_cursor(void *, char *, void *);
 extern void eib$$db_close_cursor(void *, char *);
-extern void eib$$db_declare(void *, char *, long *);
-extern void eib$$db_describe_select(void *, long *, void *);
-extern void eib$$db_describe_markers(void *, long *, void *);
+extern void eib$$db_declare(void *, char *, int *);
+extern void eib$$db_describe_select(void *, int *, void *);
+extern void eib$$db_describe_markers(void *, int *, void *);
 extern void eib$$db_fetch(void *, char *, void *);
 
 typedef SQL_T_SQLDA2 *__sqlda_ptr32;
@@ -130,7 +130,7 @@ typedef struct {
 #endif
     SQL_T_SQLDA2   *pSQLDA_o;
     SQL_T_SQLDA2   *pSQLDA_i;
-    long           *pId;
+    int           *pId;
     char           *pCursor;
 #if __INITIAL_POINTER_SIZE == 64
 #   pragma __pointer_size __restore
@@ -144,13 +144,13 @@ static volatile unsigned int global_cursor_id = 1;
 
 extern PyTypeObject STMT_Type;
 
-typedef unsigned long   vc_len_t;
+typedef unsigned int   vc_len_t;
 typedef unsigned short  sc_len_t;
 
 # define MAXVLEN 8192
 
 typedef struct {
-    unsigned long  dlen;
+    unsigned int  dlen;
     char   data[MAXVLEN];
 } vc_t;
 
@@ -614,9 +614,9 @@ STMT_new(
     if (self != NULL) {
         self->pId = 
 #if __INITIAL_POINTER_SIZE == 64
-            _calloc32(1, sizeof(long));
+            _calloc32(1, sizeof(int));
 #else
-            calloc(1, sizeof(long));
+            calloc(1, sizeof(int));
 #endif
         self->numCols = 0;
         self->pCursor = 
@@ -778,7 +778,7 @@ static int TimbufFromFloat(PyObject *arg, unsigned short timbuf[7], int interval
         double_value = -double_value;
         *psign = -1;
     }
-    long long_value = double_value * 100 + .5;
+    int long_value = double_value * 100 + .5;
     timbuf[SECOND] = (unsigned short)(long_value / 100);
     timbuf[SUBSEC] = (unsigned short)(long_value % 100);
     return 1;
@@ -787,7 +787,7 @@ static int TimbufFromFloat(PyObject *arg, unsigned short timbuf[7], int interval
 /* ------------------------------------------------------------------------------------------------------------------------------ */
 
 static int TimbufFromLong(PyObject *arg, unsigned short timbuf[7], int interval_type, int *psign) {
-    long long_value = PyLong_AsLong(arg);
+    int long_value = PyLong_AsLong(arg);
     if (long_value < 0) {
         long_value = -long_value;
         *psign = -1;
@@ -1072,7 +1072,7 @@ static int NormalizeTimbuf(unsigned short timbuf[7]) {
             first = 0;
         }
     }
-    unsigned long tmp = timbuf[SUBSEC];
+    unsigned int tmp = timbuf[SUBSEC];
     timbuf[SUBSEC] = tmp % 100;
     tmp /= 100;
     tmp += timbuf[SECOND];
@@ -1111,7 +1111,7 @@ static unsigned short ParseVMSMonth(char *m) {
 static int DateTimeStrToTimbuf(char *str, Py_ssize_t str_size, unsigned short timbuf[7], int scale) {
     static char delim[6] = {'-','-',' ',':',':','.'};
     
-    long val = 0;       // value
+    int val = 0;       // value
     char *t = str;      // current char
     int pos = 0;        // position in timbuf
     char *m = NULL;     // start of month in str

@@ -91,7 +91,7 @@ class _hashlib.HMAC "HMACobject *" "((_hashlibstate *)PyModule_GetState(module))
 static PyObject *
 _setException(PyObject *exc)
 {
-    unsigned long errcode;
+    unsigned int errcode;
     const char *lib, *func, *reason;
 
     errcode = ERR_peek_last_error();
@@ -507,7 +507,7 @@ static PyMethodDef EVP_methods[] = {
 static PyObject *
 EVP_get_block_size(EVPobject *self, void *closure)
 {
-    long block_size;
+    int block_size;
     block_size = EVP_MD_CTX_block_size(self->ctx);
     return PyLong_FromLong(block_size);
 }
@@ -515,7 +515,7 @@ EVP_get_block_size(EVPobject *self, void *closure)
 static PyObject *
 EVP_get_digest_size(EVPobject *self, void *closure)
 {
-    long size;
+    int size;
     size = EVP_MD_CTX_size(self->ctx);
     return PyLong_FromLong(size);
 }
@@ -1113,7 +1113,7 @@ _hashlib.pbkdf2_hmac as pbkdf2_hmac
     hash_name: str
     password: Py_buffer
     salt: Py_buffer
-    iterations: long
+    iterations: int
     dklen as dklen_obj: object = None
 
 Password based key derivation function 2 (PKCS #5 v2.0) with HMAC as pseudorandom function.
@@ -1121,13 +1121,13 @@ Password based key derivation function 2 (PKCS #5 v2.0) with HMAC as pseudorando
 
 static PyObject *
 pbkdf2_hmac_impl(PyObject *module, const char *hash_name,
-                 Py_buffer *password, Py_buffer *salt, long iterations,
+                 Py_buffer *password, Py_buffer *salt, int iterations,
                  PyObject *dklen_obj)
 /*[clinic end generated code: output=144b76005416599b input=ed3ab0d2d28b5d5c]*/
 {
     PyObject *key_obj = NULL;
     char *key;
-    long dklen;
+    int dklen;
     int retval;
     const EVP_MD *digest;
 
@@ -1217,8 +1217,8 @@ _hashlib.scrypt
     n as n_obj: object(subclass_of='&PyLong_Type') = None
     r as r_obj: object(subclass_of='&PyLong_Type') = None
     p as p_obj: object(subclass_of='&PyLong_Type') = None
-    maxmem: long = 0
-    dklen: long = 64
+    maxmem: int = 0
+    dklen: int = 64
 
 
 scrypt password-based key derivation function.
@@ -1227,13 +1227,13 @@ scrypt password-based key derivation function.
 static PyObject *
 _hashlib_scrypt_impl(PyObject *module, Py_buffer *password, Py_buffer *salt,
                      PyObject *n_obj, PyObject *r_obj, PyObject *p_obj,
-                     long maxmem, long dklen)
+                     int maxmem, int dklen)
 /*[clinic end generated code: output=14849e2aa2b7b46c input=48a7d63bf3f75c42]*/
 {
     PyObject *key_obj = NULL;
     char *key;
     int retval;
-    unsigned long n, r, p;
+    unsigned int n, r, p;
 
     if (password->len > INT_MAX) {
         PyErr_SetString(PyExc_OverflowError,
@@ -1253,7 +1253,7 @@ _hashlib_scrypt_impl(PyObject *module, Py_buffer *password, Py_buffer *salt,
     }
 
     n = PyLong_AsUnsignedLong(n_obj);
-    if (n == (unsigned long) -1 && PyErr_Occurred()) {
+    if (n == (unsigned int) -1 && PyErr_Occurred()) {
         PyErr_SetString(PyExc_TypeError,
                         "n is required and must be an unsigned int");
         return NULL;
@@ -1265,14 +1265,14 @@ _hashlib_scrypt_impl(PyObject *module, Py_buffer *password, Py_buffer *salt,
     }
 
     r = PyLong_AsUnsignedLong(r_obj);
-    if (r == (unsigned long) -1 && PyErr_Occurred()) {
+    if (r == (unsigned int) -1 && PyErr_Occurred()) {
         PyErr_SetString(PyExc_TypeError,
                          "r is required and must be an unsigned int");
         return NULL;
     }
 
     p = PyLong_AsUnsignedLong(p_obj);
-    if (p == (unsigned long) -1 && PyErr_Occurred()) {
+    if (p == (unsigned int) -1 && PyErr_Occurred()) {
         PyErr_SetString(PyExc_TypeError,
                          "p is required and must be an unsigned int");
         return NULL;
@@ -1822,7 +1822,7 @@ _hashlib_get_fips_mode_impl(PyObject *module)
         // then the function will return 0 with an error code of
         // CRYPTO_R_FIPS_MODE_NOT_SUPPORTED (0x0f06d065)."
         // But 0 is also a valid result value.
-        unsigned long errcode = ERR_peek_last_error();
+        unsigned int errcode = ERR_peek_last_error();
         if (errcode) {
             _setException(PyExc_ValueError);
             return -1;

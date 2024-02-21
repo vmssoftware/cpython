@@ -46,7 +46,7 @@
 
 #if defined(MS_WIN32) && !defined(MS_WIN64)
 #define HANDLE_TO_PYNUM(handle) \
-    PyLong_FromUnsignedLong((unsigned long) handle)
+    PyLong_FromUnsignedLong((unsigned int) handle)
 #define PYNUM_TO_HANDLE(obj) ((HANDLE)PyLong_AsUnsignedLong(obj))
 #define F_POINTER "k"
 #define T_POINTER T_ULONG
@@ -746,11 +746,11 @@ _winapi_CreatePipe_impl(PyObject *module, PyObject *pipe_attrs, DWORD size)
 
 /* helpers for createprocess */
 
-static unsigned long
+static unsigned int
 getulong(PyObject* obj, const char* name)
 {
     PyObject* value;
-    unsigned long ret;
+    unsigned int ret;
 
     value = PyObject_GetAttrString(obj, name);
     if (! value) {
@@ -1352,12 +1352,12 @@ _winapi_GetStdHandle_impl(PyObject *module, DWORD std_handle)
 }
 
 /*[clinic input]
-_winapi.GetVersion -> long
+_winapi.GetVersion -> int
 
 Return the version number of the current operating system.
 [clinic start generated code]*/
 
-static long
+static int
 _winapi_GetVersion_impl(PyObject *module)
 /*[clinic end generated code: output=e41f0db5a3b82682 input=e21dff8d0baeded2]*/
 /* Disable deprecation warnings about GetVersionEx as the result is
@@ -1766,7 +1766,7 @@ _winapi_WaitForMultipleObjects_impl(PyObject *module, PyObject *handle_seq,
 }
 
 /*[clinic input]
-_winapi.WaitForSingleObject -> long
+_winapi.WaitForSingleObject -> int
 
     handle: HANDLE
     milliseconds: DWORD
@@ -1779,7 +1779,7 @@ the time-out interval elapses. The timeout value is specified
 in milliseconds.
 [clinic start generated code]*/
 
-static long
+static int
 _winapi_WaitForSingleObject_impl(PyObject *module, HANDLE handle,
                                  DWORD milliseconds)
 /*[clinic end generated code: output=3c4715d8f1b39859 input=443d1ab076edc7b1]*/

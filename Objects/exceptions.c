@@ -840,7 +840,7 @@ oserror_parse_args(PyObject **p_args,
             return -1;
 #ifdef MS_WINDOWS
         if (*winerror && PyLong_Check(*winerror)) {
-            long errcode, winerrcode;
+            int errcode, winerrcode;
             PyObject *newargs;
             Py_ssize_t i;
 

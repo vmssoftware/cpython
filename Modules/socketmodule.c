@@ -2174,7 +2174,7 @@ getsockaddrarg(PySocketSockObject *s, PyObject *args,
             PyObject *interfaceName;
             struct ifreq ifr;
             Py_ssize_t len;
-            unsigned long int rx_id, tx_id;
+            unsigned int int rx_id, tx_id;
 
             struct sockaddr_can *addr = &addrbuf->can;
 
@@ -2786,7 +2786,7 @@ For IP sockets, the address info is a pair (hostaddr, port).");
 static PyObject *
 sock_setblocking(PySocketSockObject *s, PyObject *arg)
 {
-    long block;
+    int block;
 
     block = PyLong_AsLong(arg);
     if (block == -1 && PyErr_Occurred())
@@ -3333,7 +3333,7 @@ sock_connect_ex(PySocketSockObject *s, PyObject *addro)
     if (res < 0)
         return NULL;
 
-    return PyLong_FromLong((long) res);
+    return PyLong_FromLong((int) res);
 }
 
 PyDoc_STRVAR(connect_ex_doc,
@@ -4846,7 +4846,7 @@ of the socket (flag == SHUT_WR), or both ends (flag == SHUT_RDWR).");
 static PyObject*
 sock_ioctl(PySocketSockObject *s, PyObject *arg)
 {
-    unsigned long cmd = SIO_RCVALL;
+    unsigned int cmd = SIO_RCVALL;
     PyObject *argO;
     DWORD recv;
 
@@ -5066,7 +5066,7 @@ sock_dealloc(PySocketSockObject *s)
 static PyObject *
 sock_repr(PySocketSockObject *s)
 {
-    long sock_fd;
+    int sock_fd;
     /* On Windows, this test is needed because SOCKET_T is unsigned */
     if (s->sock_fd == INVALID_SOCKET) {
         sock_fd = -1;
@@ -5083,7 +5083,7 @@ sock_repr(PySocketSockObject *s)
     }
 #endif
     else
-        sock_fd = (long)s->sock_fd;
+        sock_fd = (int)s->sock_fd;
     return PyUnicode_FromFormat(
         "<socket object, fd=%ld, family=%d, type=%d, proto=%d>",
         sock_fd, s->sock_family,
@@ -5873,7 +5873,7 @@ socket_getservbyname(PyObject *self, PyObject *args)
         PyErr_SetString(PyExc_OSError, "service/proto not found");
         return NULL;
     }
-    return PyLong_FromLong((long) ntohs(sp->s_port));
+    return PyLong_FromLong((int) ntohs(sp->s_port));
 }
 
 PyDoc_STRVAR(getservbyname_doc,
@@ -5944,7 +5944,7 @@ socket_getprotobyname(PyObject *self, PyObject *args)
         PyErr_SetString(PyExc_OSError, "protocol not found");
         return NULL;
     }
-    return PyLong_FromLong((long) sp->p_proto);
+    return PyLong_FromLong((int) sp->p_proto);
 }
 
 PyDoc_STRVAR(getprotobyname_doc,
@@ -6153,15 +6153,15 @@ Convert a 16-bit unsigned integer from network to host byte order.");
 static PyObject *
 socket_ntohl(PyObject *self, PyObject *arg)
 {
-    unsigned long x;
+    unsigned int x;
 
     if (PyLong_Check(arg)) {
         x = PyLong_AsUnsignedLong(arg);
-        if (x == (unsigned long) -1 && PyErr_Occurred())
+        if (x == (unsigned int) -1 && PyErr_Occurred())
             return NULL;
 #if SIZEOF_LONG > 4
         {
-            unsigned long y;
+            unsigned int y;
             /* only want the trailing 32 bits */
             y = x & 0xFFFFFFFFUL;
             if (y ^ x)
@@ -6216,15 +6216,15 @@ Convert a 16-bit unsigned integer from host to network byte order.");
 static PyObject *
 socket_htonl(PyObject *self, PyObject *arg)
 {
-    unsigned long x;
+    unsigned int x;
 
     if (PyLong_Check(arg)) {
         x = PyLong_AsUnsignedLong(arg);
-        if (x == (unsigned long) -1 && PyErr_Occurred())
+        if (x == (unsigned int) -1 && PyErr_Occurred())
             return NULL;
 #if SIZEOF_LONG > 4
         {
-            unsigned long y;
+            unsigned int y;
             /* only want the trailing 32 bits */
             y = x & 0xFFFFFFFFUL;
             if (y ^ x)
@@ -6238,7 +6238,7 @@ socket_htonl(PyObject *self, PyObject *arg)
         return PyErr_Format(PyExc_TypeError,
                             "expected int, %s found",
                             Py_TYPE(arg)->tp_name);
-    return PyLong_FromUnsignedLong(htonl((unsigned long)x));
+    return PyLong_FromUnsignedLong(htonl((unsigned int)x));
 }
 
 PyDoc_STRVAR(htonl_doc,
@@ -6501,7 +6501,7 @@ socket_getaddrinfo(PyObject *self, PyObject *args, PyObject* kwargs)
         return NULL;
     }
     if (PyLong_CheckExact(pobj)) {
-        long value = PyLong_AsLong(pobj);
+        int value = PyLong_AsLong(pobj);
         if (value == -1 && PyErr_Occurred())
             goto err;
         PyOS_snprintf(pbuf, sizeof(pbuf), "%ld", value);
@@ -6833,7 +6833,7 @@ socket_if_nametoindex(PyObject *self, PyObject *args)
 #ifdef MS_WINDOWS
     NET_IFINDEX index;
 #else
-    unsigned long index;
+    unsigned int index;
 #endif
     if (!PyArg_ParseTuple(args, "O&:if_nametoindex",
                           PyUnicode_FSConverter, &oname))
@@ -6869,12 +6869,12 @@ socket_if_indextoname(PyObject *self, PyObject *arg)
 #ifdef MS_WINDOWS
     NET_IFINDEX index;
 #else
-    unsigned long index;
+    unsigned int index;
 #endif
     char name[IF_NAMESIZE + 1];
 
     index = PyLong_AsUnsignedLong(arg);
-    if (index == (unsigned long) -1)
+    if (index == (unsigned int) -1)
         return NULL;
 
     if (if_indextoname(index, name) == NULL) {

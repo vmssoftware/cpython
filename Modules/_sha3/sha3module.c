@@ -609,7 +609,7 @@ SHA3_TYPE_SPEC(Keccak_512_spec, "keccak_512", Keccak_512_slots);
 
 
 static PyObject *
-_SHAKE_digest(SHA3object *self, unsigned long digestlen, int hex)
+_SHAKE_digest(SHA3object *self, unsigned int digestlen, int hex)
 {
     unsigned char *digest = NULL;
     SHA3_state temp;
@@ -666,7 +666,7 @@ Return the digest value as a bytes object.
 [clinic start generated code]*/
 
 static PyObject *
-_sha3_shake_128_digest_impl(SHA3object *self, unsigned long length)
+_sha3_shake_128_digest_impl(SHA3object *self, unsigned int length)
 /*[clinic end generated code: output=2313605e2f87bb8f input=418ef6a36d2e6082]*/
 {
     return _SHAKE_digest(self, length, 0);
@@ -683,7 +683,7 @@ Return the digest value as a string of hexadecimal digits.
 [clinic start generated code]*/
 
 static PyObject *
-_sha3_shake_128_hexdigest_impl(SHA3object *self, unsigned long length)
+_sha3_shake_128_hexdigest_impl(SHA3object *self, unsigned int length)
 /*[clinic end generated code: output=bf8e2f1e490944a8 input=69fb29b0926ae321]*/
 {
     return _SHAKE_digest(self, length, 1);

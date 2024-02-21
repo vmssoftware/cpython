@@ -2454,7 +2454,7 @@ type_init(PyObject *cls, PyObject *args, PyObject *kwds)
     return res;
 }
 
-unsigned long
+unsigned int
 PyType_GetFlags(PyTypeObject *type)
 {
     return type->tp_flags;
@@ -2970,7 +2970,7 @@ type_new_descriptors(const type_new_ctx *ctx, PyTypeObject *type)
 
     if (ctx->add_dict) {
         if (ctx->base->tp_itemsize) {
-            type->tp_dictoffset = -(long)sizeof(PyObject *);
+            type->tp_dictoffset = -(int)sizeof(PyObject *);
         }
         else {
             type->tp_dictoffset = slotoffset;
@@ -6493,7 +6493,7 @@ wrap_inquirypred(PyObject *self, PyObject *args, void *wrapped)
     res = (*func)(self);
     if (res == -1 && PyErr_Occurred())
         return NULL;
-    return PyBool_FromLong((long)res);
+    return PyBool_FromLong((int)res);
 }
 
 static PyObject *
@@ -8086,7 +8086,7 @@ static void **
 slotptr(PyTypeObject *type, int ioffset)
 {
     char *ptr;
-    long offset = ioffset;
+    int offset = ioffset;
 
     /* Note: this depends on the order of the members of PyHeapTypeObject! */
     assert(offset >= 0);

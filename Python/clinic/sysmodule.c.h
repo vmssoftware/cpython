@@ -444,7 +444,7 @@ sys_get_coroutine_origin_tracking_depth(PyObject *module, PyObject *Py_UNUSED(ig
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromLong((long)_return_value);
+    return_value = PyLong_FromLong((int)_return_value);
 
 exit:
     return return_value;

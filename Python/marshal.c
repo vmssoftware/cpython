@@ -170,7 +170,7 @@ w_short(int x, WFILE *p)
 }
 
 static void
-w_long(long x, WFILE *p)
+w_long(int x, WFILE *p)
 {
     w_byte((char)( x      & 0xff), p);
     w_byte((char)((x>> 8) & 0xff), p);
@@ -187,7 +187,7 @@ w_long(long x, WFILE *p)
             (p)->error = WFERR_UNMARSHALLABLE;  \
             return;                             \
         }                                       \
-        w_long((long)(n), p);                   \
+        w_long((int)(n), p);                   \
     } while(0)
 #else
 # define W_SIZE  w_long
@@ -231,7 +231,7 @@ w_PyLong(const PyLongObject *ob, char flag, WFILE *p)
 
     W_TYPE(TYPE_LONG, p);
     if (Py_SIZE(ob) == 0) {
-        w_long((long)0, p);
+        w_long((int)0, p);
         return;
     }
 
@@ -249,7 +249,7 @@ w_PyLong(const PyLongObject *ob, char flag, WFILE *p)
         p->error = WFERR_UNMARSHALLABLE;
         return;
     }
-    w_long((long)(Py_SIZE(ob) > 0 ? l : -l), p);
+    w_long((int)(Py_SIZE(ob) > 0 ? l : -l), p);
 
     for (i=0; i < n-1; i++) {
         d = ob->ob_digit[i];
@@ -376,7 +376,7 @@ w_complex_object(PyObject *v, char flag, WFILE *p)
 
     if (PyLong_CheckExact(v)) {
         int overflow;
-        long x = PyLong_AsLongAndOverflow(v, &overflow);
+        int x = PyLong_AsLongAndOverflow(v, &overflow);
         if (overflow) {
             w_PyLong((PyLongObject *)v, flag, p);
         }
@@ -577,7 +577,7 @@ w_clear_refs(WFILE *wf)
 
 /* version currently has no effect for writing ints. */
 void
-PyMarshal_WriteLongToFile(long x, FILE *fp, int version)
+PyMarshal_WriteLongToFile(int x, FILE *fp, int version)
 {
     char buf[4];
     WFILE wf;
@@ -734,18 +734,18 @@ r_short(RFILE *p)
     return x;
 }
 
-static long
+static int
 r_long(RFILE *p)
 {
-    long x = -1;
+    int x = -1;
     const unsigned char *buffer;
 
     buffer = (const unsigned char *) r_string(4, p);
     if (buffer != NULL) {
         x = buffer[0];
-        x |= (long)buffer[1] << 8;
-        x |= (long)buffer[2] << 16;
-        x |= (long)buffer[3] << 24;
+        x |= (int)buffer[1] << 8;
+        x |= (int)buffer[2] << 16;
+        x |= (int)buffer[3] << 24;
 #if SIZEOF_LONG > 4
         /* Sign extension for 64-bit machines */
         x |= -(x & 0x80000000L);
@@ -771,7 +771,7 @@ static PyObject *
 r_PyLong(RFILE *p)
 {
     PyLongObject *ob;
-    long n, size, i;
+    int n, size, i;
     int j, md, shorts_in_top_digit;
     digit d;
 
@@ -935,7 +935,7 @@ r_object(RFILE *p)
        an exception is set. */
     PyObject *v, *v2;
     Py_ssize_t idx = 0;
-    long i, n;
+    int i, n;
     int type, code = r_byte(p);
     int flag, is_interned = 0;
     PyObject *retval = NULL;
@@ -1464,11 +1464,11 @@ PyMarshal_ReadShortFromFile(FILE *fp)
     return res;
 }
 
-long
+int
 PyMarshal_ReadLongFromFile(FILE *fp)
 {
     RFILE rf;
-    long res;
+    int res;
     rf.fp = fp;
     rf.readable = NULL;
     rf.ptr = rf.end = NULL;

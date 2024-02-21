@@ -132,7 +132,7 @@ static FNFCICLOSE(cb_close)
 
 static FNFCISEEK(cb_seek)
 {
-    long result = (long)_lseek((int)hf, dist, seektype);
+    int result = (int)_lseek((int)hf, dist, seektype);
     if (result == -1)
         *err = errno;
     return result;
@@ -466,7 +466,7 @@ _msi_Record_GetInteger_impl(msiobj *self, unsigned int field)
         PyErr_SetString(MSIError, "could not convert record field to integer");
         return NULL;
     }
-    return PyLong_FromLong((long) status);
+    return PyLong_FromLong((int) status);
 }
 
 /*[clinic input]
@@ -771,7 +771,7 @@ _msi_SummaryInformation_SetProperty_impl(msiobj *self, int field,
         PyMem_Free(value);
 #endif /* USE_UNICODE_WCHAR_CACHE */
     } else if (PyLong_CheckExact(data)) {
-        long value = PyLong_AsLong(data);
+        int value = PyLong_AsLong(data);
         if (value == -1 && PyErr_Occurred()) {
             return NULL;
         }
@@ -1273,12 +1273,12 @@ PyInit__msi(void)
     if (m == NULL)
         return NULL;
 
-    PyModule_AddIntConstant(m, "MSIDBOPEN_CREATEDIRECT", (long)(SIZE_T)MSIDBOPEN_CREATEDIRECT);
-    PyModule_AddIntConstant(m, "MSIDBOPEN_CREATE", (long)(SIZE_T)MSIDBOPEN_CREATE);
-    PyModule_AddIntConstant(m, "MSIDBOPEN_DIRECT", (long)(SIZE_T)MSIDBOPEN_DIRECT);
-    PyModule_AddIntConstant(m, "MSIDBOPEN_READONLY", (long)(SIZE_T)MSIDBOPEN_READONLY);
-    PyModule_AddIntConstant(m, "MSIDBOPEN_TRANSACT", (long)(SIZE_T)MSIDBOPEN_TRANSACT);
-    PyModule_AddIntConstant(m, "MSIDBOPEN_PATCHFILE", (long)(SIZE_T)MSIDBOPEN_PATCHFILE);
+    PyModule_AddIntConstant(m, "MSIDBOPEN_CREATEDIRECT", (int)(SIZE_T)MSIDBOPEN_CREATEDIRECT);
+    PyModule_AddIntConstant(m, "MSIDBOPEN_CREATE", (int)(SIZE_T)MSIDBOPEN_CREATE);
+    PyModule_AddIntConstant(m, "MSIDBOPEN_DIRECT", (int)(SIZE_T)MSIDBOPEN_DIRECT);
+    PyModule_AddIntConstant(m, "MSIDBOPEN_READONLY", (int)(SIZE_T)MSIDBOPEN_READONLY);
+    PyModule_AddIntConstant(m, "MSIDBOPEN_TRANSACT", (int)(SIZE_T)MSIDBOPEN_TRANSACT);
+    PyModule_AddIntConstant(m, "MSIDBOPEN_PATCHFILE", (int)(SIZE_T)MSIDBOPEN_PATCHFILE);
 
     PyModule_AddIntMacro(m, MSICOLINFO_NAMES);
     PyModule_AddIntMacro(m, MSICOLINFO_TYPES);

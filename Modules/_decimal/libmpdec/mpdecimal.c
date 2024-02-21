@@ -397,7 +397,7 @@ mpd_arith_sign(const mpd_t *dec)
 }
 
 /* Radix */
-ALWAYS_INLINE long
+ALWAYS_INLINE int
 mpd_radix(void)
 {
     return 10;

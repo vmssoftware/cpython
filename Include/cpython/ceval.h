@@ -21,8 +21,8 @@ PyAPI_FUNC(int) PyEval_MergeCompilerFlags(PyCompilerFlags *cf);
 
 PyAPI_FUNC(PyObject *) _PyEval_EvalFrameDefault(PyThreadState *tstate, PyFrameObject *f, int exc);
 
-PyAPI_FUNC(void) _PyEval_SetSwitchInterval(unsigned long microseconds);
-PyAPI_FUNC(unsigned long) _PyEval_GetSwitchInterval(void);
+PyAPI_FUNC(void) _PyEval_SetSwitchInterval(unsigned int microseconds);
+PyAPI_FUNC(unsigned int) _PyEval_GetSwitchInterval(void);
 
 PyAPI_FUNC(Py_ssize_t) _PyEval_RequestCodeExtraIndex(freefunc);
 

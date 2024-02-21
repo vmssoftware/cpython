@@ -11,9 +11,9 @@ typedef struct _ProfilerSubEntry {
     rotating_node_t header;
     _PyTime_t tt;
     _PyTime_t it;
-    long callcount;
-    long recursivecallcount;
-    long recursionLevel;
+    int callcount;
+    int recursivecallcount;
+    int recursionLevel;
 } ProfilerSubEntry;
 
 /* represents a function or user defined block */
@@ -22,9 +22,9 @@ typedef struct _ProfilerEntry {
     PyObject *userObj; /* PyCodeObject, or a descriptive str for builtins */
     _PyTime_t tt; /* total time in this entry */
     _PyTime_t it; /* inline time in this entry (not in subcalls) */
-    long callcount; /* how many times this was called */
-    long recursivecallcount; /* how many times called recursively */
-    long recursionLevel;
+    int callcount; /* how many times this was called */
+    int recursivecallcount; /* how many times called recursively */
+    int recursionLevel;
     rotating_node_t *calls;
 } ProfilerEntry;
 

@@ -1427,9 +1427,9 @@ _sre_compile_impl(PyObject *module, PyObject *pattern, int flags,
 
     for (i = 0; i < n; i++) {
         PyObject *o = PyList_GET_ITEM(code, i);
-        unsigned long value = PyLong_AsUnsignedLong(o);
+        unsigned int value = PyLong_AsUnsignedLong(o);
         self->code[i] = (SRE_CODE) value;
-        if ((unsigned long) self->code[i] != value) {
+        if ((unsigned int) self->code[i] != value) {
             PyErr_SetString(PyExc_OverflowError,
                             "regular expression code size limit exceeded");
             break;
@@ -1527,14 +1527,14 @@ _sre_compile_impl(PyObject *module, PyObject *pattern, int flags,
         VTRACE(("%p: ", code));                         \
         if (code >= end) FAIL;                          \
         op = *code++;                                   \
-        VTRACE(("%lu (op)\n", (unsigned long)op));      \
+        VTRACE(("%lu (op)\n", (unsigned int)op));      \
     } while (0)
 #define GET_ARG                                         \
     do {                                                \
         VTRACE(("%p= ", code));                         \
         if (code >= end) FAIL;                          \
         arg = *code++;                                  \
-        VTRACE(("%lu (arg)\n", (unsigned long)arg));    \
+        VTRACE(("%lu (arg)\n", (unsigned int)arg));    \
     } while (0)
 #define GET_SKIP_ADJ(adj)                               \
     do {                                                \
@@ -1542,7 +1542,7 @@ _sre_compile_impl(PyObject *module, PyObject *pattern, int flags,
         if (code >= end) FAIL;                          \
         skip = *code;                                   \
         VTRACE(("%lu (skip to %p)\n",                   \
-               (unsigned long)skip, code+skip));        \
+               (unsigned int)skip, code+skip));        \
         if (skip-adj > (uintptr_t)(end - code))      \
             FAIL;                                       \
         code++;                                         \

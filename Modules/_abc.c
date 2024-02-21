@@ -463,7 +463,7 @@ _abc__abc_init(PyObject *module, PyObject *self)
         }
         else {
             if (PyLong_CheckExact(flags)) {
-                long val = PyLong_AsLong(flags);
+                int val = PyLong_AsLong(flags);
                 if (val == -1 && PyErr_Occurred()) {
                     return NULL;
                 }
@@ -482,7 +482,7 @@ _abc__abc_init(PyObject *module, PyObject *self)
 }
 
 static void
-set_collection_flag_recursive(PyTypeObject *child, unsigned long flag)
+set_collection_flag_recursive(PyTypeObject *child, unsigned int flag)
 {
     assert(flag == Py_TPFLAGS_MAPPING || flag == Py_TPFLAGS_SEQUENCE);
     if (PyType_HasFeature(child, Py_TPFLAGS_IMMUTABLETYPE) ||
@@ -559,7 +559,7 @@ _abc__abc_register_impl(PyObject *module, PyObject *self, PyObject *subclass)
 
     /* Set Py_TPFLAGS_SEQUENCE  or Py_TPFLAGS_MAPPING flag */
     if (PyType_Check(self)) {
-        unsigned long collection_flag = ((PyTypeObject *)self)->tp_flags & COLLECTION_FLAGS;
+        unsigned int collection_flag = ((PyTypeObject *)self)->tp_flags & COLLECTION_FLAGS;
         if (collection_flag) {
             set_collection_flag_recursive((PyTypeObject *)subclass, collection_flag);
         }

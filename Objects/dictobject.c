@@ -422,7 +422,7 @@ calculate_keysize(Py_ssize_t minsize)
 #elif defined(_MSC_VER)
     // On 64bit Windows, sizeof(long) == 4.
     minsize = (minsize | PyDict_MINSIZE) - 1;
-    unsigned long msb;
+    unsigned int msb;
     _BitScanReverse64(&msb, (uint64_t)minsize);
     return 1LL << (msb + 1);
 #else

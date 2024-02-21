@@ -101,9 +101,12 @@ typedef intptr_t        Py_intptr_t;
  * sizeof(size_t).  C99 doesn't define such a thing directly (size_t is an
  * unsigned integral type).  See PEP 353 for details.
  */
-#ifdef HAVE_PY_SSIZE_T
-
-#elif defined(HAVE_SSIZE_T) // __VMS
+#if defined(__VMS)
+/* Define Py_ssize_t as 'int' for any kind of OpenVMS compiler (IA64, X86-64, clang) */
+typedef int             Py_ssize_t;
+#elif defined(HAVE_PY_SSIZE_T)
+typedef ssize_t         Py_ssize_t;
+#elif defined(HAVE_SSIZE_T)
 typedef ssize_t         Py_ssize_t;
 #elif SIZEOF_VOID_P == SIZEOF_SIZE_T
 typedef Py_intptr_t     Py_ssize_t;

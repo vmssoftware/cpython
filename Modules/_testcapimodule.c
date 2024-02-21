@@ -74,7 +74,7 @@ test_config(PyObject *self, PyObject *Py_UNUSED(ignored))
 
     CHECK_SIZEOF(SIZEOF_SHORT, short);
     CHECK_SIZEOF(SIZEOF_INT, int);
-    CHECK_SIZEOF(SIZEOF_LONG, long);
+    CHECK_SIZEOF(SIZEOF_LONG, int);
     CHECK_SIZEOF(SIZEOF_VOID_P, void*);
     CHECK_SIZEOF(SIZEOF_TIME_T, time_t);
     CHECK_SIZEOF(SIZEOF_LONG_LONG, long long);
@@ -479,7 +479,7 @@ raise_test_long_error(const char* msg)
 }
 
 #define TESTNAME        test_long_api_inner
-#define TYPENAME        long
+#define TYPENAME        int
 #define F_S_TO_PY       PyLong_FromLong
 #define F_PY_TO_S       PyLong_AsLong
 #define F_U_TO_PY       PyLong_FromUnsignedLong
@@ -537,7 +537,7 @@ static PyObject *
 test_long_and_overflow(PyObject *self, PyObject *Py_UNUSED(ignored))
 {
     PyObject *num, *one, *temp;
-    long value;
+    int value;
     int overflow;
 
     /* Test that overflow is set properly for a large value. */
@@ -964,7 +964,7 @@ test_L_code(PyObject *self, PyObject *Py_UNUSED(ignored))
     }
     if (value != 42)
         return raiseTestError("test_L_code",
-            "L code returned wrong value for long 42");
+            "L code returned wrong value for int 42");
 
     Py_DECREF(num);
     num = PyLong_FromLong(42);
@@ -1221,7 +1221,7 @@ getargs_b(PyObject *self, PyObject *args)
     unsigned char value;
     if (!PyArg_ParseTuple(args, "b", &value))
         return NULL;
-    return PyLong_FromUnsignedLong((unsigned long)value);
+    return PyLong_FromUnsignedLong((unsigned int)value);
 }
 
 static PyObject *
@@ -1230,7 +1230,7 @@ getargs_B(PyObject *self, PyObject *args)
     unsigned char value;
     if (!PyArg_ParseTuple(args, "B", &value))
         return NULL;
-    return PyLong_FromUnsignedLong((unsigned long)value);
+    return PyLong_FromUnsignedLong((unsigned int)value);
 }
 
 static PyObject *
@@ -1239,7 +1239,7 @@ getargs_h(PyObject *self, PyObject *args)
     short value;
     if (!PyArg_ParseTuple(args, "h", &value))
         return NULL;
-    return PyLong_FromLong((long)value);
+    return PyLong_FromLong((int)value);
 }
 
 static PyObject *
@@ -1248,7 +1248,7 @@ getargs_H(PyObject *self, PyObject *args)
     unsigned short value;
     if (!PyArg_ParseTuple(args, "H", &value))
         return NULL;
-    return PyLong_FromUnsignedLong((unsigned long)value);
+    return PyLong_FromUnsignedLong((unsigned int)value);
 }
 
 static PyObject *
@@ -1257,13 +1257,13 @@ getargs_I(PyObject *self, PyObject *args)
     unsigned int value;
     if (!PyArg_ParseTuple(args, "I", &value))
         return NULL;
-    return PyLong_FromUnsignedLong((unsigned long)value);
+    return PyLong_FromUnsignedLong((unsigned int)value);
 }
 
 static PyObject *
 getargs_k(PyObject *self, PyObject *args)
 {
-    unsigned long value;
+    unsigned int value;
     if (!PyArg_ParseTuple(args, "k", &value))
         return NULL;
     return PyLong_FromUnsignedLong(value);
@@ -1275,13 +1275,13 @@ getargs_i(PyObject *self, PyObject *args)
     int value;
     if (!PyArg_ParseTuple(args, "i", &value))
         return NULL;
-    return PyLong_FromLong((long)value);
+    return PyLong_FromLong((int)value);
 }
 
 static PyObject *
 getargs_l(PyObject *self, PyObject *args)
 {
-    long value;
+    int value;
     if (!PyArg_ParseTuple(args, "l", &value))
         return NULL;
     return PyLong_FromLong(value);
@@ -1329,7 +1329,7 @@ static PyObject *
 test_k_code(PyObject *self, PyObject *Py_UNUSED(ignored))
 {
     PyObject *tuple, *num;
-    unsigned long value;
+    unsigned int value;
 
     tuple = PyTuple_New(1);
     if (tuple == NULL)
@@ -1361,7 +1361,7 @@ test_k_code(PyObject *self, PyObject *Py_UNUSED(ignored))
         return NULL;
 
     value = PyLong_AsUnsignedLongMask(num);
-    if (value != (unsigned long)-0x42)
+    if (value != (unsigned int)-0x42)
         return raiseTestError("test_k_code",
                               "PyLong_AsUnsignedLongMask() returned wrong "
                               "value for long -0xFFF..000042");
@@ -1372,7 +1372,7 @@ test_k_code(PyObject *self, PyObject *Py_UNUSED(ignored))
     if (!PyArg_ParseTuple(tuple, "k:test_k_code", &value)) {
         return NULL;
     }
-    if (value != (unsigned long)-0x42)
+    if (value != (unsigned int)-0x42)
         return raiseTestError("test_k_code",
             "k code returned wrong value for long -0xFFF..000042");
 
@@ -2301,7 +2301,7 @@ static PyObject *
 test_long_numbits(PyObject *self, PyObject *Py_UNUSED(ignored))
 {
     struct triple {
-        long input;
+        int input;
         size_t nbits;
         int sign;
     } testcases[] = {{0, 0, 0},
@@ -2966,13 +2966,13 @@ test_string_from_format(PyObject *self, PyObject *Py_UNUSED(ignored))
     Py_DECREF(result)
 
     CHECK_1_FORMAT("%d", int);
-    CHECK_1_FORMAT("%ld", long);
+    CHECK_1_FORMAT("%ld", int);
     /* The z width modifier was added in Python 2.5. */
     CHECK_1_FORMAT("%zd", Py_ssize_t);
 
     /* The u type code was added in Python 2.5. */
     CHECK_1_FORMAT("%u", unsigned int);
-    CHECK_1_FORMAT("%lu", unsigned long);
+    CHECK_1_FORMAT("%lu", unsigned int);
     CHECK_1_FORMAT("%zu", size_t);
 
     /* "%lld" and "%llu" support added in Python 2.7. */
@@ -3665,7 +3665,7 @@ test_pytime_object_to_timeval(PyObject *self, PyObject *args)
 {
     PyObject *obj;
     time_t sec;
-    long usec;
+    int usec;
     int round;
     if (!PyArg_ParseTuple(args, "Oi:pytime_object_to_timeval", &obj, &round))
         return NULL;
@@ -3681,7 +3681,7 @@ test_pytime_object_to_timespec(PyObject *self, PyObject *args)
 {
     PyObject *obj;
     time_t sec;
-    long nsec;
+    int nsec;
     int round;
     if (!PyArg_ParseTuple(args, "Oi:pytime_object_to_timespec", &obj, &round))
         return NULL;
@@ -4361,7 +4361,7 @@ call_in_temporary_c_thread(PyObject *self, PyObject *callback)
 {
     PyObject *res = NULL;
     test_c_thread_t test_c_thread;
-    long thread;
+    int thread;
 
     test_c_thread.start_event = PyThread_allocate_lock();
     test_c_thread.exit_event = PyThread_allocate_lock();
@@ -4410,7 +4410,7 @@ exit:
 static PyObject*
 pymarshal_write_long_to_file(PyObject* self, PyObject *args)
 {
-    long value;
+    int value;
     PyObject *filename;
     int version;
     FILE *fp;
@@ -4463,7 +4463,7 @@ static PyObject*
 pymarshal_read_short_from_file(PyObject* self, PyObject *args)
 {
     int value;
-    long pos;
+    int pos;
     PyObject *filename;
     FILE *fp;
 
@@ -4488,7 +4488,7 @@ pymarshal_read_short_from_file(PyObject* self, PyObject *args)
 static PyObject*
 pymarshal_read_long_from_file(PyObject* self, PyObject *args)
 {
-    long value, pos;
+    int value, pos;
     PyObject *filename;
     FILE *fp;
 
@@ -4514,7 +4514,7 @@ static PyObject*
 pymarshal_read_last_object_from_file(PyObject* self, PyObject *args)
 {
     PyObject *obj;
-    long pos;
+    int pos;
     PyObject *filename;
     FILE *fp;
 
@@ -4538,7 +4538,7 @@ static PyObject*
 pymarshal_read_object_from_file(PyObject* self, PyObject *args)
 {
     PyObject *obj;
-    long pos;
+    int pos;
     PyObject *filename;
     FILE *fp;
 
@@ -5902,8 +5902,8 @@ typedef struct {
     unsigned short ushort_member;
     int int_member;
     unsigned int uint_member;
-    long long_member;
-    unsigned long ulong_member;
+    int long_member;
+    unsigned int ulong_member;
     Py_ssize_t pyssizet_member;
     float float_member;
     double double_member;
@@ -6938,7 +6938,7 @@ PyDoc_STRVAR(heapctypesetattr__doc__,
 
 typedef struct {
     PyObject_HEAD
-    long value;
+    int value;
 } HeapCTypeSetattrObject;
 
 static struct PyMemberDef heapctypesetattr_members[] = {
@@ -6981,7 +6981,7 @@ heapctypesetattr_setattro(HeapCTypeSetattrObject *self, PyObject *attr, PyObject
     PyObject *ivalue = PyNumber_Long(value);
     if (ivalue == NULL)
         return -1;
-    long v = PyLong_AsLong(ivalue);
+    int v = PyLong_AsLong(ivalue);
     Py_DECREF(ivalue);
     if (v == -1 && PyErr_Occurred())
         return -1;

@@ -111,13 +111,13 @@ _PyImportZip_Init(PyThreadState *tstate)
    These calls are serialized by the global interpreter lock. */
 
 static PyThread_type_lock import_lock = NULL;
-static unsigned long import_lock_thread = PYTHREAD_INVALID_THREAD_ID;
+static unsigned int import_lock_thread = PYTHREAD_INVALID_THREAD_ID;
 static int import_lock_level = 0;
 
 void
 _PyImport_AcquireLock(void)
 {
-    unsigned long me = PyThread_get_thread_ident();
+    unsigned int me = PyThread_get_thread_ident();
     if (me == PYTHREAD_INVALID_THREAD_ID)
         return; /* Too bad */
     if (import_lock == NULL) {
@@ -144,7 +144,7 @@ _PyImport_AcquireLock(void)
 int
 _PyImport_ReleaseLock(void)
 {
-    unsigned long me = PyThread_get_thread_ident();
+    unsigned int me = PyThread_get_thread_ident();
     if (me == PYTHREAD_INVALID_THREAD_ID || import_lock == NULL)
         return 0; /* Too bad */
     if (import_lock_thread != me)
@@ -174,7 +174,7 @@ _PyImport_ReInitLock(void)
 
     if (import_lock_level > 1) {
         /* Forked as a side effect of import */
-        unsigned long me = PyThread_get_thread_ident();
+        unsigned int me = PyThread_get_thread_ident();
         PyThread_acquire_lock(import_lock, WAIT_LOCK);
         import_lock_thread = me;
         import_lock_level--;
@@ -372,10 +372,10 @@ import_ensure_initialized(PyInterpreterState *interp, PyObject *mod, PyObject *n
 
 /* Helper for pythonrun.c -- return magic number and tag. */
 
-long
+int
 PyImport_GetMagicNumber(void)
 {
-    long res;
+    int res;
     PyInterpreterState *interp = _PyInterpreterState_GET();
     PyObject *external, *pyc_magic;
 
@@ -1529,8 +1529,8 @@ import_find_and_load(PyThreadState *tstate, PyObject *abs_name)
 
         import_level--;
         fprintf(stderr, "import time: %9ld | %10ld | %*s%s\n",
-                (long)_PyTime_AsMicroseconds(cum - accumulated, _PyTime_ROUND_CEILING),
-                (long)_PyTime_AsMicroseconds(cum, _PyTime_ROUND_CEILING),
+                (int)_PyTime_AsMicroseconds(cum - accumulated, _PyTime_ROUND_CEILING),
+                (int)_PyTime_AsMicroseconds(cum, _PyTime_ROUND_CEILING),
                 import_level*2, "", PyUnicode_AsUTF8(abs_name));
 
         accumulated = accumulated_copy + cum;
@@ -1968,7 +1968,7 @@ _imp_is_frozen_impl(PyObject *module, PyObject *name)
     const struct _frozen *p;
 
     p = find_frozen(name);
-    return PyBool_FromLong((long) (p == NULL ? 0 : p->size));
+    return PyBool_FromLong((int) (p == NULL ? 0 : p->size));
 }
 
 /* Common implementation for _imp.exec_dynamic and _imp.exec_builtin */
@@ -2091,12 +2091,12 @@ _imp_exec_builtin_impl(PyObject *module, PyObject *mod)
 /*[clinic input]
 _imp.source_hash
 
-    key: long
+    key: int
     source: Py_buffer
 [clinic start generated code]*/
 
 static PyObject *
-_imp_source_hash_impl(PyObject *module, long key, Py_buffer *source)
+_imp_source_hash_impl(PyObject *module, int key, Py_buffer *source)
 /*[clinic end generated code: output=edb292448cf399ea input=9aaad1e590089789]*/
 {
     union {

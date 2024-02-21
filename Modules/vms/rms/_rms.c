@@ -94,7 +94,7 @@ static rms_file_t *_new(char *, int, int, unsigned int);
 
 static void addint(PyObject * d, char *name, int val)
 {
-    PyObject *obj = PyLong_FromLong((long) val);
+    PyObject *obj = PyLong_FromLong((int) val);
 
     if (!obj || (PyDict_SetItemString(d, name, obj) == -1)) {
         Py_FatalError("can't initialize sane module");
@@ -1343,7 +1343,7 @@ static PyObject *RMS_getrmsattr(PyObject * dummy, PyObject * args)
         return (NULL);
     }
 
-    return PyLong_FromLong((long) res);
+    return PyLong_FromLong((int) res);
 }
 
 

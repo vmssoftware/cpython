@@ -75,7 +75,7 @@ check_popcount(uint32_t x, int expected)
     if (bits != expected) {
         PyErr_Format(PyExc_AssertionError,
                      "_Py_popcount32(%lu) returns %i, expected %i",
-                     (unsigned long)x, bits, expected);
+                     (unsigned int)x, bits, expected);
         return -1;
     }
     return 0;
@@ -106,10 +106,10 @@ test_popcount(PyObject *self, PyObject *Py_UNUSED(args))
 
 
 static int
-check_bit_length(unsigned long x, int expected)
+check_bit_length(unsigned int x, int expected)
 {
     // Use volatile to prevent the compiler to optimize out the whole test
-    volatile unsigned long u = x;
+    volatile unsigned int u = x;
     int len = _Py_bit_length(u);
     if (len != expected) {
         PyErr_Format(PyExc_AssertionError,

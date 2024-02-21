@@ -5,4 +5,3 @@ simplejson
 charset-normalizer
 backports.entry-points-selectable
 ruamel.yaml
-ruamel.yaml.clib

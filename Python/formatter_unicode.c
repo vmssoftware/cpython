@@ -865,7 +865,7 @@ format_long_internal(PyObject *value, const InternalFormatSpec *format,
     Py_ssize_t n_total;
     Py_ssize_t prefix = 0;
     NumberFieldWidths spec;
-    long x;
+    int x;
 
     /* Locale settings, either from the actual locale or
        from a hard-code pseudo-locale */

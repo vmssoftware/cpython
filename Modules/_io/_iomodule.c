@@ -241,7 +241,7 @@ _io_open_impl(PyObject *module, PyObject *file, const char *mode,
     int text = 0, binary = 0, universal = 0;
     char rawmode[6], *m;
     int line_buffering, is_number;
-    long isatty = 0;
+    int isatty = 0;
 
     PyObject *raw, *modeobj = NULL, *buffer, *wrapper, *result = NULL, *path_or_fd = NULL;
 

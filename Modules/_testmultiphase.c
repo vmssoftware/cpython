@@ -199,7 +199,7 @@ _StateAccessType_increment_count_noclinic(StateAccessTypeObject *self,
     if (!_PyArg_CheckPositional("StateAccessTypeObject.decrement_count", nargs, 0, 1)) {
         return NULL;
     }
-    long n = 1;
+    int n = 1;
     if (nargs) {
         n = PyLong_AsLong(args[0]);
         if (PyErr_Occurred()) {
@@ -280,8 +280,8 @@ Return the sum of i and j.");
 static PyObject *
 testexport_foo(PyObject *self, PyObject *args)
 {
-    long i, j;
-    long res;
+    int i, j;
+    int res;
     if (!PyArg_ParseTuple(args, "ll:foo", &i, &j))
         return NULL;
     res = i + j;
@@ -486,8 +486,8 @@ Return the difference of i - j.");
 static PyObject *
 nonmodule_bar(PyObject *self, PyObject *args)
 {
-    long i, j;
-    long res;
+    int i, j;
+    int res;
     if (!PyArg_ParseTuple(args, "ll:bar", &i, &j))
         return NULL;
     res = i - j;

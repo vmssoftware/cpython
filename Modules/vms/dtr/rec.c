@@ -413,13 +413,13 @@ void _setint(void *addr, long long val, int idx)
 	break;
     case DSC$K_DTYPE_LU:
 	{
-	    unsigned long tmp = (unsigned long) val;
+	    unsigned int tmp = (unsigned int) val;
 	    memcpy(rec->fields[idx].val, &tmp, size);
 	}
 	break;
     case DSC$K_DTYPE_L:
 	{
-	    long tmp = (long) val;
+	    int tmp = (int) val;
 	    memcpy(rec->fields[idx].val, &tmp, size);
 	}
 	break;
@@ -499,13 +499,13 @@ void _addint(void *addr, int type, long long val, unsigned short off)
 	break;
     case DSC$K_DTYPE_LU:
 	{
-	    unsigned long tmp = (unsigned long) val;
+	    unsigned int tmp = (unsigned int) val;
 	    memcpy(rec->fields[idx].val, &tmp, size);
 	}
 	break;
     case DSC$K_DTYPE_L:
 	{
-	    long tmp = (long) val;
+	    int tmp = (int) val;
 	    memcpy(rec->fields[idx].val, &tmp, size);
 	}
 	break;

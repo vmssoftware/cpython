@@ -1029,7 +1029,7 @@
 /* #undef HAVE_SPLICE */
 
 /* Define if your compiler provides ssize_t */
-#define HAVE_SSIZE_T
+#undef HAVE_SSIZE_T
 
 /* Define to 1 if you have the `statvfs' function. */
 #define HAVE_STATVFS 1
@@ -1678,7 +1678,7 @@
 /* #undef size_t */
 
 /* Define to `int' if <sys/socket.h> does not define. */
-#define socklen_t size_t
+/* #define socklen_t unsigned int */
 
 /* Define to `int' if <sys/types.h> doesn't define. */
 /* #undef uid_t */

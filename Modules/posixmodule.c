@@ -704,8 +704,8 @@ _Py_Uid_Converter(PyObject *obj, uid_t *p)
     uid_t uid;
     PyObject *index;
     int overflow;
-    long result;
-    unsigned long uresult;
+    int result;
+    unsigned int uresult;
 
     index = _PyNumber_Index(obj);
     if (index == NULL) {
@@ -745,8 +745,8 @@ _Py_Uid_Converter(PyObject *obj, uid_t *p)
             goto underflow;
 
         /* Ensure the value wasn't truncated. */
-        if (sizeof(uid_t) < sizeof(long) &&
-            (long)uid != result)
+        if (sizeof(uid_t) < sizeof(int) &&
+            (int)uid != result)
             goto underflow;
         goto success;
     }
@@ -779,8 +779,8 @@ _Py_Uid_Converter(PyObject *obj, uid_t *p)
         goto overflow;
 
     /* Ensure the value wasn't truncated. */
-    if (sizeof(uid_t) < sizeof(long) &&
-        (unsigned long)uid != uresult)
+    if (sizeof(uid_t) < sizeof(int) &&
+        (unsigned int)uid != uresult)
         goto overflow;
     /* fallthrough */
 
@@ -810,8 +810,8 @@ _Py_Gid_Converter(PyObject *obj, gid_t *p)
     gid_t gid;
     PyObject *index;
     int overflow;
-    long result;
-    unsigned long uresult;
+    int result;
+    unsigned int uresult;
 
     index = _PyNumber_Index(obj);
     if (index == NULL) {
@@ -852,8 +852,8 @@ _Py_Gid_Converter(PyObject *obj, gid_t *p)
         }
 
         /* Ensure the value wasn't truncated. */
-        if (sizeof(gid_t) < sizeof(long) &&
-            (long)gid != result)
+        if (sizeof(gid_t) < sizeof(int) &&
+            (int)gid != result)
             goto underflow;
         goto success;
     }
@@ -886,8 +886,8 @@ _Py_Gid_Converter(PyObject *obj, gid_t *p)
         goto overflow;
 
     /* Ensure the value wasn't truncated. */
-    if (sizeof(gid_t) < sizeof(long) &&
-        (unsigned long)gid != uresult)
+    if (sizeof(gid_t) < sizeof(int) &&
+        (unsigned int)gid != uresult)
         goto overflow;
     /* fallthrough */
 
@@ -945,7 +945,7 @@ static int
 _fd_converter(PyObject *o, int *p)
 {
     int overflow;
-    long long_value;
+    int long_value;
 
     PyObject *index = _PyNumber_Index(o);
     if (index == NULL) {
@@ -1521,7 +1521,7 @@ _Py_Sigset_Converter(PyObject *obj, void *addr)
 {
     sigset_t *mask = (sigset_t *)addr;
     PyObject *iterator, *item;
-    long signum;
+    int signum;
     int overflow;
 
     // The extra parens suppress the unreachable-code warning with clang on MacOS
@@ -2456,7 +2456,7 @@ _posix_free(void *module)
 }
 
 static void
-fill_time(PyObject *module, PyObject *v, int index, time_t sec, unsigned long nsec)
+fill_time(PyObject *module, PyObject *v, int index, time_t sec, unsigned int nsec)
 {
     PyObject *s = _PyLong_FromTime_t(sec);
     PyObject *ns_fractional = PyLong_FromUnsignedLong(nsec);
@@ -2499,13 +2499,13 @@ exit:
 static PyObject*
 _pystat_fromstructstat(PyObject *module, STRUCT_STAT *st)
 {
-    unsigned long ansec, mnsec, cnsec;
+    unsigned int ansec, mnsec, cnsec;
     PyObject *StatResultType = get_posix_state(module)->StatResultType;
     PyObject *v = PyStructSequence_New((PyTypeObject *)StatResultType);
     if (v == NULL)
         return NULL;
 
-    PyStructSequence_SET_ITEM(v, 0, PyLong_FromLong((long)st->st_mode));
+    PyStructSequence_SET_ITEM(v, 0, PyLong_FromLong((int)st->st_mode));
     Py_BUILD_ASSERT(sizeof(unsigned long long) >= sizeof(st->st_ino));
     PyStructSequence_SET_ITEM(v, 1, PyLong_FromUnsignedLongLong(st->st_ino));
 #ifdef MS_WINDOWS
@@ -2513,7 +2513,7 @@ _pystat_fromstructstat(PyObject *module, STRUCT_STAT *st)
 #else
     PyStructSequence_SET_ITEM(v, 2, _PyLong_FromDev(st->st_dev));
 #endif
-    PyStructSequence_SET_ITEM(v, 3, PyLong_FromLong((long)st->st_nlink));
+    PyStructSequence_SET_ITEM(v, 3, PyLong_FromLong((int)st->st_nlink));
 #if defined(MS_WINDOWS)
     PyStructSequence_SET_ITEM(v, 4, PyLong_FromLong(0));
     PyStructSequence_SET_ITEM(v, 5, PyLong_FromLong(0));
@@ -2545,25 +2545,25 @@ _pystat_fromstructstat(PyObject *module, STRUCT_STAT *st)
 
 #ifdef HAVE_STRUCT_STAT_ST_BLKSIZE
     PyStructSequence_SET_ITEM(v, ST_BLKSIZE_IDX,
-                              PyLong_FromLong((long)st->st_blksize));
+                              PyLong_FromLong((int)st->st_blksize));
 #endif
 #ifdef HAVE_STRUCT_STAT_ST_BLOCKS
     PyStructSequence_SET_ITEM(v, ST_BLOCKS_IDX,
-                              PyLong_FromLong((long)st->st_blocks));
+                              PyLong_FromLong((int)st->st_blocks));
 #endif
 #ifdef HAVE_STRUCT_STAT_ST_RDEV
     PyStructSequence_SET_ITEM(v, ST_RDEV_IDX,
-                              PyLong_FromLong((long)st->st_rdev));
+                              PyLong_FromLong((int)st->st_rdev));
 #endif
 #ifdef HAVE_STRUCT_STAT_ST_GEN
     PyStructSequence_SET_ITEM(v, ST_GEN_IDX,
-                              PyLong_FromLong((long)st->st_gen));
+                              PyLong_FromLong((int)st->st_gen));
 #endif
 #ifdef HAVE_STRUCT_STAT_ST_BIRTHTIME
     {
       PyObject *val;
-      unsigned long bsec,bnsec;
-      bsec = (long)st->st_birthtime;
+      unsigned int bsec,bnsec;
+      bsec = (int)st->st_birthtime;
 #ifdef HAVE_STAT_TV_NSEC2
       bnsec = st->st_birthtimespec.tv_nsec;
 #else
@@ -2576,7 +2576,7 @@ _pystat_fromstructstat(PyObject *module, STRUCT_STAT *st)
 #endif
 #ifdef HAVE_STRUCT_STAT_ST_FLAGS
     PyStructSequence_SET_ITEM(v, ST_FLAGS_IDX,
-                              PyLong_FromLong((long)st->st_flags));
+                              PyLong_FromLong((int)st->st_flags));
 #endif
 #ifdef HAVE_STRUCT_STAT_ST_FILE_ATTRIBUTES
     PyStructSequence_SET_ITEM(v, ST_FILE_ATTRIBUTES_IDX,
@@ -2593,13 +2593,13 @@ _pystat_fromstructstat(PyObject *module, STRUCT_STAT *st)
 
 #ifdef __VMS
     PyStructSequence_SET_ITEM(v, ST_FAB_RFM_IDX,
-                              PyLong_FromUnsignedLong((unsigned long)st->st_fab_rfm));
+                              PyLong_FromUnsignedLong((unsigned int)st->st_fab_rfm));
     PyStructSequence_SET_ITEM(v, ST_FAB_RAT_IDX,
-                              PyLong_FromUnsignedLong((unsigned long)st->st_fab_rat));
+                              PyLong_FromUnsignedLong((unsigned int)st->st_fab_rat));
     PyStructSequence_SET_ITEM(v, ST_FAB_FSZ_IDX,
-                              PyLong_FromUnsignedLong((unsigned long)st->st_fab_fsz));
+                              PyLong_FromUnsignedLong((unsigned int)st->st_fab_fsz));
     PyStructSequence_SET_ITEM(v, ST_FAB_MRS_IDX,
-                              PyLong_FromUnsignedLong((unsigned long)st->st_fab_mrs));
+                              PyLong_FromUnsignedLong((unsigned int)st->st_fab_mrs));
 #endif
 
     if (PyErr_Occurred()) {
@@ -3193,7 +3193,7 @@ os_ttyname_impl(PyObject *module, int fd)
 /*[clinic end generated code: output=c424d2e9d1cd636a input=9ff5a58b08115c55]*/
 {
 
-    long size = sysconf(_SC_TTY_NAME_MAX);
+    int size = sysconf(_SC_TTY_NAME_MAX);
     if (size == -1) {
         return posix_error();
     }
@@ -3545,7 +3545,7 @@ unavailable, using it will raise a NotImplementedError.
 [clinic start generated code]*/
 
 static PyObject *
-os_chflags_impl(PyObject *module, path_t *path, unsigned long flags,
+os_chflags_impl(PyObject *module, path_t *path, unsigned int flags,
                 int follow_symlinks)
 /*[clinic end generated code: output=85571c6737661ce9 input=0327e29feb876236]*/
 {
@@ -3591,7 +3591,7 @@ Equivalent to chflags(path, flags, follow_symlinks=False).
 [clinic start generated code]*/
 
 static PyObject *
-os_lchflags_impl(PyObject *module, path_t *path, unsigned long flags)
+os_lchflags_impl(PyObject *module, path_t *path, unsigned int flags)
 /*[clinic end generated code: output=30ae958695c07316 input=f9f82ea8b585ca9d]*/
 {
     int res;
@@ -4717,7 +4717,7 @@ os_nice_impl(PyObject *module, int increment)
     if (value == -1 && errno != 0)
         /* either nice() or getpriority() returned an error */
         return posix_error();
-    return PyLong_FromLong((long) value);
+    return PyLong_FromLong((int) value);
 }
 #endif /* HAVE_NICE */
 
@@ -4742,7 +4742,7 @@ os_getpriority_impl(PyObject *module, int which, int who)
     retval = getpriority(which, who);
     if (errno != 0)
         return posix_error();
-    return PyLong_FromLong((long)retval);
+    return PyLong_FromLong((int)retval);
 }
 #endif /* HAVE_GETPRIORITY */
 
@@ -4973,18 +4973,18 @@ os_rmdir_impl(PyObject *module, path_t *path, int dir_fd)
 #ifdef HAVE_SYSTEM
 #ifdef MS_WINDOWS
 /*[clinic input]
-os.system -> long
+os.system -> int
 
     command: Py_UNICODE
 
 Execute the command in a subshell.
 [clinic start generated code]*/
 
-static long
+static int
 os_system_impl(PyObject *module, const Py_UNICODE *command)
 /*[clinic end generated code: output=5b7c3599c068ca42 input=303f5ce97df606b0]*/
 {
-    long result;
+    int result;
 
     if (PySys_Audit("os.system", "(u)", command) < 0) {
         return -1;
@@ -4999,18 +4999,18 @@ os_system_impl(PyObject *module, const Py_UNICODE *command)
 }
 #else /* MS_WINDOWS */
 /*[clinic input]
-os.system -> long
+os.system -> int
 
     command: FSConverter
 
 Execute the command in a subshell.
 [clinic start generated code]*/
 
-static long
+static int
 os_system_impl(PyObject *module, PyObject *command)
 /*[clinic end generated code: output=290fc437dd4f33a0 input=86a58554ba6094af]*/
 {
-    long result;
+    int result;
     const char *bytes = PyBytes_AsString(command);
 
     if (PySys_Audit("os.system", "(O)", command) < 0) {
@@ -5042,7 +5042,7 @@ os_umask_impl(PyObject *module, int mask)
     int i = (int)umask(mask);
     if (i < 0)
         return posix_error();
-    return PyLong_FromLong((long)i);
+    return PyLong_FromLong((int)i);
 }
 
 #ifdef MS_WINDOWS
@@ -5320,9 +5320,9 @@ os_uname_impl(PyObject *module)
 typedef struct {
     int    now;
     time_t atime_s;
-    long   atime_ns;
+    int   atime_ns;
     time_t mtime_s;
-    long   mtime_ns;
+    int   mtime_ns;
 } utime_t;
 
 /*
@@ -5518,7 +5518,7 @@ utime_default(utime_t *ut, const char *path)
 #endif
 
 static int
-split_py_long_to_s_and_ns(PyObject *module, PyObject *py_long, time_t *s, long *ns)
+split_py_long_to_s_and_ns(PyObject *module, PyObject *py_long, time_t *s, int *ns)
 {
     int result = 0;
     PyObject *divmod;
@@ -5608,7 +5608,7 @@ os_utime_impl(PyObject *module, path_t *path, PyObject *times, PyObject *ns,
 
     if (times != Py_None) {
         time_t a_sec, m_sec;
-        long a_nsec, m_nsec;
+        int a_nsec, m_nsec;
         if (!PyTuple_CheckExact(times) || (PyTuple_Size(times) != 2)) {
             PyErr_SetString(PyExc_TypeError,
                          "utime: 'times' must be either"
@@ -6137,7 +6137,7 @@ parse_posix_spawn_flags(PyObject *module, const char *func_name, PyObject *setpg
                         PyObject *setsigdef, PyObject *scheduler,
                         posix_spawnattr_t *attrp)
 {
-    long all_flags = 0;
+    int all_flags = 0;
 
     errno = posix_spawnattr_init(attrp);
     if (errno) {
@@ -6293,7 +6293,7 @@ parse_file_actions(PyObject *file_actions,
                 "Each file_actions element must be a non-empty tuple");
             goto fail;
         }
-        long tag = PyLong_AsLong(PyTuple_GET_ITEM(file_action, 0));
+        int tag = PyLong_AsLong(PyTuple_GET_ITEM(file_action, 0));
         if (tag == -1 && PyErr_Occurred()) {
             goto fail;
         }
@@ -6303,7 +6303,7 @@ parse_file_actions(PyObject *file_actions,
             case POSIX_SPAWN_OPEN: {
                 int fd, oflag;
                 PyObject *path;
-                unsigned long mode;
+                unsigned int mode;
                 if (!PyArg_ParseTuple(file_action, "OiO&ik"
                         ";A open file_action tuple must have 5 elements",
                         &tag_obj, &fd, PyUnicode_FSConverter, &path,
@@ -7102,7 +7102,7 @@ static PyStructSequence_Desc sched_param_desc = {
 static int
 convert_sched_param(PyObject *module, PyObject *param, struct sched_param *res)
 {
-    long priority;
+    int priority;
 
     if (!Py_IS_TYPE(param, (PyTypeObject *)get_posix_state(module)->SchedParamType)) {
         PyErr_SetString(PyExc_TypeError, "must have a sched_param object");
@@ -7115,7 +7115,7 @@ convert_sched_param(PyObject *module, PyObject *param, struct sched_param *res)
         PyErr_SetString(PyExc_OverflowError, "sched_priority out of range");
         return 0;
     }
-    res->sched_priority = Py_SAFE_DOWNCAST(priority, long, int);
+    res->sched_priority = Py_SAFE_DOWNCAST(priority, int, int);
     return 1;
 }
 #endif /* defined(HAVE_SCHED_SETPARAM) || defined(HAVE_SCHED_SETSCHEDULER) || defined(POSIX_SPAWN_SETSCHEDULER) || defined(POSIX_SPAWN_SETSCHEDPARAM) */
@@ -7267,7 +7267,7 @@ os_sched_yield_impl(PyObject *module)
 
 #ifdef HAVE_SCHED_SETAFFINITY
 /* The minimum number of CPUs allocated in a cpu_set_t */
-static const int NCPUS_START = sizeof(unsigned long) * CHAR_BIT;
+static const int NCPUS_START = sizeof(unsigned int) * CHAR_BIT;
 
 /*[clinic input]
 os.sched_setaffinity
@@ -7303,7 +7303,7 @@ os_sched_setaffinity_impl(PyObject *module, pid_t pid, PyObject *mask)
     CPU_ZERO_S(setsize, cpu_set);
 
     while ((item = PyIter_Next(iterator))) {
-        long cpu;
+        int cpu;
         if (!PyLong_Check(item)) {
             PyErr_Format(PyExc_TypeError,
                         "expected an iterator of ints, "
@@ -8634,9 +8634,9 @@ os_waitid_impl(PyObject *module, idtype_t idtype, id_t id, int options)
 
     PyStructSequence_SET_ITEM(result, 0, PyLong_FromPid(si.si_pid));
     PyStructSequence_SET_ITEM(result, 1, _PyLong_FromUid(si.si_uid));
-    PyStructSequence_SET_ITEM(result, 2, PyLong_FromLong((long)(si.si_signo)));
-    PyStructSequence_SET_ITEM(result, 3, PyLong_FromLong((long)(si.si_status)));
-    PyStructSequence_SET_ITEM(result, 4, PyLong_FromLong((long)(si.si_code)));
+    PyStructSequence_SET_ITEM(result, 2, PyLong_FromLong((int)(si.si_signo)));
+    PyStructSequence_SET_ITEM(result, 3, PyLong_FromLong((int)(si.si_status)));
+    PyStructSequence_SET_ITEM(result, 4, PyLong_FromLong((int)(si.si_code)));
     if (PyErr_Occurred()) {
         Py_DECREF(result);
         return NULL;
@@ -9226,7 +9226,7 @@ build_times_result(PyObject *module, double user, double system,
 
 #ifndef MS_WINDOWS
 #define NEED_TICKS_PER_SECOND
-static long ticks_per_second = -1;
+static int ticks_per_second = -1;
 #endif /* MS_WINDOWS */
 
 /*[clinic input]
@@ -9301,7 +9301,7 @@ os_getsid_impl(PyObject *module, pid_t pid)
     sid = getsid(pid);
     if (sid < 0)
         return posix_error();
-    return PyLong_FromLong((long)sid);
+    return PyLong_FromLong((int)sid);
 }
 #endif /* HAVE_GETSID */
 
@@ -11679,19 +11679,19 @@ _pystatvfs_fromstructstatvfs(PyObject *module, struct statvfs st) {
         return NULL;
 
 #if !defined(HAVE_LARGEFILE_SUPPORT)
-    PyStructSequence_SET_ITEM(v, 0, PyLong_FromLong((long) st.f_bsize));
-    PyStructSequence_SET_ITEM(v, 1, PyLong_FromLong((long) st.f_frsize));
-    PyStructSequence_SET_ITEM(v, 2, PyLong_FromLong((long) st.f_blocks));
-    PyStructSequence_SET_ITEM(v, 3, PyLong_FromLong((long) st.f_bfree));
-    PyStructSequence_SET_ITEM(v, 4, PyLong_FromLong((long) st.f_bavail));
-    PyStructSequence_SET_ITEM(v, 5, PyLong_FromLong((long) st.f_files));
-    PyStructSequence_SET_ITEM(v, 6, PyLong_FromLong((long) st.f_ffree));
-    PyStructSequence_SET_ITEM(v, 7, PyLong_FromLong((long) st.f_favail));
-    PyStructSequence_SET_ITEM(v, 8, PyLong_FromLong((long) st.f_flag));
-    PyStructSequence_SET_ITEM(v, 9, PyLong_FromLong((long) st.f_namemax));
+    PyStructSequence_SET_ITEM(v, 0, PyLong_FromLong((int) st.f_bsize));
+    PyStructSequence_SET_ITEM(v, 1, PyLong_FromLong((int) st.f_frsize));
+    PyStructSequence_SET_ITEM(v, 2, PyLong_FromLong((int) st.f_blocks));
+    PyStructSequence_SET_ITEM(v, 3, PyLong_FromLong((int) st.f_bfree));
+    PyStructSequence_SET_ITEM(v, 4, PyLong_FromLong((int) st.f_bavail));
+    PyStructSequence_SET_ITEM(v, 5, PyLong_FromLong((int) st.f_files));
+    PyStructSequence_SET_ITEM(v, 6, PyLong_FromLong((int) st.f_ffree));
+    PyStructSequence_SET_ITEM(v, 7, PyLong_FromLong((int) st.f_favail));
+    PyStructSequence_SET_ITEM(v, 8, PyLong_FromLong((int) st.f_flag));
+    PyStructSequence_SET_ITEM(v, 9, PyLong_FromLong((int) st.f_namemax));
 #else
-    PyStructSequence_SET_ITEM(v, 0, PyLong_FromLong((long) st.f_bsize));
-    PyStructSequence_SET_ITEM(v, 1, PyLong_FromLong((long) st.f_frsize));
+    PyStructSequence_SET_ITEM(v, 0, PyLong_FromLong((int) st.f_bsize));
+    PyStructSequence_SET_ITEM(v, 1, PyLong_FromLong((int) st.f_frsize));
     PyStructSequence_SET_ITEM(v, 2,
                               PyLong_FromLongLong((long long) st.f_blocks));
     PyStructSequence_SET_ITEM(v, 3,
@@ -11704,8 +11704,8 @@ _pystatvfs_fromstructstatvfs(PyObject *module, struct statvfs st) {
                               PyLong_FromLongLong((long long) st.f_ffree));
     PyStructSequence_SET_ITEM(v, 7,
                               PyLong_FromLongLong((long long) st.f_favail));
-    PyStructSequence_SET_ITEM(v, 8, PyLong_FromLong((long) st.f_flag));
-    PyStructSequence_SET_ITEM(v, 9, PyLong_FromLong((long) st.f_namemax));
+    PyStructSequence_SET_ITEM(v, 8, PyLong_FromLong((int) st.f_flag));
+    PyStructSequence_SET_ITEM(v, 9, PyLong_FromLong((int) st.f_namemax));
 #endif
 /* The _ALL_SOURCE feature test macro defines f_fsid as a structure
  * (issue #32390). */
@@ -12007,7 +12007,7 @@ conv_path_confname(PyObject *arg, int *valuep)
 
 #ifdef HAVE_FPATHCONF
 /*[clinic input]
-os.fpathconf -> long
+os.fpathconf -> int
 
     fd: fildes
     name: path_confname
@@ -12018,11 +12018,11 @@ Return the configuration limit name for the file descriptor fd.
 If there is no limit, return -1.
 [clinic start generated code]*/
 
-static long
+static int
 os_fpathconf_impl(PyObject *module, int fd, int name)
 /*[clinic end generated code: output=d5b7042425fc3e21 input=5b8d2471cfaae186]*/
 {
-    long limit;
+    int limit;
 
     errno = 0;
     limit = fpathconf(fd, name);
@@ -12036,7 +12036,7 @@ os_fpathconf_impl(PyObject *module, int fd, int name)
 
 #ifdef HAVE_PATHCONF
 /*[clinic input]
-os.pathconf -> long
+os.pathconf -> int
     path: path_t(allow_fd='PATH_HAVE_FPATHCONF')
     name: path_confname
 
@@ -12047,11 +12047,11 @@ On some platforms, path may also be specified as an open file descriptor.
   If this functionality is unavailable, using it raises an exception.
 [clinic start generated code]*/
 
-static long
+static int
 os_pathconf_impl(PyObject *module, path_t *path, int name)
 /*[clinic end generated code: output=5bedee35b293a089 input=bc3e2a985af27e5e]*/
 {
-    long limit;
+    int limit;
 
     errno = 0;
 #ifdef HAVE_FPATHCONF
@@ -12790,18 +12790,18 @@ conv_sysconf_confname(PyObject *arg, int *valuep)
 
 
 /*[clinic input]
-os.sysconf -> long
+os.sysconf -> int
     name: sysconf_confname
     /
 
 Return an integer-valued system configuration variable.
 [clinic start generated code]*/
 
-static long
+static int
 os_sysconf_impl(PyObject *module, int name)
 /*[clinic end generated code: output=3662f945fc0cc756 input=279e3430a33f29e4]*/
 {
-    long value;
+    int value;
 
     errno = 0;
     value = sysconf(name);
@@ -14056,7 +14056,7 @@ DirEntry_test_mode(PyTypeObject *defining_class, DirEntry *self,
 {
     PyObject *stat = NULL;
     PyObject *st_mode = NULL;
-    long mode;
+    int mode;
     int result;
 #if defined(MS_WINDOWS) || defined(HAVE_DIRENT_D_TYPE)
     int is_symlink;
@@ -15165,7 +15165,7 @@ os_waitstatus_to_exitcode_impl(PyObject *module, PyObject *status_obj)
         PyErr_Format(PyExc_ValueError, "invalid exit code: %llu", exitcode);
         return NULL;
     }
-    return PyLong_FromUnsignedLong((unsigned long)exitcode);
+    return PyLong_FromUnsignedLong((unsigned int)exitcode);
 #endif
 }
 #endif

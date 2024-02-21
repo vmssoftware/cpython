@@ -66,7 +66,7 @@ int getentropy (char entropy[], size_t entropy_size)
     }
 
     int         i = 0;
-    long int    r = jrand48(seed);
+    int         r = jrand48(seed);
     int         step = sizeof(r);
     while ((i+step) < entropy_size) {
         memcpy (&entropy[i], &r, step);
@@ -153,7 +153,7 @@ py_getrandom(void *buffer, Py_ssize_t size, int blocking, int raise)
     static int getrandom_works = 1;
     int flags;
     char *dest;
-    long n;
+    int n;
 
     if (!getrandom_works) {
         return 0;

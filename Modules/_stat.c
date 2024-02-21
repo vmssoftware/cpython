@@ -251,15 +251,15 @@ typedef unsigned short mode_t;
 static mode_t
 _PyLong_AsMode_t(PyObject *op)
 {
-    unsigned long value;
+    unsigned int value;
     mode_t mode;
 
     value = PyLong_AsUnsignedLong(op);
-    if ((value == (unsigned long)-1) && PyErr_Occurred())
+    if ((value == (unsigned int)-1) && PyErr_Occurred())
         return (mode_t)-1;
 
     mode = (mode_t)value;
-    if ((unsigned long)mode != value) {
+    if ((unsigned int)mode != value) {
         PyErr_SetString(PyExc_OverflowError, "mode out of range");
         return (mode_t)-1;
     }

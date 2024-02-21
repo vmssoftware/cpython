@@ -344,7 +344,7 @@ DTR_get_string(
     if (!_PyArg_CheckPositional("get_string", nargs, 1, 2)) {
         return NULL;
     }
-    long type = 0, *ptype = NULL;
+    int type = 0, *ptype = NULL;
     ConvertPosArgToLongP(0, type, "get_string");
 
     char *cmp = NULL;
@@ -394,7 +394,7 @@ DTR_info(
     if (!_PyArg_CheckPositional("info", nargs, 2, 3)) {
         return NULL;
     }
-    long id = 0, *pid = NULL;
+    int id = 0, *pid = NULL;
     ConvertPosArgToLongP(0, id, "info");
     unsigned int code = 0;
     char *pcode = NULL;
@@ -428,7 +428,7 @@ DTR_info(
     tmp_dsc.dsc$b_dtype = DSC$K_DTYPE_T;
     tmp_dsc.dsc$a_pointer = buffer;
 
-    long ret = 0;
+    int ret = 0;
     self->status = 0;
     Py_BEGIN_ALLOW_THREADS
     self->status = dtr$info(&self->dab, &id, pcode, &ret, &tmp_dsc, index);
@@ -488,7 +488,7 @@ DTR_lookup(
         pname_dsc = &name_dsc;
     }
 
-    long id = 0;
+    int id = 0;
     self->status = 0;
     Py_BEGIN_ALLOW_THREADS
     self->status = dtr$lookup(&self->dab, pcode, &id, pname_dsc);
@@ -565,7 +565,7 @@ DTR_dtr(
         _PyArg_BadArgument("dtr", "args", "long", args);
         return NULL;
     }
-    long opt = PyLong_AsLong(args);
+    int opt = PyLong_AsLong(args);
     self->status = 0;
     Py_BEGIN_ALLOW_THREADS
     self->status = dtr$dtr(&self->dab, &opt);

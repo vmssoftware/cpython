@@ -854,7 +854,7 @@ xmlcharrefreplace(_PyBytesWriter *writer, char *str,
 #error "LONG_BIT is smaller than 32"
 #endif
 
-#define BLOOM_MASK unsigned long
+#define BLOOM_MASK unsigned int
 
 static BLOOM_MASK bloom_linebreak = ~(BLOOM_MASK)0;
 
@@ -2932,7 +2932,7 @@ unicode_fromformat_arg(_PyUnicodeWriter *writer,
 
         if (*f == 'u') {
             if (longflag) {
-                len = sprintf(buffer, "%lu", va_arg(*vargs, unsigned long));
+                len = sprintf(buffer, "%lu", va_arg(*vargs, unsigned int));
             }
             else if (longlongflag) {
                 len = sprintf(buffer, "%llu", va_arg(*vargs, unsigned long long));
@@ -2949,7 +2949,7 @@ unicode_fromformat_arg(_PyUnicodeWriter *writer,
         }
         else {
             if (longflag) {
-                len = sprintf(buffer, "%li", va_arg(*vargs, long));
+                len = sprintf(buffer, "%li", va_arg(*vargs, int));
             }
             else if (longlongflag) {
                 len = sprintf(buffer, "%lli", va_arg(*vargs, long long));
@@ -4763,7 +4763,7 @@ PyUnicode_DecodeUTF7Stateful(const char *s,
     int inShift = 0;
     Py_ssize_t shiftOutStart;
     unsigned int base64bits = 0;
-    unsigned long base64buffer = 0;
+    unsigned int base64buffer = 0;
     Py_UCS4 surrogate = 0;
     PyObject *errorHandler = NULL;
     PyObject *exc = NULL;
@@ -4959,7 +4959,7 @@ _PyUnicode_EncodeUTF7(PyObject *str,
     int inShift = 0;
     Py_ssize_t i;
     unsigned int base64bits = 0;
-    unsigned long base64buffer = 0;
+    unsigned int base64buffer = 0;
     char * out;
     const char * start;
 
@@ -8341,7 +8341,7 @@ charmap_decode_mapping(const char *s,
         ch = *s;
 
         /* Get mapping (char ordinal -> integer, Unicode char or None) */
-        key = PyLong_FromLong((long)ch);
+        key = PyLong_FromLong((int)ch);
         if (key == NULL)
             goto onError;
 
@@ -8360,13 +8360,13 @@ charmap_decode_mapping(const char *s,
         if (item == Py_None)
             goto Undefined;
         if (PyLong_Check(item)) {
-            long value = PyLong_AS_LONG(item);
+            int value = PyLong_AS_LONG(item);
             if (value == 0xFFFE)
                 goto Undefined;
             if (value < 0 || value > MAX_UNICODE) {
                 PyErr_Format(PyExc_TypeError,
                              "character mapping must be in range(0x%x)",
-                             (unsigned long)MAX_UNICODE + 1);
+                             (unsigned int)MAX_UNICODE + 1);
                 goto onError;
             }
 
@@ -8673,7 +8673,7 @@ encoding_map_lookup(Py_UCS4 c, PyObject *mapping)
 static PyObject *
 charmapencode_lookup(Py_UCS4 c, PyObject *mapping)
 {
-    PyObject *w = PyLong_FromLong((long)c);
+    PyObject *w = PyLong_FromLong((int)c);
     PyObject *x;
 
     if (w == NULL)
@@ -8691,7 +8691,7 @@ charmapencode_lookup(Py_UCS4 c, PyObject *mapping)
     else if (x == Py_None)
         return x;
     else if (PyLong_Check(x)) {
-        long value = PyLong_AS_LONG(x);
+        int value = PyLong_AS_LONG(x);
         if (value < 0 || value > 255) {
             PyErr_SetString(PyExc_TypeError,
                             "character mapping must be in range(256)");
@@ -9121,7 +9121,7 @@ unicode_translate_call_errorhandler(const char *errors,
 static int
 charmaptranslate_lookup(Py_UCS4 c, PyObject *mapping, PyObject **result)
 {
-    PyObject *w = PyLong_FromLong((long)c);
+    PyObject *w = PyLong_FromLong((int)c);
     PyObject *x;
 
     if (w == NULL)
@@ -9142,7 +9142,7 @@ charmaptranslate_lookup(Py_UCS4 c, PyObject *mapping, PyObject **result)
         return 0;
     }
     else if (PyLong_Check(x)) {
-        long value = PyLong_AS_LONG(x);
+        int value = PyLong_AS_LONG(x);
         if (value < 0 || value > MAX_UNICODE) {
             PyErr_Format(PyExc_ValueError,
                          "character mapping must be in range(0x%x)",
@@ -9192,7 +9192,7 @@ charmaptranslate_output(Py_UCS4 ch, PyObject *mapping,
     }
 
     if (PyLong_Check(item)) {
-        long ch = (Py_UCS4)PyLong_AS_LONG(item);
+        int ch = (Py_UCS4)PyLong_AS_LONG(item);
         /* PyLong_AS_LONG() cannot fail, charmaptranslate_lookup() already
            used it */
         if (_PyUnicodeWriter_WriteCharInline(writer, ch) < 0) {
@@ -9238,7 +9238,7 @@ unicode_fast_translate_lookup(PyObject *mapping, Py_UCS1 ch,
         return 1;
     }
     else if (PyLong_Check(item)) {
-        long replace = PyLong_AS_LONG(item);
+        int replace = PyLong_AS_LONG(item);
         /* PyLong_AS_LONG() cannot fail, charmaptranslate_lookup() already
            used it */
         if (127 < replace) {
@@ -14919,7 +14919,7 @@ formatchar(PyObject *v)
     }
     else {
         int overflow;
-        long x = PyLong_AsLongAndOverflow(v, &overflow);
+        int x = PyLong_AsLongAndOverflow(v, &overflow);
         if (x == -1 && PyErr_Occurred()) {
             if (PyErr_ExceptionMatches(PyExc_TypeError)) {
                 goto onError;

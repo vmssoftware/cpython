@@ -14,7 +14,7 @@ enum { RECURSIVE_MUTEX, SEMAPHORE };
 typedef struct {
     PyObject_HEAD
     SEM_HANDLE handle;
-    unsigned long last_tid;
+    unsigned int last_tid;
     int count;
     int maxvalue;
     int kind;
@@ -56,9 +56,9 @@ class _multiprocessing.SemLock "SemLockObject *" "&_PyMp_SemLockType"
 #define SEM_UNLINK(name) 0
 
 static int
-_GetSemaphoreValue(HANDLE handle, long *value)
+_GetSemaphoreValue(HANDLE handle, int *value)
 {
-    long previous;
+    int previous;
 
     switch (WaitForSingleObjectEx(handle, 0, FALSE)) {
     case WAIT_OBJECT_0:
@@ -234,7 +234,7 @@ static int
 sem_timedwait_save(sem_t *sem, struct timespec *deadline, PyThreadState *_save)
 {
     int res;
-    unsigned long delay, difference;
+    unsigned int delay, difference;
     struct timeval now, tvdeadline, tvdelay;
 
     errno = 0;
@@ -327,8 +327,8 @@ _multiprocessing_SemLock_acquire_impl(SemLockObject *self, int blocking,
             PyErr_SetFromErrno(PyExc_OSError);
             return NULL;
         }
-        long sec = (long) timeout;
-        long nsec = (long) (1e9 * (timeout - sec) + 0.5);
+        int sec = (int) timeout;
+        int nsec = (int) (1e9 * (timeout - sec) + 0.5);
         deadline.tv_sec = now.tv_sec + sec;
         deadline.tv_nsec = now.tv_usec * 1000 + nsec;
         deadline.tv_sec += (deadline.tv_nsec / 1000000000);
@@ -584,7 +584,7 @@ static PyObject *
 _multiprocessing_SemLock__count_impl(SemLockObject *self)
 /*[clinic end generated code: output=5ba8213900e517bb input=36fc59b1cd1025ab]*/
 {
-    return PyLong_FromLong((long)self->count);
+    return PyLong_FromLong((int)self->count);
 }
 
 /*[clinic input]
@@ -622,7 +622,7 @@ _multiprocessing_SemLock__get_value_impl(SemLockObject *self)
        the number of waiting threads */
     if (sval < 0)
         sval = 0;
-    return PyLong_FromLong((long)sval);
+    return PyLong_FromLong((int)sval);
 #endif
 }
 
@@ -650,7 +650,7 @@ _multiprocessing_SemLock__is_zero_impl(SemLockObject *self)
     int sval;
     if (SEM_GETVALUE(self->handle, &sval) < 0)
         return _PyMp_SetError(NULL, MP_STANDARD_ERROR);
-    return PyBool_FromLong((long)sval == 0);
+    return PyBool_FromLong((int)sval == 0);
 #endif
 }
 

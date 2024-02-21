@@ -161,7 +161,9 @@ class OpenVMSCCompiler(CCompiler):
             cc_args += ["/NODEBUG/NOOPTIMIZE"]
         if VMS64:
             cc_args += ["/POINTER_SIZE=64"]
-        
+        else:
+            cc_args += ["/POINTER_SIZE=32"]
+
         cc_args += ["/L_DOUBLE_SIZE=64"]
 
         if before:

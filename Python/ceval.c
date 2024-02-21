@@ -109,10 +109,10 @@ static void format_awaitable_error(PyThreadState *, PyTypeObject *, int, int);
 /* Dynamic execution profile */
 #ifdef DYNAMIC_EXECUTION_PROFILE
 #ifdef DXPAIRS
-static long dxpairs[257][256];
+static int dxpairs[257][256];
 #define dxp dxpairs[256]
 #else
-static long dxp[256];
+static int dxp[256];
 #endif
 #endif
 
@@ -6405,7 +6405,7 @@ unicode_concatenate(PyThreadState *tstate, PyObject *v, PyObject *w,
 #ifdef DYNAMIC_EXECUTION_PROFILE
 
 static PyObject *
-getarray(long a[256])
+getarray(int a[256])
 {
     int i;
     PyObject *l = PyList_New(256);

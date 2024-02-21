@@ -23,7 +23,7 @@ extern int _PyTraceMalloc_NewReference(PyObject *op);
 
 // Fast inlined version of PyType_HasFeature()
 static inline int
-_PyType_HasFeature(PyTypeObject *type, unsigned long feature) {
+_PyType_HasFeature(PyTypeObject *type, unsigned int feature) {
     return ((type->tp_flags & feature) != 0);
 }
 

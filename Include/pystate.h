@@ -82,7 +82,7 @@ PyAPI_FUNC(PyThreadState *) PyThreadState_Get(void);
 
 PyAPI_FUNC(PyThreadState *) PyThreadState_Swap(PyThreadState *);
 PyAPI_FUNC(PyObject *) PyThreadState_GetDict(void);
-PyAPI_FUNC(int) PyThreadState_SetAsyncExc(unsigned long, PyObject *);
+PyAPI_FUNC(int) PyThreadState_SetAsyncExc(unsigned int, PyObject *);
 
 #if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03090000
 /* New in 3.9 */

@@ -533,7 +533,7 @@ dictbytype(PyObject *src, int scope_type, int flag, Py_ssize_t offset)
 
     for (key_i = 0; key_i < num_keys; key_i++) {
         /* XXX this should probably be a macro in symtable.h */
-        long vi;
+        int vi;
         k = PyList_GET_ITEM(sorted_keys, key_i);
         v = PyDict_GetItemWithError(src, k);
         assert(v && PyLong_Check(v));

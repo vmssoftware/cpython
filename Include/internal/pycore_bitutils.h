@@ -51,7 +51,7 @@ _Py_bswap32(uint32_t word)
 #if defined(_PY_HAVE_BUILTIN_BSWAP) || _Py__has_builtin(__builtin_bswap32)
     return __builtin_bswap32(word);
 #elif defined(_MSC_VER)
-    Py_BUILD_ASSERT(sizeof(word) == sizeof(unsigned long));
+    Py_BUILD_ASSERT(sizeof(word) == sizeof(unsigned int));
     return _byteswap_ulong(word);
 #else
     // Portable implementation which doesn't rely on circular bit shift
@@ -102,7 +102,7 @@ _Py_popcount32(uint32_t x)
 #else
     // The C standard guarantees that unsigned long will always be big enough
     // to hold a uint32_t value without losing information.
-    Py_BUILD_ASSERT(sizeof(x) <= sizeof(unsigned long));
+    Py_BUILD_ASSERT(sizeof(x) <= sizeof(unsigned int));
     return __builtin_popcountl(x);
 #endif
 
@@ -133,21 +133,21 @@ _Py_popcount32(uint32_t x)
 // Return the index of the most significant 1 bit in 'x'. This is the smallest
 // integer k such that x < 2**k. Equivalent to floor(log2(x)) + 1 for x != 0.
 static inline int
-_Py_bit_length(unsigned long x)
+_Py_bit_length(unsigned int x)
 {
 #if (defined(__clang__) || defined(__GNUC__))
     if (x != 0) {
         // __builtin_clzl() is available since GCC 3.4.
         // Undefined behavior for x == 0.
-        return (int)sizeof(unsigned long) * 8 - __builtin_clzl(x);
+        return (int)sizeof(unsigned int) * 8 - __builtin_clzl(x);
     }
     else {
         return 0;
     }
 #elif defined(_MSC_VER)
     // _BitScanReverse() is documented to search 32 bits.
-    Py_BUILD_ASSERT(sizeof(unsigned long) <= 4);
-    unsigned long msb;
+    Py_BUILD_ASSERT(sizeof(unsigned int) <= 4);
+    unsigned int msb;
     if (_BitScanReverse(&msb, x)) {
         return (int)msb + 1;
     }

@@ -137,7 +137,7 @@ dump_memo_stats(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(ignored))
     Py_ssize_t len = PyList_Size(list);
     for (Py_ssize_t i = 0; i < len; i++) {
         PyObject *value = PyList_GetItem(list, i);  // Borrowed reference.
-        long count = PyLong_AsLong(value);
+        int count = PyLong_AsLong(value);
         if (count < 0) {
             break;
         }

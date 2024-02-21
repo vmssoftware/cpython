@@ -36,7 +36,7 @@ DECC_fix_time(
     CheckArgAsLong(args, "fix_time");
     unsigned long long vms_time = PyLong_AsUnsignedLongLong(args);
 
-    unsigned long unix_time = -1;
+    unsigned int unix_time = -1;
     Py_BEGIN_ALLOW_THREADS
     unix_time = decc$fix_time(&vms_time);
     Py_END_ALLOW_THREADS
@@ -81,7 +81,7 @@ DECC_unixtime(
     unsigned long long vms_time = PyLong_AsUnsignedLongLong(args);
 
     unsigned long long diff = vms_time - epoch();
-    unsigned long sec = diff / FAC - offset();
+    unsigned int sec = diff / FAC - offset();
     return PyLong_FromUnsignedLong(sec);
 }
 
@@ -93,7 +93,7 @@ DECC_vmstime(
 {
     CheckArgAsLong(args, "vmstime");
 
-    unsigned long unix_time = PyLong_AsUnsignedLong(args);
+    unsigned int unix_time = PyLong_AsUnsignedLong(args);
 
     unsigned long long val = epoch() + (((unsigned long long)unix_time) * FAC);
 
@@ -366,8 +366,8 @@ DECC_sysconf(
     PyObject * args)
 {
     CheckArgAsLong(args, "sysconf");
-    long name = PyLong_AsLong(args);
-    long value = 0;
+    int name = PyLong_AsLong(args);
+    int value = 0;
     Py_BEGIN_ALLOW_THREADS
     value = sysconf(name);
     Py_END_ALLOW_THREADS
@@ -381,8 +381,8 @@ DECC_sleep(
     PyObject * args)
 {
     CheckArgAsLong(args, "sleep");
-    unsigned long sleep_seconds = PyLong_AsUnsignedLong(args);
-    unsigned long slept_seconds = 0;
+    unsigned int sleep_seconds = PyLong_AsUnsignedLong(args);
+    unsigned int slept_seconds = 0;
     Py_BEGIN_ALLOW_THREADS
     slept_seconds = sleep(sleep_seconds);
     Py_END_ALLOW_THREADS

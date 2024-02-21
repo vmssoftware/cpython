@@ -994,7 +994,7 @@ static PyObject* ast2obj_object(struct ast_state *Py_UNUSED(state), void *o)
 #define ast2obj_identifier ast2obj_object
 #define ast2obj_string ast2obj_object
 
-static PyObject* ast2obj_int(struct ast_state *Py_UNUSED(state), long b)
+static PyObject* ast2obj_int(struct ast_state *Py_UNUSED(state), int b)
 {
     return PyLong_FromLong(b);
 }

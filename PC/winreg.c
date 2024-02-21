@@ -481,14 +481,14 @@ PyWinObject_CloseHKEY(PyObject *obHandle)
     }
 #if SIZEOF_LONG >= SIZEOF_HKEY
     else if (PyLong_Check(obHandle)) {
-        long rc = RegCloseKey((HKEY)PyLong_AsLong(obHandle));
+        int rc = RegCloseKey((HKEY)PyLong_AsLong(obHandle));
         ok = (rc == ERROR_SUCCESS);
         if (!ok)
             PyErr_SetFromWindowsErrWithFunction(rc, "RegCloseKey");
     }
 #else
     else if (PyLong_Check(obHandle)) {
-        long rc = RegCloseKey((HKEY)PyLong_AsVoidPtr(obHandle));
+        int rc = RegCloseKey((HKEY)PyLong_AsVoidPtr(obHandle));
         ok = (rc == ERROR_SUCCESS);
         if (!ok)
             PyErr_SetFromWindowsErrWithFunction(rc, "RegCloseKey");
@@ -853,7 +853,7 @@ winreg_ConnectRegistry_impl(PyObject *module,
 /*[clinic end generated code: output=cd4f70fb9ec901fb input=5f98a891a347e68e]*/
 {
     HKEY retKey;
-    long rc;
+    int rc;
     if (PySys_Audit("winreg.ConnectRegistry", "un",
                     computer_name, (Py_ssize_t)key) < 0) {
         return NULL;
@@ -893,7 +893,7 @@ winreg_CreateKey_impl(PyObject *module, HKEY key, const Py_UNICODE *sub_key)
 /*[clinic end generated code: output=2af13910d56eae26 input=3cdd1622488acea2]*/
 {
     HKEY retKey;
-    long rc;
+    int rc;
 
     if (PySys_Audit("winreg.CreateKey", "nun",
                     (Py_ssize_t)key, sub_key,
@@ -943,7 +943,7 @@ winreg_CreateKeyEx_impl(PyObject *module, HKEY key,
 /*[clinic end generated code: output=643a70ad6a361a97 input=42c2b03f98406b66]*/
 {
     HKEY retKey;
-    long rc;
+    int rc;
 
     if (PySys_Audit("winreg.CreateKey", "nun",
                     (Py_ssize_t)key, sub_key,
@@ -985,7 +985,7 @@ static PyObject *
 winreg_DeleteKey_impl(PyObject *module, HKEY key, const Py_UNICODE *sub_key)
 /*[clinic end generated code: output=d2652a84f70e0862 input=b31d225b935e4211]*/
 {
-    long rc;
+    int rc;
     if (PySys_Audit("winreg.DeleteKey", "nun",
                     (Py_ssize_t)key, sub_key,
                     (Py_ssize_t)0) < 0) {
@@ -1030,7 +1030,7 @@ winreg_DeleteKeyEx_impl(PyObject *module, HKEY key,
     HMODULE hMod;
     typedef LONG (WINAPI *RDKEFunc)(HKEY, const wchar_t*, REGSAM, int);
     RDKEFunc pfn = NULL;
-    long rc;
+    int rc;
 
     if (PySys_Audit("winreg.DeleteKey", "nun",
                     (Py_ssize_t)key, sub_key,
@@ -1074,7 +1074,7 @@ static PyObject *
 winreg_DeleteValue_impl(PyObject *module, HKEY key, const Py_UNICODE *value)
 /*[clinic end generated code: output=56fa9d21f3a54371 input=a78d3407a4197b21]*/
 {
-    long rc;
+    int rc;
     if (PySys_Audit("winreg.DeleteValue", "nu",
                     (Py_ssize_t)key, value) < 0) {
         return NULL;
@@ -1108,7 +1108,7 @@ static PyObject *
 winreg_EnumKey_impl(PyObject *module, HKEY key, int index)
 /*[clinic end generated code: output=25a6ec52cd147bc4 input=fad9a7c00ab0e04b]*/
 {
-    long rc;
+    int rc;
     PyObject *retStr;
 
     if (PySys_Audit("winreg.EnumKey", "ni",
@@ -1163,7 +1163,7 @@ static PyObject *
 winreg_EnumValue_impl(PyObject *module, HKEY key, int index)
 /*[clinic end generated code: output=d363b5a06f8789ac input=4414f47a6fb238b5]*/
 {
-    long rc;
+    int rc;
     wchar_t *retValueBuf;
     BYTE *tmpBuf;
     BYTE *retDataBuf;
@@ -1310,7 +1310,7 @@ static PyObject *
 winreg_FlushKey_impl(PyObject *module, HKEY key)
 /*[clinic end generated code: output=e6fc230d4c5dc049 input=f57457c12297d82f]*/
 {
-    long rc;
+    int rc;
     Py_BEGIN_ALLOW_THREADS
     rc = RegFlushKey(key);
     Py_END_ALLOW_THREADS
@@ -1354,7 +1354,7 @@ winreg_LoadKey_impl(PyObject *module, HKEY key, const Py_UNICODE *sub_key,
                     const Py_UNICODE *file_name)
 /*[clinic end generated code: output=65f89f2548cb27c7 input=e3b5b45ade311582]*/
 {
-    long rc;
+    int rc;
 
     if (PySys_Audit("winreg.LoadKey", "nuu",
                     (Py_ssize_t)key, sub_key, file_name) < 0) {
@@ -1393,7 +1393,7 @@ winreg_OpenKey_impl(PyObject *module, HKEY key, const Py_UNICODE *sub_key,
 /*[clinic end generated code: output=8849bff2c30104ad input=098505ac36a9ae28]*/
 {
     HKEY retKey;
-    long rc;
+    int rc;
 
     if (PySys_Audit("winreg.OpenKey", "nun",
                     (Py_ssize_t)key, sub_key,
@@ -1451,7 +1451,7 @@ static PyObject *
 winreg_QueryInfoKey_impl(PyObject *module, HKEY key)
 /*[clinic end generated code: output=dc657b8356a4f438 input=c3593802390cde1f]*/
 {
-    long rc;
+    int rc;
     DWORD nSubKeys, nValues;
     FILETIME ft;
     LARGE_INTEGER li;
@@ -1502,7 +1502,7 @@ static PyObject *
 winreg_QueryValue_impl(PyObject *module, HKEY key, const Py_UNICODE *sub_key)
 /*[clinic end generated code: output=c655810ae50c63a9 input=41cafbbf423b21d6]*/
 {
-    long rc;
+    int rc;
     PyObject *retStr;
     wchar_t *retBuf;
     DWORD bufSize = 0;
@@ -1573,7 +1573,7 @@ static PyObject *
 winreg_QueryValueEx_impl(PyObject *module, HKEY key, const Py_UNICODE *name)
 /*[clinic end generated code: output=f1b85b1c3d887ec7 input=cf366cada4836891]*/
 {
-    long rc;
+    int rc;
     BYTE *retBuf, *tmp;
     DWORD bufSize = 0, retSize;
     DWORD typ;
@@ -1652,7 +1652,7 @@ winreg_SaveKey_impl(PyObject *module, HKEY key, const Py_UNICODE *file_name)
 {
     LPSECURITY_ATTRIBUTES pSA = NULL;
 
-    long rc;
+    int rc;
 /*  One day we may get security into the core?
     if (!PyWinObject_AsSECURITY_ATTRIBUTES(obSA, &pSA, TRUE))
         return NULL;
@@ -1702,7 +1702,7 @@ winreg_SetValue_impl(PyObject *module, HKEY key, const Py_UNICODE *sub_key,
 /*[clinic end generated code: output=d4773dc9c372311a input=bf088494ae2d24fd]*/
 {
     Py_ssize_t value_length;
-    long rc;
+    int rc;
 
     if (type != REG_SZ) {
         PyErr_SetString(PyExc_TypeError, "type must be winreg.REG_SZ");
@@ -2002,7 +2002,7 @@ static struct PyMethodDef winreg_methods[] = {
 };
 
 static void
-insint(PyObject * d, char * name, long value)
+insint(PyObject * d, char * name, int value)
 {
     PyObject *v = PyLong_FromLong(value);
     if (!v || PyDict_SetItemString(d, name, v))

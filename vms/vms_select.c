@@ -82,7 +82,7 @@ static int select_terminal(const struct vms_pollfd_st *term_array, int ti) {
     IOSB iosb;
     union typeahead_st {
         unsigned short numchars;
-        unsigned long  dummy[2];
+        unsigned int  dummy[2];
     } typeahead;
 
     /* Loop through the terminal channels */
@@ -327,7 +327,7 @@ int vms_select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
                 if (select_array[fd].events != 0) {
                     status = vms_channel_lookup(fd, &pipe_array[pi].channel);
                     if (status == 0) {
-                        unsigned long  mbx_char;
+                        unsigned int  mbx_char;
                         unsigned short mbx_len;
                         ILE3 item_list[2];
                         item_list[0].ile3$w_length = 4;

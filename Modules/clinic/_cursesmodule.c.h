@@ -26,7 +26,7 @@ PyDoc_STRVAR(_curses_window_addch__doc__,
 static PyObject *
 _curses_window_addch_impl(PyCursesWindowObject *self, int group_left_1,
                           int y, int x, PyObject *ch, int group_right_1,
-                          long attr);
+                          int attr);
 
 static PyObject *
 _curses_window_addch(PyCursesWindowObject *self, PyObject *args)
@@ -37,7 +37,7 @@ _curses_window_addch(PyCursesWindowObject *self, PyObject *args)
     int x = 0;
     PyObject *ch;
     int group_right_1 = 0;
-    long attr = A_NORMAL;
+    int attr = A_NORMAL;
 
     switch (PyTuple_GET_SIZE(args)) {
         case 1:
@@ -98,7 +98,7 @@ PyDoc_STRVAR(_curses_window_addstr__doc__,
 static PyObject *
 _curses_window_addstr_impl(PyCursesWindowObject *self, int group_left_1,
                            int y, int x, PyObject *str, int group_right_1,
-                           long attr);
+                           int attr);
 
 static PyObject *
 _curses_window_addstr(PyCursesWindowObject *self, PyObject *args)
@@ -109,7 +109,7 @@ _curses_window_addstr(PyCursesWindowObject *self, PyObject *args)
     int x = 0;
     PyObject *str;
     int group_right_1 = 0;
-    long attr = 0;
+    int attr = 0;
 
     switch (PyTuple_GET_SIZE(args)) {
         case 1:
@@ -172,7 +172,7 @@ PyDoc_STRVAR(_curses_window_addnstr__doc__,
 static PyObject *
 _curses_window_addnstr_impl(PyCursesWindowObject *self, int group_left_1,
                             int y, int x, PyObject *str, int n,
-                            int group_right_1, long attr);
+                            int group_right_1, int attr);
 
 static PyObject *
 _curses_window_addnstr(PyCursesWindowObject *self, PyObject *args)
@@ -184,7 +184,7 @@ _curses_window_addnstr(PyCursesWindowObject *self, PyObject *args)
     PyObject *str;
     int n;
     int group_right_1 = 0;
-    long attr = 0;
+    int attr = 0;
 
     switch (PyTuple_GET_SIZE(args)) {
         case 2:
@@ -236,14 +236,14 @@ PyDoc_STRVAR(_curses_window_bkgd__doc__,
     {"bkgd", (PyCFunction)(void(*)(void))_curses_window_bkgd, METH_FASTCALL, _curses_window_bkgd__doc__},
 
 static PyObject *
-_curses_window_bkgd_impl(PyCursesWindowObject *self, PyObject *ch, long attr);
+_curses_window_bkgd_impl(PyCursesWindowObject *self, PyObject *ch, int attr);
 
 static PyObject *
 _curses_window_bkgd(PyCursesWindowObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
     PyObject *return_value = NULL;
     PyObject *ch;
-    long attr = A_NORMAL;
+    int attr = A_NORMAL;
 
     if (!_PyArg_CheckPositional("bkgd", nargs, 1, 2)) {
         goto exit;
@@ -273,13 +273,13 @@ PyDoc_STRVAR(_curses_window_attroff__doc__,
     {"attroff", (PyCFunction)_curses_window_attroff, METH_O, _curses_window_attroff__doc__},
 
 static PyObject *
-_curses_window_attroff_impl(PyCursesWindowObject *self, long attr);
+_curses_window_attroff_impl(PyCursesWindowObject *self, int attr);
 
 static PyObject *
 _curses_window_attroff(PyCursesWindowObject *self, PyObject *arg)
 {
     PyObject *return_value = NULL;
-    long attr;
+    int attr;
 
     attr = PyLong_AsLong(arg);
     if (attr == -1 && PyErr_Occurred()) {
@@ -301,13 +301,13 @@ PyDoc_STRVAR(_curses_window_attron__doc__,
     {"attron", (PyCFunction)_curses_window_attron, METH_O, _curses_window_attron__doc__},
 
 static PyObject *
-_curses_window_attron_impl(PyCursesWindowObject *self, long attr);
+_curses_window_attron_impl(PyCursesWindowObject *self, int attr);
 
 static PyObject *
 _curses_window_attron(PyCursesWindowObject *self, PyObject *arg)
 {
     PyObject *return_value = NULL;
-    long attr;
+    int attr;
 
     attr = PyLong_AsLong(arg);
     if (attr == -1 && PyErr_Occurred()) {
@@ -329,13 +329,13 @@ PyDoc_STRVAR(_curses_window_attrset__doc__,
     {"attrset", (PyCFunction)_curses_window_attrset, METH_O, _curses_window_attrset__doc__},
 
 static PyObject *
-_curses_window_attrset_impl(PyCursesWindowObject *self, long attr);
+_curses_window_attrset_impl(PyCursesWindowObject *self, int attr);
 
 static PyObject *
 _curses_window_attrset(PyCursesWindowObject *self, PyObject *arg)
 {
     PyObject *return_value = NULL;
-    long attr;
+    int attr;
 
     attr = PyLong_AsLong(arg);
     if (attr == -1 && PyErr_Occurred()) {
@@ -363,14 +363,14 @@ PyDoc_STRVAR(_curses_window_bkgdset__doc__,
 
 static PyObject *
 _curses_window_bkgdset_impl(PyCursesWindowObject *self, PyObject *ch,
-                            long attr);
+                            int attr);
 
 static PyObject *
 _curses_window_bkgdset(PyCursesWindowObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
     PyObject *return_value = NULL;
     PyObject *ch;
-    long attr = A_NORMAL;
+    int attr = A_NORMAL;
 
     if (!_PyArg_CheckPositional("bkgdset", nargs, 1, 2)) {
         goto exit;
@@ -646,14 +646,14 @@ PyDoc_STRVAR(_curses_window_echochar__doc__,
 
 static PyObject *
 _curses_window_echochar_impl(PyCursesWindowObject *self, PyObject *ch,
-                             long attr);
+                             int attr);
 
 static PyObject *
 _curses_window_echochar(PyCursesWindowObject *self, PyObject *const *args, Py_ssize_t nargs)
 {
     PyObject *return_value = NULL;
     PyObject *ch;
-    long attr = A_NORMAL;
+    int attr = A_NORMAL;
 
     if (!_PyArg_CheckPositional("echochar", nargs, 1, 2)) {
         goto exit;
@@ -727,14 +727,14 @@ PyDoc_STRVAR(_curses_window_getbkgd__doc__,
 #define _CURSES_WINDOW_GETBKGD_METHODDEF    \
     {"getbkgd", (PyCFunction)_curses_window_getbkgd, METH_NOARGS, _curses_window_getbkgd__doc__},
 
-static long
+static int
 _curses_window_getbkgd_impl(PyCursesWindowObject *self);
 
 static PyObject *
 _curses_window_getbkgd(PyCursesWindowObject *self, PyObject *Py_UNUSED(ignored))
 {
     PyObject *return_value = NULL;
-    long _return_value;
+    int _return_value;
 
     _return_value = _curses_window_getbkgd_impl(self);
     if ((_return_value == -1) && PyErr_Occurred()) {
@@ -792,7 +792,7 @@ _curses_window_getch(PyCursesWindowObject *self, PyObject *args)
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromLong((long)_return_value);
+    return_value = PyLong_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -916,7 +916,7 @@ PyDoc_STRVAR(_curses_window_hline__doc__,
 static PyObject *
 _curses_window_hline_impl(PyCursesWindowObject *self, int group_left_1,
                           int y, int x, PyObject *ch, int n,
-                          int group_right_1, long attr);
+                          int group_right_1, int attr);
 
 static PyObject *
 _curses_window_hline(PyCursesWindowObject *self, PyObject *args)
@@ -928,7 +928,7 @@ _curses_window_hline(PyCursesWindowObject *self, PyObject *args)
     PyObject *ch;
     int n;
     int group_right_1 = 0;
-    long attr = A_NORMAL;
+    int attr = A_NORMAL;
 
     switch (PyTuple_GET_SIZE(args)) {
         case 2:
@@ -987,7 +987,7 @@ PyDoc_STRVAR(_curses_window_insch__doc__,
 static PyObject *
 _curses_window_insch_impl(PyCursesWindowObject *self, int group_left_1,
                           int y, int x, PyObject *ch, int group_right_1,
-                          long attr);
+                          int attr);
 
 static PyObject *
 _curses_window_insch(PyCursesWindowObject *self, PyObject *args)
@@ -998,7 +998,7 @@ _curses_window_insch(PyCursesWindowObject *self, PyObject *args)
     int x = 0;
     PyObject *ch;
     int group_right_1 = 0;
-    long attr = A_NORMAL;
+    int attr = A_NORMAL;
 
     switch (PyTuple_GET_SIZE(args)) {
         case 1:
@@ -1049,7 +1049,7 @@ PyDoc_STRVAR(_curses_window_inch__doc__,
 #define _CURSES_WINDOW_INCH_METHODDEF    \
     {"inch", (PyCFunction)_curses_window_inch, METH_VARARGS, _curses_window_inch__doc__},
 
-static unsigned long
+static unsigned int
 _curses_window_inch_impl(PyCursesWindowObject *self, int group_right_1,
                          int y, int x);
 
@@ -1060,7 +1060,7 @@ _curses_window_inch(PyCursesWindowObject *self, PyObject *args)
     int group_right_1 = 0;
     int y = 0;
     int x = 0;
-    unsigned long _return_value;
+    unsigned int _return_value;
 
     switch (PyTuple_GET_SIZE(args)) {
         case 0:
@@ -1076,7 +1076,7 @@ _curses_window_inch(PyCursesWindowObject *self, PyObject *args)
             goto exit;
     }
     _return_value = _curses_window_inch_impl(self, group_right_1, y, x);
-    if ((_return_value == (unsigned long)-1) && PyErr_Occurred()) {
+    if ((_return_value == (unsigned int)-1) && PyErr_Occurred()) {
         goto exit;
     }
     return_value = PyLong_FromUnsignedLong(_return_value);
@@ -1110,7 +1110,7 @@ PyDoc_STRVAR(_curses_window_insstr__doc__,
 static PyObject *
 _curses_window_insstr_impl(PyCursesWindowObject *self, int group_left_1,
                            int y, int x, PyObject *str, int group_right_1,
-                           long attr);
+                           int attr);
 
 static PyObject *
 _curses_window_insstr(PyCursesWindowObject *self, PyObject *args)
@@ -1121,7 +1121,7 @@ _curses_window_insstr(PyCursesWindowObject *self, PyObject *args)
     int x = 0;
     PyObject *str;
     int group_right_1 = 0;
-    long attr = 0;
+    int attr = 0;
 
     switch (PyTuple_GET_SIZE(args)) {
         case 1:
@@ -1186,7 +1186,7 @@ PyDoc_STRVAR(_curses_window_insnstr__doc__,
 static PyObject *
 _curses_window_insnstr_impl(PyCursesWindowObject *self, int group_left_1,
                             int y, int x, PyObject *str, int n,
-                            int group_right_1, long attr);
+                            int group_right_1, int attr);
 
 static PyObject *
 _curses_window_insnstr(PyCursesWindowObject *self, PyObject *args)
@@ -1198,7 +1198,7 @@ _curses_window_insnstr(PyCursesWindowObject *self, PyObject *args)
     PyObject *str;
     int n;
     int group_right_1 = 0;
-    long attr = 0;
+    int attr = 0;
 
     switch (PyTuple_GET_SIZE(args)) {
         case 2:
@@ -1778,7 +1778,7 @@ PyDoc_STRVAR(_curses_window_vline__doc__,
 static PyObject *
 _curses_window_vline_impl(PyCursesWindowObject *self, int group_left_1,
                           int y, int x, PyObject *ch, int n,
-                          int group_right_1, long attr);
+                          int group_right_1, int attr);
 
 static PyObject *
 _curses_window_vline(PyCursesWindowObject *self, PyObject *args)
@@ -1790,7 +1790,7 @@ _curses_window_vline(PyCursesWindowObject *self, PyObject *args)
     PyObject *ch;
     int n;
     int group_right_1 = 0;
-    long attr = A_NORMAL;
+    int attr = A_NORMAL;
 
     switch (PyTuple_GET_SIZE(args)) {
         case 2:
@@ -2323,7 +2323,7 @@ PyDoc_STRVAR(_curses_ungetmouse__doc__,
 
 static PyObject *
 _curses_ungetmouse_impl(PyObject *module, short id, int x, int y, int z,
-                        unsigned long bstate);
+                        unsigned int bstate);
 
 static PyObject *
 _curses_ungetmouse(PyObject *module, PyObject *const *args, Py_ssize_t nargs)
@@ -2333,13 +2333,13 @@ _curses_ungetmouse(PyObject *module, PyObject *const *args, Py_ssize_t nargs)
     int x;
     int y;
     int z;
-    unsigned long bstate;
+    unsigned int bstate;
 
     if (!_PyArg_CheckPositional("ungetmouse", nargs, 5, 5)) {
         goto exit;
     }
     {
-        long ival = PyLong_AsLong(args[0]);
+        int ival = PyLong_AsLong(args[0]);
         if (ival == -1 && PyErr_Occurred()) {
             goto exit;
         }
@@ -2418,7 +2418,7 @@ _curses_halfdelay(PyObject *module, PyObject *arg)
     unsigned char tenths;
 
     {
-        long ival = PyLong_AsLong(arg);
+        int ival = PyLong_AsLong(arg);
         if (ival == -1 && PyErr_Occurred()) {
             goto exit;
         }
@@ -3101,13 +3101,13 @@ PyDoc_STRVAR(_curses_mousemask__doc__,
     {"mousemask", (PyCFunction)_curses_mousemask, METH_O, _curses_mousemask__doc__},
 
 static PyObject *
-_curses_mousemask_impl(PyObject *module, unsigned long newmask);
+_curses_mousemask_impl(PyObject *module, unsigned int newmask);
 
 static PyObject *
 _curses_mousemask(PyObject *module, PyObject *arg)
 {
     PyObject *return_value = NULL;
-    unsigned long newmask;
+    unsigned int newmask;
 
     if (!PyLong_Check(arg)) {
         _PyArg_BadArgument("mousemask", "argument", "int", arg);

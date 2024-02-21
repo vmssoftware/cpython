@@ -408,7 +408,7 @@ stdprinter_write(PyStdPrinter_Object *self, PyObject *args)
 static PyObject *
 stdprinter_fileno(PyStdPrinter_Object *self, PyObject *Py_UNUSED(ignored))
 {
-    return PyLong_FromLong((long) self->fd);
+    return PyLong_FromLong((int) self->fd);
 }
 
 static PyObject *
@@ -427,7 +427,7 @@ stdprinter_noop(PyStdPrinter_Object *self, PyObject *Py_UNUSED(ignored))
 static PyObject *
 stdprinter_isatty(PyStdPrinter_Object *self, PyObject *Py_UNUSED(ignored))
 {
-    long res;
+    int res;
     if (self->fd < 0) {
         Py_RETURN_FALSE;
     }

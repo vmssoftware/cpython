@@ -1319,8 +1319,8 @@ run_pyc_file(FILE *fp, PyObject *globals, PyObject *locals,
     PyThreadState *tstate = _PyThreadState_GET();
     PyCodeObject *co;
     PyObject *v;
-    long magic;
-    long PyImport_GetMagicNumber(void);
+    int magic;
+    int PyImport_GetMagicNumber(void);
 
     magic = PyMarshal_ReadLongFromFile(fp);
     if (magic != PyImport_GetMagicNumber()) {

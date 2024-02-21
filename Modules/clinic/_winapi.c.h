@@ -673,14 +673,14 @@ PyDoc_STRVAR(_winapi_GetVersion__doc__,
 #define _WINAPI_GETVERSION_METHODDEF    \
     {"GetVersion", (PyCFunction)_winapi_GetVersion, METH_NOARGS, _winapi_GetVersion__doc__},
 
-static long
+static int
 _winapi_GetVersion_impl(PyObject *module);
 
 static PyObject *
 _winapi_GetVersion(PyObject *module, PyObject *Py_UNUSED(ignored))
 {
     PyObject *return_value = NULL;
-    long _return_value;
+    int _return_value;
 
     _return_value = _winapi_GetVersion_impl(module);
     if ((_return_value == -1) && PyErr_Occurred()) {
@@ -1039,7 +1039,7 @@ PyDoc_STRVAR(_winapi_WaitForSingleObject__doc__,
 #define _WINAPI_WAITFORSINGLEOBJECT_METHODDEF    \
     {"WaitForSingleObject", (PyCFunction)(void(*)(void))_winapi_WaitForSingleObject, METH_FASTCALL, _winapi_WaitForSingleObject__doc__},
 
-static long
+static int
 _winapi_WaitForSingleObject_impl(PyObject *module, HANDLE handle,
                                  DWORD milliseconds);
 
@@ -1049,7 +1049,7 @@ _winapi_WaitForSingleObject(PyObject *module, PyObject *const *args, Py_ssize_t 
     PyObject *return_value = NULL;
     HANDLE handle;
     DWORD milliseconds;
-    long _return_value;
+    int _return_value;
 
     if (!_PyArg_ParseStack(args, nargs, "" F_HANDLE "k:WaitForSingleObject",
         &handle, &milliseconds)) {

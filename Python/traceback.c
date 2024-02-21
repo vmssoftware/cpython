@@ -526,7 +526,7 @@ tb_displayline(PyObject *f, PyObject *filename, int lineno, PyObject *name)
 static const int TB_RECURSIVE_CUTOFF = 3; // Also hardcoded in traceback.py.
 
 static int
-tb_print_line_repeated(PyObject *f, long cnt)
+tb_print_line_repeated(PyObject *f, int cnt)
 {
     cnt -= TB_RECURSIVE_CUTOFF;
     PyObject *line = PyUnicode_FromFormat(
@@ -543,14 +543,14 @@ tb_print_line_repeated(PyObject *f, long cnt)
 }
 
 static int
-tb_printinternal(PyTracebackObject *tb, PyObject *f, long limit)
+tb_printinternal(PyTracebackObject *tb, PyObject *f, int limit)
 {
     int err = 0;
     Py_ssize_t depth = 0;
     PyObject *last_file = NULL;
     int last_line = -1;
     PyObject *last_name = NULL;
-    long cnt = 0;
+    int cnt = 0;
     PyTracebackObject *tb1 = tb;
     while (tb1 != NULL) {
         depth++;
@@ -598,7 +598,7 @@ PyTraceBack_Print(PyObject *v, PyObject *f)
 {
     int err;
     PyObject *limitv;
-    long limit = PyTraceBack_LIMIT;
+    int limit = PyTraceBack_LIMIT;
 
     if (v == NULL)
         return 0;
@@ -857,7 +857,7 @@ write_thread_id(int fd, PyThreadState *tstate, int is_current)
         PUTS(fd, "Thread 0x");
     _Py_DumpHexadecimal(fd,
                         tstate->thread_id,
-                        sizeof(unsigned long) * 2);
+                        sizeof(unsigned int) * 2);
     PUTS(fd, " (most recent call first):\n");
 }
 

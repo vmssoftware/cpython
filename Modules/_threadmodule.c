@@ -226,7 +226,7 @@ but it needn't be locked by the same thread that unlocks it.");
 static PyObject *
 lock_locked_lock(lockobject *self, PyObject *Py_UNUSED(ignored))
 {
-    return PyBool_FromLong((long)self->locked);
+    return PyBool_FromLong((int)self->locked);
 }
 
 PyDoc_STRVAR(locked_doc,
@@ -322,8 +322,8 @@ static PyType_Spec lock_type_spec = {
 typedef struct {
     PyObject_HEAD
     PyThread_type_lock rlock_lock;
-    unsigned long rlock_owner;
-    unsigned long rlock_count;
+    unsigned int rlock_owner;
+    unsigned int rlock_count;
     PyObject *in_weakreflist;
 } rlockobject;
 
@@ -358,7 +358,7 @@ static PyObject *
 rlock_acquire(rlockobject *self, PyObject *args, PyObject *kwds)
 {
     _PyTime_t timeout;
-    unsigned long tid;
+    unsigned int tid;
     PyLockStatus r = PY_LOCK_ACQUIRED;
 
     if (lock_acquire_parse_args(args, kwds, &timeout) < 0)
@@ -366,7 +366,7 @@ rlock_acquire(rlockobject *self, PyObject *args, PyObject *kwds)
 
     tid = PyThread_get_thread_ident();
     if (self->rlock_count > 0 && tid == self->rlock_owner) {
-        unsigned long count = self->rlock_count + 1;
+        unsigned int count = self->rlock_count + 1;
         if (count <= self->rlock_count) {
             PyErr_SetString(PyExc_OverflowError,
                             "Internal lock count overflowed");
@@ -407,7 +407,7 @@ the lock is taken and its internal counter initialized to 1.");
 static PyObject *
 rlock_release(rlockobject *self, PyObject *Py_UNUSED(ignored))
 {
-    unsigned long tid = PyThread_get_thread_ident();
+    unsigned int tid = PyThread_get_thread_ident();
 
     if (self->rlock_count == 0 || self->rlock_owner != tid) {
         PyErr_SetString(PyExc_RuntimeError,
@@ -436,8 +436,8 @@ to be available for other threads.");
 static PyObject *
 rlock_acquire_restore(rlockobject *self, PyObject *args)
 {
-    unsigned long owner;
-    unsigned long count;
+    unsigned int owner;
+    unsigned int count;
     int r = 1;
 
     if (!PyArg_ParseTuple(args, "(kk):_acquire_restore", &count, &owner))
@@ -466,8 +466,8 @@ For internal use by `threading.Condition`.");
 static PyObject *
 rlock_release_save(rlockobject *self, PyObject *Py_UNUSED(ignored))
 {
-    unsigned long owner;
-    unsigned long count;
+    unsigned int owner;
+    unsigned int count;
 
     if (self->rlock_count == 0) {
         PyErr_SetString(PyExc_RuntimeError,
@@ -492,7 +492,7 @@ For internal use by `threading.Condition`.");
 static PyObject *
 rlock_is_owned(rlockobject *self, PyObject *Py_UNUSED(ignored))
 {
-    unsigned long tid = PyThread_get_thread_ident();
+    unsigned int tid = PyThread_get_thread_ident();
 
     if (self->rlock_count > 0 && self->rlock_owner == tid) {
         Py_RETURN_TRUE;
@@ -1157,7 +1157,7 @@ thread_PyThread_start_new_thread(PyObject *self, PyObject *fargs)
     boot->args = Py_NewRef(args);
     boot->kwargs = Py_XNewRef(kwargs);
 
-    unsigned long ident = PyThread_start_new_thread(thread_run, (void*) boot);
+    unsigned int ident = PyThread_start_new_thread(thread_run, (void*) boot);
     if (ident == PYTHREAD_INVALID_THREAD_ID) {
         PyErr_SetString(ThreadError, "can't start new thread");
         PyThreadState_Clear(boot->tstate);
@@ -1236,7 +1236,7 @@ information about locks.");
 static PyObject *
 thread_get_ident(PyObject *self, PyObject *Py_UNUSED(ignored))
 {
-    unsigned long ident = PyThread_get_thread_ident();
+    unsigned int ident = PyThread_get_thread_ident();
     if (ident == PYTHREAD_INVALID_THREAD_ID) {
         PyErr_SetString(ThreadError, "no current thread ident");
         return NULL;
@@ -1259,7 +1259,7 @@ A thread's identity may be reused for another thread after it exits.");
 static PyObject *
 thread_get_native_id(PyObject *self, PyObject *Py_UNUSED(ignored))
 {
-    unsigned long native_id = PyThread_get_thread_native_id();
+    unsigned int native_id = PyThread_get_thread_native_id();
     return PyLong_FromUnsignedLong(native_id);
 }
 
@@ -1428,7 +1428,7 @@ thread_excepthook_file(PyObject *file, PyObject *exc_type, PyObject *exc_value,
         Py_DECREF(name);
     }
     else {
-        unsigned long ident = PyThread_get_thread_ident();
+        unsigned int ident = PyThread_get_thread_ident();
         PyObject *str = PyUnicode_FromFormat("%lu", ident);
         if (str != NULL) {
             if (PyFile_WriteObject(str, file, Py_PRINT_RAW) < 0) {

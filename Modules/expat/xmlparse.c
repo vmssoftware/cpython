@@ -345,8 +345,8 @@ typedef struct {
 } DEFAULT_ATTRIBUTE;
 
 typedef struct {
-  unsigned long version;
-  unsigned long hash;
+  unsigned int version;
+  unsigned int hash;
   const XML_Char *uriName;
 } NS_ATT;
 
@@ -549,7 +549,7 @@ static ELEMENT_TYPE *getElementType(XML_Parser parser, const ENCODING *enc,
 static XML_Char *copyString(const XML_Char *s,
                             const XML_Memory_Handling_Suite *memsuite);
 
-static unsigned long generate_hash_secret_salt(XML_Parser parser);
+static unsigned int generate_hash_secret_salt(XML_Parser parser);
 static XML_Bool startParsing(XML_Parser parser);
 
 static XML_Parser parserCreate(const XML_Char *encodingName,
@@ -583,8 +583,8 @@ static XML_Parser getRootParserOf(XML_Parser parser,
                                   unsigned int *outLevelDiff);
 #endif /* XML_DTD */
 
-static unsigned long getDebugLevel(const char *variableName,
-                                   unsigned long defaultDebugLevel);
+static unsigned int getDebugLevel(const char *variableName,
+                                   unsigned int defaultDebugLevel);
 
 #define poolStart(pool) ((pool)->start)
 #define poolEnd(pool) ((pool)->ptr)
@@ -680,7 +680,7 @@ struct XML_ParserStruct {
   int m_idAttIndex;
   ATTRIBUTE *m_atts;
   NS_ATT *m_nsAtts;
-  unsigned long m_nsAttsVersion;
+  unsigned int m_nsAttsVersion;
   unsigned char m_nsAttsPower;
 #ifdef XML_ATTR_INFO
   XML_AttrInfo *m_attInfo;
@@ -698,7 +698,7 @@ struct XML_ParserStruct {
   XML_Bool m_useForeignDTD;
   enum XML_ParamEntityParsing m_paramEntityParsing;
 #endif
-  unsigned long m_hash_secret_salt;
+  unsigned int m_hash_secret_salt;
 #ifdef XML_DTD
   ACCOUNTING m_accounting;
   ENTITY_STATS m_entity_stats;
@@ -860,7 +860,7 @@ writeRandomBytes_rand_s(void *target, size_t count) {
 
 #if ! defined(HAVE_ARC4RANDOM_BUF) && ! defined(HAVE_ARC4RANDOM)
 
-static unsigned long
+static unsigned int
 gather_time_entropy(void) {
 #  ifdef _WIN32
   FILETIME ft;
@@ -885,18 +885,18 @@ gather_time_entropy(void) {
 
 #endif /* ! defined(HAVE_ARC4RANDOM_BUF) && ! defined(HAVE_ARC4RANDOM) */
 
-static unsigned long
-ENTROPY_DEBUG(const char *label, unsigned long entropy) {
+static unsigned int
+ENTROPY_DEBUG(const char *label, unsigned int entropy) {
   if (getDebugLevel("EXPAT_ENTROPY_DEBUG", 0) >= 1u) {
     fprintf(stderr, "expat: Entropy: %s --> 0x%0*lx (%lu bytes)\n", label,
-            (int)sizeof(entropy) * 2, entropy, (unsigned long)sizeof(entropy));
+            (int)sizeof(entropy) * 2, entropy, (unsigned int)sizeof(entropy));
   }
   return entropy;
 }
 
-static unsigned long
+static unsigned int
 generate_hash_secret_salt(XML_Parser parser) {
-  unsigned long entropy;
+  unsigned int entropy;
   (void)parser;
 
   /* "Failproof" high quality providers: */
@@ -928,16 +928,16 @@ generate_hash_secret_salt(XML_Parser parser) {
   entropy = gather_time_entropy() ^ getpid();
 
   /* Factors are 2^31-1 and 2^61-1 (Mersenne primes M31 and M61) */
-  if (sizeof(unsigned long) == 4) {
+  if (sizeof(unsigned int) == 4) {
     return ENTROPY_DEBUG("fallback(4)", entropy * 2147483647);
   } else {
     return ENTROPY_DEBUG("fallback(8)",
-                         entropy * (unsigned long)2305843009213693951ULL);
+                         entropy * (unsigned int)2305843009213693951ULL);
   }
 #endif
 }
 
-static unsigned long
+static unsigned int
 get_hash_secret_salt(XML_Parser parser) {
   if (parser->m_parentParser != NULL)
     return get_hash_secret_salt(parser->m_parentParser);
@@ -1285,7 +1285,7 @@ XML_ExternalEntityParserCreate(XML_Parser oldParser, const XML_Char *context,
      from hash tables associated with either parser without us having
      to worry which hash secrets each table has.
   */
-  unsigned long oldhash_secret_salt;
+  unsigned int oldhash_secret_salt;
 
   /* Validate the oldParser parameter before we pull everything out of it */
   if (oldParser == NULL)
@@ -1800,7 +1800,7 @@ XML_SetParamEntityParsing(XML_Parser parser,
 }
 
 int XMLCALL
-XML_SetHashSalt(XML_Parser parser, unsigned long hash_salt) {
+XML_SetHashSalt(XML_Parser parser, unsigned int hash_salt) {
   if (parser == NULL)
     return 0;
   if (parser->m_parentParser)
@@ -2510,7 +2510,7 @@ XML_GetFeatureList(void) {
       /* Added in Expat 2.4.0. */
       {XML_FEATURE_BILLION_LAUGHS_ATTACK_PROTECTION_MAXIMUM_AMPLIFICATION_DEFAULT,
        XML_L("XML_BLAP_MAX_AMP"),
-       (long int)
+       (int)
            EXPAT_BILLION_LAUGHS_ATTACK_PROTECTION_MAXIMUM_AMPLIFICATION_DEFAULT},
       {XML_FEATURE_BILLION_LAUGHS_ATTACK_PROTECTION_ACTIVATION_THRESHOLD_DEFAULT,
        XML_L("XML_BLAP_ACT_THRES"),
@@ -3412,7 +3412,7 @@ storeAtts(XML_Parser parser, const ENCODING *enc, const char *attStr,
   i = 0;
   if (nPrefixes) {
     int j; /* hash table index */
-    unsigned long version = parser->m_nsAttsVersion;
+    unsigned int version = parser->m_nsAttsVersion;
     int nsAttsSize = (int)1 << parser->m_nsAttsPower;
     unsigned char oldNsAttsPower = parser->m_nsAttsPower;
     /* size of hash table must be at least 2 * (# of prefixed attributes) */
@@ -3449,7 +3449,7 @@ storeAtts(XML_Parser parser, const ENCODING *enc, const char *attStr,
       if (s[-1] == 2) { /* prefixed */
         ATTRIBUTE_ID *id;
         const BINDING *b;
-        unsigned long uriHash;
+        unsigned int uriHash;
         struct siphash sip_state;
         struct sipkey sip_key;
 
@@ -3497,13 +3497,13 @@ storeAtts(XML_Parser parser, const ENCODING *enc, const char *attStr,
             return XML_ERROR_NO_MEMORY;
         } while (*s++);
 
-        uriHash = (unsigned long)sip24_final(&sip_state);
+        uriHash = (unsigned int)sip24_final(&sip_state);
 
         { /* Check hash table for duplicate of expanded name (uriName).
              Derived from code in lookup(parser, HASH_TABLE *table, ...).
           */
           unsigned char step = 0;
-          unsigned long mask = nsAttsSize - 1;
+          unsigned int mask = nsAttsSize - 1;
           j = uriHash & mask; /* index into hash table */
           while (parser->m_nsAtts[j].version == version) {
             /* for speed we compare stored hash values first */
@@ -6702,7 +6702,7 @@ copy_salt_to_sipkey(XML_Parser parser, struct sipkey *key) {
   key->k[1] = get_hash_secret_salt(parser);
 }
 
-static unsigned long FASTCALL
+static unsigned int FASTCALL
 hash(XML_Parser parser, KEY s) {
   struct siphash state;
   struct sipkey key;
@@ -6710,7 +6710,7 @@ hash(XML_Parser parser, KEY s) {
   copy_salt_to_sipkey(parser, &key);
   sip24_init(&state, &key);
   sip24_update(&state, s, keylen(s) * sizeof(XML_Char));
-  return (unsigned long)sip24_final(&state);
+  return (unsigned int)sip24_final(&state);
 }
 
 static NAMED *
@@ -6730,10 +6730,10 @@ lookup(XML_Parser parser, HASH_TABLE *table, KEY name, size_t createSize) {
       return NULL;
     }
     memset(table->v, 0, tsize);
-    i = hash(parser, name) & ((unsigned long)table->size - 1);
+    i = hash(parser, name) & ((unsigned int)table->size - 1);
   } else {
-    unsigned long h = hash(parser, name);
-    unsigned long mask = (unsigned long)table->size - 1;
+    unsigned int h = hash(parser, name);
+    unsigned int mask = (unsigned int)table->size - 1;
     unsigned char step = 0;
     i = h & mask;
     while (table->v[i]) {
@@ -6750,7 +6750,7 @@ lookup(XML_Parser parser, HASH_TABLE *table, KEY name, size_t createSize) {
     if (table->used >> (table->power - 1)) {
       unsigned char newPower = table->power + 1;
       size_t newSize = (size_t)1 << newPower;
-      unsigned long newMask = (unsigned long)newSize - 1;
+      unsigned int newMask = (unsigned int)newSize - 1;
       size_t tsize = newSize * sizeof(NAMED *);
       NAMED **newV = (NAMED **)table->mem->malloc_fcn(tsize);
       if (! newV)
@@ -6758,7 +6758,7 @@ lookup(XML_Parser parser, HASH_TABLE *table, KEY name, size_t createSize) {
       memset(newV, 0, tsize);
       for (i = 0; i < table->size; i++)
         if (table->v[i]) {
-          unsigned long newHash = hash(parser, table->v[i]->name);
+          unsigned int newHash = hash(parser, table->v[i]->name);
           size_t j = newHash & newMask;
           step = 0;
           while (newV[j]) {
@@ -7960,8 +7960,8 @@ unsignedCharToPrintable(unsigned char c) {
 
 #endif /* XML_DTD */
 
-static unsigned long
-getDebugLevel(const char *variableName, unsigned long defaultDebugLevel) {
+static unsigned int
+getDebugLevel(const char *variableName, unsigned int defaultDebugLevel) {
   const char *const valueOrNull = getenv(variableName);
   if (valueOrNull == NULL) {
     return defaultDebugLevel;
@@ -7970,7 +7970,7 @@ getDebugLevel(const char *variableName, unsigned long defaultDebugLevel) {
 
   errno = 0;
   char *afterValue = (char *)value;
-  unsigned long debugLevel = strtoul(value, &afterValue, 10);
+  unsigned int debugLevel = strtoul(value, &afterValue, 10);
   if ((errno != 0) || (afterValue[0] != '\0')) {
     errno = 0;
     return defaultDebugLevel;

@@ -220,7 +220,7 @@ skip_optional_kwonly:
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     /* Cleanup for path */
@@ -563,7 +563,7 @@ PyDoc_STRVAR(os_chflags__doc__,
     {"chflags", (PyCFunction)(void(*)(void))os_chflags, METH_FASTCALL|METH_KEYWORDS, os_chflags__doc__},
 
 static PyObject *
-os_chflags_impl(PyObject *module, path_t *path, unsigned long flags,
+os_chflags_impl(PyObject *module, path_t *path, unsigned int flags,
                 int follow_symlinks);
 
 static PyObject *
@@ -575,7 +575,7 @@ os_chflags(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *
     PyObject *argsbuf[3];
     Py_ssize_t noptargs = nargs + (kwnames ? PyTuple_GET_SIZE(kwnames) : 0) - 2;
     path_t path = PATH_T_INITIALIZE("chflags", "path", 0, 0);
-    unsigned long flags;
+    unsigned int flags;
     int follow_symlinks = 1;
 
     args = _PyArg_UnpackKeywords(args, nargs, NULL, kwnames, &_parser, 2, 3, 0, argsbuf);
@@ -624,7 +624,7 @@ PyDoc_STRVAR(os_lchflags__doc__,
     {"lchflags", (PyCFunction)(void(*)(void))os_lchflags, METH_FASTCALL|METH_KEYWORDS, os_lchflags__doc__},
 
 static PyObject *
-os_lchflags_impl(PyObject *module, path_t *path, unsigned long flags);
+os_lchflags_impl(PyObject *module, path_t *path, unsigned int flags);
 
 static PyObject *
 os_lchflags(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames)
@@ -634,7 +634,7 @@ os_lchflags(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject 
     static _PyArg_Parser _parser = {NULL, _keywords, "lchflags", 0};
     PyObject *argsbuf[2];
     path_t path = PATH_T_INITIALIZE("lchflags", "path", 0, 0);
-    unsigned long flags;
+    unsigned int flags;
 
     args = _PyArg_UnpackKeywords(args, nargs, NULL, kwnames, &_parser, 2, 2, 0, argsbuf);
     if (!args) {
@@ -1707,7 +1707,7 @@ PyDoc_STRVAR(os_system__doc__,
 #define OS_SYSTEM_METHODDEF    \
     {"system", (PyCFunction)(void(*)(void))os_system, METH_FASTCALL|METH_KEYWORDS, os_system__doc__},
 
-static long
+static int
 os_system_impl(PyObject *module, const Py_UNICODE *command);
 
 static PyObject *
@@ -1718,7 +1718,7 @@ os_system(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *k
     static _PyArg_Parser _parser = {NULL, _keywords, "system", 0};
     PyObject *argsbuf[1];
     const Py_UNICODE *command;
-    long _return_value;
+    int _return_value;
 
     args = _PyArg_UnpackKeywords(args, nargs, NULL, kwnames, &_parser, 1, 1, 0, argsbuf);
     if (!args) {
@@ -1764,7 +1764,7 @@ PyDoc_STRVAR(os_system__doc__,
 #define OS_SYSTEM_METHODDEF    \
     {"system", (PyCFunction)(void(*)(void))os_system, METH_FASTCALL|METH_KEYWORDS, os_system__doc__},
 
-static long
+static int
 os_system_impl(PyObject *module, PyObject *command);
 
 static PyObject *
@@ -1775,7 +1775,7 @@ os_system(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *k
     static _PyArg_Parser _parser = {NULL, _keywords, "system", 0};
     PyObject *argsbuf[1];
     PyObject *command = NULL;
-    long _return_value;
+    int _return_value;
 
     args = _PyArg_UnpackKeywords(args, nargs, NULL, kwnames, &_parser, 1, 1, 0, argsbuf);
     if (!args) {
@@ -4529,7 +4529,7 @@ skip_optional_kwonly:
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromLong((long)_return_value);
+    return_value = PyLong_FromLong((int)_return_value);
 
 exit:
     /* Cleanup for path */
@@ -4636,7 +4636,7 @@ os_dup(PyObject *module, PyObject *arg)
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromLong((long)_return_value);
+    return_value = PyLong_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -4691,7 +4691,7 @@ skip_optional_pos:
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromLong((long)_return_value);
+    return_value = PyLong_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -5404,7 +5404,7 @@ os_isatty(PyObject *module, PyObject *arg)
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -6020,7 +6020,7 @@ os_major(PyObject *module, PyObject *arg)
     if ((_return_value == (unsigned int)-1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromUnsignedLong((unsigned long)_return_value);
+    return_value = PyLong_FromUnsignedLong((unsigned int)_return_value);
 
 exit:
     return return_value;
@@ -6056,7 +6056,7 @@ os_minor(PyObject *module, PyObject *arg)
     if ((_return_value == (unsigned int)-1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromUnsignedLong((unsigned long)_return_value);
+    return_value = PyLong_FromUnsignedLong((unsigned int)_return_value);
 
 exit:
     return return_value;
@@ -6518,7 +6518,7 @@ os_WCOREDUMP(PyObject *module, PyObject *arg)
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -6565,7 +6565,7 @@ os_WIFCONTINUED(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObj
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -6609,7 +6609,7 @@ os_WIFSTOPPED(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObjec
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -6653,7 +6653,7 @@ os_WIFSIGNALED(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObje
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -6697,7 +6697,7 @@ os_WIFEXITED(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -6741,7 +6741,7 @@ os_WEXITSTATUS(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObje
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromLong((long)_return_value);
+    return_value = PyLong_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -6785,7 +6785,7 @@ os_WTERMSIG(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject 
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromLong((long)_return_value);
+    return_value = PyLong_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -6829,7 +6829,7 @@ os_WSTOPSIG(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject 
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromLong((long)_return_value);
+    return_value = PyLong_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -6970,7 +6970,7 @@ PyDoc_STRVAR(os_fpathconf__doc__,
 #define OS_FPATHCONF_METHODDEF    \
     {"fpathconf", (PyCFunction)(void(*)(void))os_fpathconf, METH_FASTCALL, os_fpathconf__doc__},
 
-static long
+static int
 os_fpathconf_impl(PyObject *module, int fd, int name);
 
 static PyObject *
@@ -6979,7 +6979,7 @@ os_fpathconf(PyObject *module, PyObject *const *args, Py_ssize_t nargs)
     PyObject *return_value = NULL;
     int fd;
     int name;
-    long _return_value;
+    int _return_value;
 
     if (!_PyArg_CheckPositional("fpathconf", nargs, 2, 2)) {
         goto exit;
@@ -7017,7 +7017,7 @@ PyDoc_STRVAR(os_pathconf__doc__,
 #define OS_PATHCONF_METHODDEF    \
     {"pathconf", (PyCFunction)(void(*)(void))os_pathconf, METH_FASTCALL|METH_KEYWORDS, os_pathconf__doc__},
 
-static long
+static int
 os_pathconf_impl(PyObject *module, path_t *path, int name);
 
 static PyObject *
@@ -7029,7 +7029,7 @@ os_pathconf(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject 
     PyObject *argsbuf[2];
     path_t path = PATH_T_INITIALIZE("pathconf", "path", 0, PATH_HAVE_FPATHCONF);
     int name;
-    long _return_value;
+    int _return_value;
 
     args = _PyArg_UnpackKeywords(args, nargs, NULL, kwnames, &_parser, 2, 2, 0, argsbuf);
     if (!args) {
@@ -7098,7 +7098,7 @@ PyDoc_STRVAR(os_sysconf__doc__,
 #define OS_SYSCONF_METHODDEF    \
     {"sysconf", (PyCFunction)os_sysconf, METH_O, os_sysconf__doc__},
 
-static long
+static int
 os_sysconf_impl(PyObject *module, int name);
 
 static PyObject *
@@ -7106,7 +7106,7 @@ os_sysconf(PyObject *module, PyObject *arg)
 {
     PyObject *return_value = NULL;
     int name;
-    long _return_value;
+    int _return_value;
 
     if (!conv_sysconf_confname(arg, &name)) {
         goto exit;
@@ -8066,7 +8066,7 @@ os_get_inheritable(PyObject *module, PyObject *arg)
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -8136,7 +8136,7 @@ os_get_handle_inheritable(PyObject *module, PyObject *arg)
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -8209,7 +8209,7 @@ os_get_blocking(PyObject *module, PyObject *arg)
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -8288,7 +8288,7 @@ os_DirEntry_is_symlink(DirEntry *self, PyTypeObject *defining_class, PyObject *c
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -8355,7 +8355,7 @@ os_DirEntry_is_dir(DirEntry *self, PyTypeObject *defining_class, PyObject *const
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -8391,7 +8391,7 @@ os_DirEntry_is_file(DirEntry *self, PyTypeObject *defining_class, PyObject *cons
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;

@@ -48,7 +48,7 @@
             return NULL;                                        \
         }                                                       \
         value = PyLong_AsUnsignedLong(args[pos]);               \
-        if (value == (unsigned long)-1) {                       \
+        if (value == (unsigned int)-1) {                       \
             _PyArg_BadArgument(func_name, "args[" #pos "]", "unsigned", args[pos]); \
             return NULL;                                        \
         }                                                       \
@@ -61,7 +61,7 @@
             return NULL;                                        \
         }                                                       \
         value = PyLong_AsUnsignedLong(args[pos]);               \
-        if (value == (unsigned long)-1) {                       \
+        if (value == (unsigned int)-1) {                       \
             _PyArg_BadArgument(func_name, "args[" #pos "]", "unsigned", args[pos]); \
             return NULL;                                        \
         }                                                       \
@@ -291,7 +291,7 @@ SYS_assign(
         ConvertArgToStr(args[2], mbxnam, mbxnam_size, "assign");
     }
 
-    unsigned long flags = 0;
+    unsigned int flags = 0;
     if (nargs > 3 && args[3] != Py_None) {
         if (PyLong_Check(args[3])) {
             flags = PyLong_AsUnsignedLong(args[3]);
@@ -461,8 +461,8 @@ SYS_getmsg(
         _PyArg_BadArgument("getmsg", "args[0]", "long", args[0]);
         return NULL;
     }
-    unsigned long msgid = PyLong_AsUnsignedLong(args[0]);
-    unsigned long flags = 0x0F;
+    unsigned int msgid = PyLong_AsUnsignedLong(args[0]);
+    unsigned int flags = 0x0F;
     if (nargs > 1) {
         if (!PyLong_Check(args[1])) {
             _PyArg_BadArgument("getmsg", "args[1]", "long", args[1]);
@@ -1264,7 +1264,7 @@ SYS_delprc(
         return NULL;
     }
 
-    unsigned long pid = 0;
+    unsigned int pid = 0;
     __void_ptr32 ppid = NULL;
     char *prcnam = NULL;
     Py_ssize_t prcnam_size = 0;
@@ -1458,7 +1458,7 @@ SYS_uicstr(
         return NULL;
     }
 
-    long val = 0;
+    int val = 0;
     ConvertPosArgToLong(0, val, "uicstr");
 
     int flag = 0;

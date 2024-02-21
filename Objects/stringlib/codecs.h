@@ -513,7 +513,7 @@ STRINGLIB(utf16_decode)(const unsigned char **inptr, const unsigned char *e,
             /* Fast path for runs of in-range non-surrogate chars. */
             const unsigned char *_q = q;
             while (_q + SIZEOF_LONG <= e) {
-                unsigned long block = * (const unsigned long *) _q;
+                unsigned int block = * (const unsigned int *) _q;
                 if (native_ordering) {
                     /* Can use buffer directly */
                     if (block & FAST_CHAR_MASK)

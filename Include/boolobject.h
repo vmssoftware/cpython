@@ -35,7 +35,7 @@ PyAPI_FUNC(int) Py_IsFalse(PyObject *x);
 #define Py_RETURN_FALSE return Py_NewRef(Py_False)
 
 /* Function to return a bool from a C long */
-PyAPI_FUNC(PyObject *) PyBool_FromLong(long);
+PyAPI_FUNC(PyObject *) PyBool_FromLong(int);
 
 #ifdef __cplusplus
 }

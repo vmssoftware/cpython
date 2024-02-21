@@ -88,7 +88,7 @@ mkpwent(PyObject *module, struct passwd *p)
     if (v == NULL)
         return NULL;
 
-#define SETI(i,val) PyStructSequence_SET_ITEM(v, i, PyLong_FromLong((long) val))
+#define SETI(i,val) PyStructSequence_SET_ITEM(v, i, PyLong_FromLong((int) val))
 #define SETS(i,val) sets(v, i, val)
 
     SETS(setIndex++, p->pw_name);

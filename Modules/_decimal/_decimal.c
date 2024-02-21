@@ -461,13 +461,13 @@ dict_as_flags(PyObject *val)
 static uint32_t
 long_as_flags(PyObject *v)
 {
-    long x;
+    int x;
 
     x = PyLong_AsLong(v);
     if (x == -1 && PyErr_Occurred()) {
         return DEC_ERR_OCCURRED;
     }
-    if (x < 0 || x > (long)MPD_Max_status) {
+    if (x < 0 || x > (int)MPD_Max_status) {
         PyErr_SetString(PyExc_TypeError, invalid_flags_err);
         return DEC_INVALID_SIGNALS;
     }
@@ -2421,7 +2421,7 @@ dectuple_as_str(PyObject *dectuple)
     char *decstring = NULL;
     char sign_special[6];
     char *cp;
-    long sign, l;
+    int sign, l;
     mpd_ssize_t exp = 0;
     Py_ssize_t i, mem, tsize;
     int is_infinite = 0;

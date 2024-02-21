@@ -17,7 +17,7 @@
  * smallmax[base] is the largest unsigned long i such that
  * i * base doesn't overflow unsigned long.
  */
-static const unsigned long smallmax[] = {
+static const unsigned int smallmax[] = {
     0, /* bases 0 and 1 are invalid */
     0,
     ULONG_MAX / 2,
@@ -91,10 +91,10 @@ static const int digitlimit[] = {
 **              Errors due to bad pointers will probably result in
 **              exceptions - we don't check for them.
 */
-unsigned long
+unsigned int
 PyOS_strtoul(const char *str, char **ptr, int base)
 {
-    unsigned long result = 0; /* return value of the function */
+    unsigned int result = 0; /* return value of the function */
     int c;             /* current input character */
     int ovlimit;       /* required digits to overflow */
 
@@ -213,7 +213,7 @@ PyOS_strtoul(const char *str, char **ptr, int base)
         if (ovlimit > 0) /* no overflow check required */
             result = result * base + c;
         else { /* requires overflow check */
-            unsigned long temp_result;
+            unsigned int temp_result;
 
             if (ovlimit < 0) /* guaranteed overflow */
                 goto overflowed;
@@ -251,19 +251,19 @@ overflowed:
         *ptr = (char *)str;
     }
     errno = ERANGE;
-    return (unsigned long)-1;
+    return (unsigned int)-1;
 }
 
 /* Checking for overflow in PyOS_strtol is a PITA; see comments
  * about PY_ABS_LONG_MIN in longobject.c.
  */
-#define PY_ABS_LONG_MIN         (0-(unsigned long)LONG_MIN)
+#define PY_ABS_LONG_MIN         (0-(unsigned int)LONG_MIN)
 
-long
+int
 PyOS_strtol(const char *str, char **ptr, int base)
 {
-    long result;
-    unsigned long uresult;
+    int result;
+    unsigned int uresult;
     char sign;
 
     while (*str && Py_ISSPACE(*str))
@@ -275,8 +275,8 @@ PyOS_strtol(const char *str, char **ptr, int base)
 
     uresult = PyOS_strtoul(str, ptr, base);
 
-    if (uresult <= (unsigned long)LONG_MAX) {
-        result = (long)uresult;
+    if (uresult <= (unsigned int)LONG_MAX) {
+        result = (int)uresult;
         if (sign == '-')
             result = -result;
     }

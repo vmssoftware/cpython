@@ -33,10 +33,10 @@ PyMember_GetOne(const char *obj_addr, PyMemberDef *l)
         v = PyLong_FromUnsignedLong(*(unsigned int*)addr);
         break;
     case T_LONG:
-        v = PyLong_FromLong(*(long*)addr);
+        v = PyLong_FromLong(*(int*)addr);
         break;
     case T_ULONG:
-        v = PyLong_FromUnsignedLong(*(unsigned long*)addr);
+        v = PyLong_FromUnsignedLong(*(unsigned int*)addr);
         break;
     case T_PYSSIZET:
         v = PyLong_FromSsize_t(*(Py_ssize_t*)addr);
@@ -141,7 +141,7 @@ PyMember_SetOne(char *addr, PyMemberDef *l, PyObject *v)
         break;
         }
     case T_BYTE:{
-        long long_val = PyLong_AsLong(v);
+        int long_val = PyLong_AsLong(v);
         if ((long_val == -1) && PyErr_Occurred())
             return -1;
         *(char*)addr = (char)long_val;
@@ -152,7 +152,7 @@ PyMember_SetOne(char *addr, PyMemberDef *l, PyObject *v)
         break;
         }
     case T_UBYTE:{
-        long long_val = PyLong_AsLong(v);
+        int long_val = PyLong_AsLong(v);
         if ((long_val == -1) && PyErr_Occurred())
             return -1;
         *(unsigned char*)addr = (unsigned char)long_val;
@@ -161,7 +161,7 @@ PyMember_SetOne(char *addr, PyMemberDef *l, PyObject *v)
         break;
         }
     case T_SHORT:{
-        long long_val = PyLong_AsLong(v);
+        int long_val = PyLong_AsLong(v);
         if ((long_val == -1) && PyErr_Occurred())
             return -1;
         *(short*)addr = (short)long_val;
@@ -170,7 +170,7 @@ PyMember_SetOne(char *addr, PyMemberDef *l, PyObject *v)
         break;
         }
     case T_USHORT:{
-        long long_val = PyLong_AsLong(v);
+        int long_val = PyLong_AsLong(v);
         if ((long_val == -1) && PyErr_Occurred())
             return -1;
         *(unsigned short*)addr = (unsigned short)long_val;
@@ -179,7 +179,7 @@ PyMember_SetOne(char *addr, PyMemberDef *l, PyObject *v)
         break;
         }
     case T_INT:{
-        long long_val = PyLong_AsLong(v);
+        int long_val = PyLong_AsLong(v);
         if ((long_val == -1) && PyErr_Occurred())
             return -1;
         *(int *)addr = (int)long_val;
@@ -188,13 +188,13 @@ PyMember_SetOne(char *addr, PyMemberDef *l, PyObject *v)
         break;
         }
     case T_UINT:{
-        unsigned long ulong_val = PyLong_AsUnsignedLong(v);
-        if ((ulong_val == (unsigned long)-1) && PyErr_Occurred()) {
+        unsigned int ulong_val = PyLong_AsUnsignedLong(v);
+        if ((ulong_val == (unsigned int)-1) && PyErr_Occurred()) {
             /* XXX: For compatibility, accept negative int values
                as well. */
             PyErr_Clear();
             ulong_val = PyLong_AsLong(v);
-            if ((ulong_val == (unsigned long)-1) &&
+            if ((ulong_val == (unsigned int)-1) &&
                 PyErr_Occurred())
                 return -1;
             *(unsigned int *)addr = (unsigned int)ulong_val;
@@ -206,20 +206,20 @@ PyMember_SetOne(char *addr, PyMemberDef *l, PyObject *v)
         break;
         }
     case T_LONG:{
-        *(long*)addr = PyLong_AsLong(v);
-        if ((*(long*)addr == -1) && PyErr_Occurred())
+        *(int*)addr = PyLong_AsLong(v);
+        if ((*(int*)addr == -1) && PyErr_Occurred())
             return -1;
         break;
         }
     case T_ULONG:{
-        *(unsigned long*)addr = PyLong_AsUnsignedLong(v);
-        if ((*(unsigned long*)addr == (unsigned long)-1)
+        *(unsigned int*)addr = PyLong_AsUnsignedLong(v);
+        if ((*(unsigned int*)addr == (unsigned int)-1)
             && PyErr_Occurred()) {
             /* XXX: For compatibility, accept negative int values
                as well. */
             PyErr_Clear();
-            *(unsigned long*)addr = PyLong_AsLong(v);
-            if ((*(unsigned long*)addr == (unsigned long)-1)
+            *(unsigned int*)addr = PyLong_AsLong(v);
+            if ((*(unsigned int*)addr == (unsigned int)-1)
                 && PyErr_Occurred())
                 return -1;
             WARN("Writing negative value into unsigned field");

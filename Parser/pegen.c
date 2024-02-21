@@ -783,7 +783,7 @@ _PyPegen_fill_token(Parser *p)
 // indexed by type.
 
 #define NSTATISTICS 2000
-static long memo_statistics[NSTATISTICS];
+static int memo_statistics[NSTATISTICS];
 
 void
 _PyPegen_clear_memo_statistics()
@@ -832,7 +832,7 @@ _PyPegen_is_memoized(Parser *p, int type, void *pres)
         if (m->type == type) {
 #if defined(PY_DEBUG)
             if (0 <= type && type < NSTATISTICS) {
-                long count = m->mark - p->mark;
+                int count = m->mark - p->mark;
                 // A memoized negative result counts for one.
                 if (count <= 0) {
                     count = 1;
@@ -1020,7 +1020,7 @@ static PyObject *
 parsenumber_raw(const char *s)
 {
     const char *end;
-    long x;
+    int x;
     double dx;
     Py_complex compl;
     int imflag;
@@ -1030,7 +1030,7 @@ parsenumber_raw(const char *s)
     end = s + strlen(s) - 1;
     imflag = *end == 'j' || *end == 'J';
     if (s[0] == '0') {
-        x = (long)PyOS_strtoul(s, (char **)&end, 0);
+        x = (int)PyOS_strtoul(s, (char **)&end, 0);
         if (x < 0 && errno == 0) {
             return PyLong_FromString(s, (char **)0, 0);
         }

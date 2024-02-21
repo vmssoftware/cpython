@@ -443,7 +443,7 @@ static PyType_Spec sslerror_type_spec = {
 static void
 fill_and_set_sslerror(_sslmodulestate *state,
                       PySSLSocket *sslsock, PyObject *type, int ssl_errno,
-                      const char *errstr, int lineno, unsigned long errcode)
+                      const char *errstr, int lineno, unsigned int errcode)
 {
     PyObject *err_value = NULL, *reason_obj = NULL, *lib_obj = NULL;
     PyObject *verify_obj = NULL, *verify_code_obj = NULL;
@@ -483,7 +483,7 @@ fill_and_set_sslerror(_sslmodulestate *state,
     /* verify code for cert validation error */
     if ((sslsock != NULL) && (type == state->PySSLCertVerificationErrorObject)) {
         const char *verify_str = NULL;
-        long verify_code;
+        int verify_code;
 
         verify_code = SSL_get_verify_result(sslsock->ssl);
         verify_code_obj = PyLong_FromLong(verify_code);
@@ -588,7 +588,7 @@ PySSL_SetError(PySSLSocket *sslsock, int ret, const char *filename, int lineno)
     char *errstr = NULL;
     _PySSLError err;
     enum py_ssl_error p = PY_SSL_ERROR_NONE;
-    unsigned long e = 0;
+    unsigned int e = 0;
 
     assert(sslsock != NULL);
 
@@ -1940,7 +1940,7 @@ cipher_to_dict(const SSL_CIPHER *cipher)
 {
     const char *cipher_name, *cipher_protocol;
 
-    unsigned long cipher_id;
+    unsigned int cipher_id;
     int alg_bits, strength_bits, len;
     char buf[512] = {0};
     int aead, nid;
@@ -2976,7 +2976,7 @@ _ssl__SSLContext_impl(PyTypeObject *type, int proto_version)
 /*[clinic end generated code: output=2cf0d7a0741b6bd1 input=8d58a805b95fc534]*/
 {
     PySSLContext *self;
-    long options;
+    int options;
     const SSL_METHOD *method = NULL;
     SSL_CTX *ctx = NULL;
     X509_VERIFY_PARAM *params;
@@ -3382,7 +3382,7 @@ static PyObject *
 get_verify_flags(PySSLContext *self, void *c)
 {
     X509_VERIFY_PARAM *param;
-    unsigned long flags;
+    unsigned int flags;
 
     param = SSL_CTX_get0_param(self->ctx);
     flags = X509_VERIFY_PARAM_get_flags(param);
@@ -3393,7 +3393,7 @@ static int
 set_verify_flags(PySSLContext *self, PyObject *arg, void *c)
 {
     X509_VERIFY_PARAM *param;
-    unsigned long new_flags, flags, set, clear;
+    unsigned int new_flags, flags, set, clear;
 
     if (!PyArg_Parse(arg, "k", &new_flags))
         return -1;
@@ -3420,7 +3420,7 @@ set_verify_flags(PySSLContext *self, PyObject *arg, void *c)
 static int
 set_min_max_proto_version(PySSLContext *self, PyObject *arg, int what)
 {
-    long v;
+    int v;
     int result;
 
     if (!PyArg_Parse(arg, "l", &v))
@@ -3545,7 +3545,7 @@ get_num_tickets(PySSLContext *self, void *c)
 static int
 set_num_tickets(PySSLContext *self, PyObject *arg, void *c)
 {
-    long num;
+    int num;
     if (!PyArg_Parse(arg, "l", &num))
         return -1;
     if (num < 0) {
@@ -3584,8 +3584,8 @@ get_options(PySSLContext *self, void *c)
 static int
 set_options(PySSLContext *self, PyObject *arg, void *c)
 {
-    long new_opts, opts, set, clear;
-    long opt_no = (
+    int new_opts, opts, set, clear;
+    int opt_no = (
         SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_TLSv1 |
         SSL_OP_NO_TLSv1_1 | SSL_OP_NO_TLSv1_2 | SSL_OP_NO_TLSv1_3
     );
@@ -4995,7 +4995,7 @@ PyDoc_STRVAR(PySSLSession_get_timeout_doc,
 
 static PyObject *
 PySSLSession_get_ticket_lifetime_hint(PySSLSession *self, void *closure) {
-    unsigned long hint = SSL_SESSION_get_ticket_lifetime_hint(self->session);
+    unsigned int hint = SSL_SESSION_get_ticket_lifetime_hint(self->session);
     return PyLong_FromUnsignedLong(hint);
 }
 
@@ -5096,7 +5096,7 @@ PySSL_RAND(PyObject *module, int len, int pseudo)
 {
     int ok;
     PyObject *bytes;
-    unsigned long err;
+    unsigned int err;
     const char *errstr;
     PyObject *v;
 
@@ -6043,7 +6043,7 @@ sslmodule_init_errorcodes(PyObject *module)
 }
 
 static void
-parse_openssl_version(unsigned long libver,
+parse_openssl_version(unsigned int libver,
                       unsigned int *major, unsigned int *minor,
                       unsigned int *fix, unsigned int *patch,
                       unsigned int *status)
@@ -6063,7 +6063,7 @@ static int
 sslmodule_init_versioninfo(PyObject *m)
 {
     PyObject *r;
-    unsigned long libver;
+    unsigned int libver;
     unsigned int major, minor, fix, patch, status;
 
     /* OpenSSL version */
