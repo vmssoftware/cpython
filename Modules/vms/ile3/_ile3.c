@@ -8,7 +8,10 @@
 #include <starlet.h>
 #include <ssdef.h>
 #include <iledef.h>
+
+#ifdef __x86_64
 #include <alloca.h>
+#endif
 
 #ifndef MIN
 #define MIN(a,b) ((a)<(b)?(a):(b))

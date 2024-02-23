@@ -1,4 +1,6 @@
 # Requires build on VILE
-# python -m pip wheel -w /pyth$whl --no-deps --no-cache-dir -r _b_build.txt -c constraints.txt
+# def pyth$whl_built work7:[vorfolomeev.pyth$whl_built.]
+# python -m pip wheel -w /pyth$whl_built --no-deps --no-cache-dir -r _b_build.txt -c constraints.txt
 MarkupSafe
 blinker
+# copy PYTH$WHL_BUILT:[000000]*.* PYTH$WHL:[000000] /log
