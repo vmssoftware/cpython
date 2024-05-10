@@ -123,7 +123,7 @@ SYS_asctim(
         _PyArg_BadArgument("asctime", "args[0]", "long", args[0]);
         return NULL;
     }
-    unsigned long long vms_time = PyLong_AsUnsignedLongLong(args[0]);
+    long long vms_time = PyLong_AsLongLong(args[0]);
     int cvt_flag = 0;
 
     if (nargs > 1) {
