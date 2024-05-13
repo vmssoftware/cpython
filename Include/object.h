@@ -252,7 +252,7 @@ PyAPI_DATA(PyTypeObject) PyType_Type; /* built-in 'type' */
 PyAPI_DATA(PyTypeObject) PyBaseObject_Type; /* built-in 'object' */
 PyAPI_DATA(PyTypeObject) PySuper_Type; /* built-in 'super' */
 
-PyAPI_FUNC(unsigned long) PyType_GetFlags(PyTypeObject*);
+PyAPI_FUNC(unsigned int) PyType_GetFlags(PyTypeObject*);
 
 PyAPI_FUNC(int) PyType_Ready(PyTypeObject *);
 PyAPI_FUNC(PyObject *) PyType_GenericAlloc(PyTypeObject *, Py_ssize_t);
@@ -719,9 +719,9 @@ times.
 
 
 static inline int
-PyType_HasFeature(PyTypeObject *type, unsigned long feature)
+PyType_HasFeature(PyTypeObject *type, unsigned int feature)
 {
-    unsigned long flags;
+    unsigned int flags;
 #ifdef Py_LIMITED_API
     // PyTypeObject is opaque in the limited C API
     flags = PyType_GetFlags(type);

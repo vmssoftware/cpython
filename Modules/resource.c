@@ -181,12 +181,12 @@ error:
 static PyObject*
 rlimit2py(struct rlimit rl)
 {
-    if (sizeof(rl.rlim_cur) > sizeof(long)) {
+    if (sizeof(rl.rlim_cur) > sizeof(int)) {
         return Py_BuildValue("LL",
                              (long long) rl.rlim_cur,
                              (long long) rl.rlim_max);
     }
-    return Py_BuildValue("ll", (long) rl.rlim_cur, (long) rl.rlim_max);
+    return Py_BuildValue("ll", (int) rl.rlim_cur, (int) rl.rlim_max);
 }
 
 /*[clinic input]
@@ -323,7 +323,7 @@ static int
 resource_getpagesize_impl(PyObject *module)
 /*[clinic end generated code: output=9ba93eb0f3d6c3a9 input=546545e8c1f42085]*/
 {
-    long pagesize = 0;
+    int pagesize = 0;
 #if defined(HAVE_GETPAGESIZE)
     pagesize = getpagesize();
 #elif defined(HAVE_SYSCONF) && defined(_SC_PAGE_SIZE)
@@ -485,11 +485,11 @@ resource_exec(PyObject *module)
 #endif
 
     PyObject *v;
-    if (sizeof(RLIM_INFINITY) > sizeof(long)) {
+    if (sizeof(RLIM_INFINITY) > sizeof(int)) {
         v = PyLong_FromLongLong((long long) RLIM_INFINITY);
     } else
     {
-        v = PyLong_FromLong((long) RLIM_INFINITY);
+        v = PyLong_FromLong((int) RLIM_INFINITY);
     }
     if (!v) {
         return -1;

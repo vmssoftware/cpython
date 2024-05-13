@@ -35,7 +35,7 @@ sem_t_mbx *sem_open_mbx (const char *name, int oflag, ...) {
     $DESCRIPTOR(dsc_name, "");
     sem_t_mbx *sem = SEM_FAILED_MBX;
     va_list vargs;
-    unsigned long mode;
+    unsigned int mode;
     unsigned int value;
     struct _iosb iosb;
     char buffer[8] = {0};
@@ -44,7 +44,7 @@ sem_t_mbx *sem_open_mbx (const char *name, int oflag, ...) {
 
     if (oflag != 0) {
         va_start(vargs, oflag);
-        mode = va_arg(vargs, unsigned long);
+        mode = va_arg(vargs, unsigned int);
         value = va_arg(vargs, unsigned int);
         va_end(vargs);
 
@@ -79,7 +79,7 @@ sem_t_mbx *sem_open_mbx (const char *name, int oflag, ...) {
         } else {
             if (value && value <= SEM_VALUE_MAX_MBX) {
                 // write value
-                *((unsigned long*)buffer) = value;
+                *((unsigned int*)buffer) = value;
             #ifdef _USE_EFN_
                 status = LIB$GET_EF(&efn);      /* if it fails just use 0 */
             #endif
@@ -143,7 +143,7 @@ int sem_wait_mbx (sem_t_mbx *sem) {
     int status = -1;
     struct _iosb iosb;
     char buffer[8] = {0};
-    unsigned long *pvalue = (unsigned long *)buffer;
+    unsigned int *pvalue = (unsigned int *)buffer;
     int efn = EFN$C_ENF;
 
     // read current value with waiting
@@ -217,7 +217,7 @@ int sem_trywait_mbx (sem_t_mbx *sem) {
     int status = -1;
     struct _iosb iosb;
     char buffer[8] = {0};
-    unsigned long *pvalue = (unsigned long *)buffer;
+    unsigned int *pvalue = (unsigned int *)buffer;
     int efn = EFN$C_ENF;
 
     // try to read current value without waiting
@@ -297,7 +297,7 @@ int sem_post_mbx (sem_t_mbx *sem) {
     int status = -1;
     struct _iosb iosb;
     char buffer[8] = {0};
-    unsigned long *pvalue = (unsigned long *)buffer;
+    unsigned int *pvalue = (unsigned int *)buffer;
     int efn = EFN$C_ENF;
 
     // try to read current value without waiting
@@ -373,7 +373,7 @@ int sem_getvalue_mbx (sem_t_mbx *sem, int *sval) {
     int status = -1;
     struct _iosb iosb;
     char buffer[8] = {0};
-    unsigned long *pvalue = (unsigned long *)buffer;
+    unsigned int *pvalue = (unsigned int *)buffer;
     int efn = EFN$C_ENF;
 
     if (!sval) {

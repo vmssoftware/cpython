@@ -20,7 +20,7 @@ typedef struct {
     PyObject *utcoff;
     PyObject *dstoff;
     PyObject *tzname;
-    long utcoff_seconds;
+    int utcoff_seconds;
 } _ttinfo;
 
 typedef struct {
@@ -107,11 +107,11 @@ static const int SOURCE_FILE = 2;
 static int
 load_data(PyZoneInfo_ZoneInfo *self, PyObject *file_obj);
 static void
-utcoff_to_dstoff(size_t *trans_idx, long *utcoffs, long *dstoffs,
+utcoff_to_dstoff(size_t *trans_idx, int *utcoffs, int *dstoffs,
                  unsigned char *isdsts, size_t num_transitions,
                  size_t num_ttinfos);
 static int
-ts_to_local(size_t *trans_idx, int64_t *trans_utc, long *utcoff,
+ts_to_local(size_t *trans_idx, int64_t *trans_utc, int *utcoff,
             int64_t *trans_local[2], size_t num_ttinfos,
             size_t num_transitions);
 
@@ -121,7 +121,7 @@ parse_tz_str(PyObject *tz_str_obj, _tzrule *out);
 static Py_ssize_t
 parse_abbr(const char *const p, PyObject **abbr);
 static Py_ssize_t
-parse_tz_delta(const char *const p, long *total_seconds);
+parse_tz_delta(const char *const p, int *total_seconds);
 static Py_ssize_t
 parse_transition_time(const char *const p, int8_t *hour, int8_t *minute,
                       int8_t *second);
@@ -135,21 +135,21 @@ find_tzrule_ttinfo_fromutc(_tzrule *rule, int64_t ts, int year,
                            unsigned char *fold);
 
 static int
-build_ttinfo(long utcoffset, long dstoffset, PyObject *tzname, _ttinfo *out);
+build_ttinfo(int utcoffset, int dstoffset, PyObject *tzname, _ttinfo *out);
 static void
 xdecref_ttinfo(_ttinfo *ttinfo);
 static int
 ttinfo_eq(const _ttinfo *const tti0, const _ttinfo *const tti1);
 
 static int
-build_tzrule(PyObject *std_abbr, PyObject *dst_abbr, long std_offset,
-             long dst_offset, TransitionRuleType *start,
+build_tzrule(PyObject *std_abbr, PyObject *dst_abbr, int std_offset,
+             int dst_offset, TransitionRuleType *start,
              TransitionRuleType *end, _tzrule *out);
 static void
 free_tzrule(_tzrule *tzrule);
 
 static PyObject *
-load_timedelta(long seconds);
+load_timedelta(int seconds);
 
 static int
 get_local_timestamp(PyObject *dt, int64_t *local_ts);
@@ -724,7 +724,7 @@ zoneinfo__unpickle(PyTypeObject *cls, PyObject *args)
  * This returns a new reference to the timedelta.
  */
 static PyObject *
-load_timedelta(long seconds)
+load_timedelta(int seconds)
 {
     PyObject *rv;
     PyObject *pyoffset = PyLong_FromLong(seconds);
@@ -760,7 +760,7 @@ error:
  * initialized _ttinfo objects.
  */
 static int
-build_ttinfo(long utcoffset, long dstoffset, PyObject *tzname, _ttinfo *out)
+build_ttinfo(int utcoffset, int dstoffset, PyObject *tzname, _ttinfo *out)
 {
     out->utcoff = NULL;
     out->dstoff = NULL;
@@ -833,8 +833,8 @@ load_data(PyZoneInfo_ZoneInfo *self, PyObject *file_obj)
 {
     PyObject *data_tuple = NULL;
 
-    long *utcoff = NULL;
-    long *dstoff = NULL;
+    int *utcoff = NULL;
+    int *dstoff = NULL;
     size_t *trans_idx = NULL;
     unsigned char *isdst = NULL;
 
@@ -947,7 +947,7 @@ load_data(PyZoneInfo_ZoneInfo *self, PyObject *file_obj)
     }
 
     // Load UTC offsets and isdst (size num_ttinfos)
-    utcoff = PyMem_Malloc(self->num_ttinfos * sizeof(long));
+    utcoff = PyMem_Malloc(self->num_ttinfos * sizeof(int));
     isdst = PyMem_Malloc(self->num_ttinfos * sizeof(unsigned char));
 
     if (utcoff == NULL || isdst == NULL) {
@@ -978,7 +978,7 @@ load_data(PyZoneInfo_ZoneInfo *self, PyObject *file_obj)
         }
     }
 
-    dstoff = PyMem_Calloc(self->num_ttinfos, sizeof(long));
+    dstoff = PyMem_Calloc(self->num_ttinfos, sizeof(int));
     if (dstoff == NULL) {
         goto error;
     }
@@ -1474,8 +1474,8 @@ parse_tz_str(PyObject *tz_str_obj, _tzrule *out)
     TransitionRuleType *start = NULL;
     TransitionRuleType *end = NULL;
     // Initialize offsets to invalid value (> 24 hours)
-    long std_offset = 1 << 20;
-    long dst_offset = 1 << 20;
+    int std_offset = 1 << 20;
+    int dst_offset = 1 << 20;
 
     const char *tz_str = PyBytes_AsString(tz_str_obj);
     if (tz_str == NULL) {
@@ -1647,7 +1647,7 @@ parse_abbr(const char *const p, PyObject **abbr)
 
 /* Parse a UTC offset from a TZ str. */
 static Py_ssize_t
-parse_tz_delta(const char *const p, long *total_seconds)
+parse_tz_delta(const char *const p, int *total_seconds)
 {
     // From the POSIX spec:
     //
@@ -1662,10 +1662,10 @@ parse_tz_delta(const char *const p, long *total_seconds)
     // The POSIX spec says that the values for `hour` must be between 0 and 24
     // hours, but RFC 8536 §3.3.1 specifies that the hours part of the
     // transition times may be signed and range from -167 to 167.
-    long sign = -1;
-    long hours = 0;
-    long minutes = 0;
-    long seconds = 0;
+    int sign = -1;
+    int hours = 0;
+    int minutes = 0;
+    int seconds = 0;
 
     const char *ptr = p;
     char buff = *ptr;
@@ -1704,7 +1704,7 @@ parse_tz_delta(const char *const p, long *total_seconds)
     }
 
     // Minutes and seconds always of the format ":dd"
-    long *outputs[2] = {&minutes, &seconds};
+    int *outputs[2] = {&minutes, &seconds};
     for (size_t i = 0; i < 2; ++i) {
         if (*ptr != ':') {
             goto complete;
@@ -1917,8 +1917,8 @@ parse_transition_time(const char *const p, int8_t *hour, int8_t *minute,
  * Returns 0 on success.
  */
 static int
-build_tzrule(PyObject *std_abbr, PyObject *dst_abbr, long std_offset,
-             long dst_offset, TransitionRuleType *start,
+build_tzrule(PyObject *std_abbr, PyObject *dst_abbr, int std_offset,
+             int dst_offset, TransitionRuleType *start,
              TransitionRuleType *end, _tzrule *out)
 {
     _tzrule rv = {{0}};
@@ -1979,7 +1979,7 @@ free_tzrule(_tzrule *tzrule)
  * bool(dt.dst()) will always match ttinfo.isdst.
  */
 static void
-utcoff_to_dstoff(size_t *trans_idx, long *utcoffs, long *dstoffs,
+utcoff_to_dstoff(size_t *trans_idx, int *utcoffs, int *dstoffs,
                  unsigned char *isdsts, size_t num_transitions,
                  size_t num_ttinfos)
 {
@@ -2002,8 +2002,8 @@ utcoff_to_dstoff(size_t *trans_idx, long *utcoffs, long *dstoffs,
             continue;
         }
 
-        long dstoff = 0;
-        long utcoff = utcoffs[idx];
+        int dstoff = 0;
+        int utcoff = utcoffs[idx];
 
         if (!isdsts[comp_idx]) {
             dstoff = utcoff - utcoffs[comp_idx];
@@ -2063,7 +2063,7 @@ utcoff_to_dstoff(size_t *trans_idx, long *utcoffs, long *dstoffs,
  * arrays must be freed if they are not NULL.
  */
 static int
-ts_to_local(size_t *trans_idx, int64_t *trans_utc, long *utcoff,
+ts_to_local(size_t *trans_idx, int64_t *trans_utc, int *utcoff,
             int64_t *trans_local[2], size_t num_ttinfos,
             size_t num_transitions)
 {

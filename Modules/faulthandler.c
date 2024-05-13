@@ -147,7 +147,7 @@ static int
 faulthandler_get_fileno(PyObject **file_ptr)
 {
     PyObject *result;
-    long fd_long;
+    int fd_long;
     int fd;
     PyObject *file = *file_ptr;
 
@@ -668,11 +668,11 @@ cancel_dump_traceback_later(void)
 static char*
 format_timeout(_PyTime_t us)
 {
-    unsigned long sec, min, hour;
+    unsigned int sec, min, hour;
     char buffer[100];
 
     /* the downcast is safe: the caller check that 0 < us <= LONG_MAX */
-    sec = (unsigned long)(us / SEC_TO_US);
+    sec = (unsigned int)(us / SEC_TO_US);
     us %= SEC_TO_US;
 
     min = sec / 60;
@@ -1096,7 +1096,7 @@ faulthandler_fatal_error_thread(void *plock)
 static PyObject *
 faulthandler_fatal_error_c_thread(PyObject *self, PyObject *args)
 {
-    long thread;
+    int thread;
     PyThread_type_lock lock;
 
     faulthandler_suppress_crash_report();

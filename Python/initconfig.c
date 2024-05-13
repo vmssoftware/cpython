@@ -1103,14 +1103,14 @@ config_dict_get_int(PyObject *dict, const char *name, int *result)
 
 
 static int
-config_dict_get_ulong(PyObject *dict, const char *name, unsigned long *result)
+config_dict_get_ulong(PyObject *dict, const char *name, unsigned int *result)
 {
     PyObject *item = config_dict_get(dict, name);
     if (item == NULL) {
         return -1;
     }
-    unsigned long value = PyLong_AsUnsignedLong(item);
-    if (value == (unsigned long)-1 && PyErr_Occurred()) {
+    unsigned int value = PyLong_AsUnsignedLong(item);
+    if (value == (unsigned int)-1 && PyErr_Occurred()) {
         if (PyErr_ExceptionMatches(PyExc_TypeError)) {
             config_dict_invalid_type(name);
         }
@@ -1604,7 +1604,7 @@ config_init_hash_seed(PyConfig *config)
     /* Convert a text seed to a numeric one */
     if (seed_text && strcmp(seed_text, "random") != 0) {
         const char *endptr = seed_text;
-        unsigned long seed;
+        unsigned int seed;
         errno = 0;
         seed = strtoul(seed_text, (char **)&endptr, 10);
         if (*endptr != '\0'
@@ -1632,7 +1632,7 @@ config_wstr_to_int(const wchar_t *wstr, int *result)
 {
     const wchar_t *endptr = wstr;
     errno = 0;
-    long value = wcstol(wstr, (wchar_t **)&endptr, 10);
+    int value = wcstol(wstr, (wchar_t **)&endptr, 10);
     if (*endptr != '\0' || errno == ERANGE) {
         return -1;
     }

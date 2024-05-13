@@ -530,11 +530,11 @@ instancemethod_repr(PyObject *self)
 }
 
 /*
-static long
+static int
 instancemethod_hash(PyObject *self)
 {
-    long x, y;
-    x = (long)self;
+    int x, y;
+    x = (int)self;
     y = PyObject_Hash(PyInstanceMethod_GET_FUNCTION(self));
     if (y == -1)
         return -1;

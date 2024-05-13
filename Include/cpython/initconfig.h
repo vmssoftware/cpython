@@ -136,7 +136,7 @@ typedef struct PyConfig {
     int dev_mode;
     int install_signal_handlers;
     int use_hash_seed;
-    unsigned long hash_seed;
+    unsigned int hash_seed;
     int faulthandler;
     int tracemalloc;
     int import_time;

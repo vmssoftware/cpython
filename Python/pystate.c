@@ -1118,7 +1118,7 @@ PyThreadState_GetID(PyThreadState *tstate)
    existing async exception.  This raises no exceptions. */
 
 int
-PyThreadState_SetAsyncExc(unsigned long id, PyObject *exc)
+PyThreadState_SetAsyncExc(unsigned int id, PyObject *exc)
 {
     _PyRuntimeState *runtime = &_PyRuntime;
     PyInterpreterState *interp = _PyRuntimeState_GetThreadState(runtime)->interp;

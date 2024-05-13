@@ -558,7 +558,7 @@ _Py_str_to_int(const char *str, int *result)
 {
     const char *endptr = str;
     errno = 0;
-    long value = strtol(str, (char **)&endptr, 10);
+    int value = strtol(str, (char **)&endptr, 10);
     if (*endptr != '\0' || errno == ERANGE) {
         return -1;
     }

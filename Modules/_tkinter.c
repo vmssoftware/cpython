@@ -1080,7 +1080,7 @@ AsObj(PyObject *value)
 
     if (PyLong_CheckExact(value)) {
         int overflow;
-        long longValue;
+        int longValue;
 #ifdef TCL_WIDE_INT_TYPE
         Tcl_WideInt wideValue;
 #endif
@@ -1229,7 +1229,7 @@ static PyObject*
 fromBignumObj(TkappObject *tkapp, Tcl_Obj *value)
 {
     mp_int bigValue;
-    unsigned long numBytes;
+    unsigned int numBytes;
     unsigned char *bytes;
     PyObject *res;
 
@@ -1287,7 +1287,7 @@ FromObj(TkappObject *tkapp, Tcl_Obj *value)
     }
 
     if (value->typePtr == tkapp->IntType) {
-        long longValue;
+        int longValue;
         if (Tcl_GetLongFromObj(interp, value, &longValue) == TCL_OK)
             return PyLong_FromLong(longValue);
         /* If there is an error in the long conversion,
@@ -2187,7 +2187,7 @@ _tkinter_tkapp_exprlong_impl(TkappObject *self, const char *s)
 {
     PyObject *res = NULL;
     int retval;
-    long v;
+    int v;
 
     CHECK_STRING_LENGTH(s);
     CHECK_TCL_APPARTMENT;

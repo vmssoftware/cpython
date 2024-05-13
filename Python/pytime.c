@@ -74,8 +74,8 @@ _PyLong_AsTime_t(PyObject *obj)
     long long val;
     val = PyLong_AsLongLong(obj);
 #else
-    long val;
-    Py_BUILD_ASSERT(sizeof(time_t) <= sizeof(long));
+    int val;
+    Py_BUILD_ASSERT(sizeof(time_t) <= sizeof(int));
     val = PyLong_AsLong(obj);
 #endif
     if (val == -1 && PyErr_Occurred()) {
@@ -93,8 +93,8 @@ _PyLong_FromTime_t(time_t t)
 #if SIZEOF_TIME_T == SIZEOF_LONG_LONG
     return PyLong_FromLongLong((long long)t);
 #else
-    Py_BUILD_ASSERT(sizeof(time_t) <= sizeof(long));
-    return PyLong_FromLong((long)t);
+    Py_BUILD_ASSERT(sizeof(time_t) <= sizeof(int));
+    return PyLong_FromLong((int)t);
 #endif
 }
 
@@ -135,8 +135,8 @@ _PyTime_Round(double x, _PyTime_round_t round)
 }
 
 static int
-_PyTime_DoubleToDenominator(double d, time_t *sec, long *numerator,
-                            long idenominator, _PyTime_round_t round)
+_PyTime_DoubleToDenominator(double d, time_t *sec, int *numerator,
+                            int idenominator, _PyTime_round_t round)
 {
     double denominator = (double)idenominator;
     double intpart;
@@ -162,14 +162,14 @@ _PyTime_DoubleToDenominator(double d, time_t *sec, long *numerator,
         return -1;
     }
     *sec = (time_t)intpart;
-    *numerator = (long)floatpart;
+    *numerator = (int)floatpart;
     assert(0 <= *numerator && *numerator < idenominator);
     return 0;
 }
 
 static int
-_PyTime_ObjectToDenominator(PyObject *obj, time_t *sec, long *numerator,
-                            long denominator, _PyTime_round_t round)
+_PyTime_ObjectToDenominator(PyObject *obj, time_t *sec, int *numerator,
+                            int denominator, _PyTime_round_t round)
 {
     assert(denominator >= 1);
 
@@ -227,14 +227,14 @@ _PyTime_ObjectToTime_t(PyObject *obj, time_t *sec, _PyTime_round_t round)
 }
 
 int
-_PyTime_ObjectToTimespec(PyObject *obj, time_t *sec, long *nsec,
+_PyTime_ObjectToTimespec(PyObject *obj, time_t *sec, int *nsec,
                          _PyTime_round_t round)
 {
     return _PyTime_ObjectToDenominator(obj, sec, nsec, SEC_TO_NS, round);
 }
 
 int
-_PyTime_ObjectToTimeval(PyObject *obj, time_t *sec, long *usec,
+_PyTime_ObjectToTimeval(PyObject *obj, time_t *sec, int *usec,
                         _PyTime_round_t round)
 {
     return _PyTime_ObjectToDenominator(obj, sec, usec, SEC_TO_US, round);
@@ -385,7 +385,7 @@ _PyTime_FromTimeval(_PyTime_t *tp, struct timeval *tv)
 
 static int
 _PyTime_FromDouble(_PyTime_t *t, double value, _PyTime_round_t round,
-                   long unit_to_ns)
+                   int unit_to_ns)
 {
     /* volatile avoids optimization changing how numbers are rounded */
     volatile double d;
@@ -405,7 +405,7 @@ _PyTime_FromDouble(_PyTime_t *t, double value, _PyTime_round_t round,
 
 static int
 _PyTime_FromObject(_PyTime_t *t, PyObject *obj, _PyTime_round_t round,
-                   long unit_to_ns)
+                   int unit_to_ns)
 {
     if (PyFloat_Check(obj)) {
         double d;
@@ -584,7 +584,7 @@ _PyTime_AsTimevalStruct_impl(_PyTime_t t, struct timeval *tv,
     res = _PyTime_AsTimeval_impl(t, &secs, &us, round);
 
 #ifdef MS_WINDOWS
-    tv->tv_sec = (long)secs;
+    tv->tv_sec = (int)secs;
 #else
     tv->tv_sec = secs;
 #endif

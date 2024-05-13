@@ -149,7 +149,7 @@ set_proxy(PyObject* proxies, const char* proto, CFDictionaryRef proxyDict,
                 if (aNum) {
                     int32_t port = cfnum_to_int32(aNum);
                     v = PyUnicode_FromFormat("http://%U:%ld",
-                        h, (long)port);
+                        h, (int)port);
                 } else {
                     v = PyUnicode_FromFormat("http://%U", h);
                 }

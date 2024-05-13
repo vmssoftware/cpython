@@ -395,7 +395,7 @@ skip_optional:
     if ((_return_value == (unsigned int)-1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromUnsignedLong((unsigned long)_return_value);
+    return_value = PyLong_FromUnsignedLong((unsigned int)_return_value);
 
 exit:
     /* Cleanup for data */

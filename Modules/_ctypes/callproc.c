@@ -625,7 +625,7 @@ union result {
     char b;
     short h;
     int i;
-    long l;
+    int l;
     long long q;
     long double D;
     double d;
@@ -679,7 +679,7 @@ static int ConvParam(PyObject *obj, Py_ssize_t index, struct argument *pa)
 
     if (PyLong_Check(obj)) {
         pa->ffi_type = &ffi_type_sint;
-        pa->value.i = (long)PyLong_AsUnsignedLong(obj);
+        pa->value.i = (int)PyLong_AsUnsignedLong(obj);
         if (pa->value.i == -1 && PyErr_Occurred()) {
             PyErr_Clear();
             pa->value.i = PyLong_AsLong(obj);

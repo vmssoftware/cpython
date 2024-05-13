@@ -2502,7 +2502,7 @@ delta_new(PyTypeObject *type, PyObject *args, PyObject *kw)
             whole_us = 2.0 * round((leftover_us + x_is_odd) * 0.5) - x_is_odd;
         }
 
-        temp = PyLong_FromLong((long)whole_us);
+        temp = PyLong_FromLong((int)whole_us);
 
         if (temp == NULL) {
             Py_DECREF(x);
@@ -5037,7 +5037,7 @@ datetime_from_timestamp(PyObject *cls, TM_FUNC f, PyObject *timestamp,
                         PyObject *tzinfo)
 {
     time_t timet;
-    long us;
+    int us;
 
     if (_PyTime_ObjectToTimeval(timestamp,
                                 &timet, &us, _PyTime_ROUND_HALF_EVEN) == -1)

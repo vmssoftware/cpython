@@ -230,7 +230,7 @@ PyCursesCheckERR(int code, const char *fname)
 static int
 PyCurses_ConvertToChtype(PyCursesWindowObject *win, PyObject *obj, chtype *ch)
 {
-    long value;
+    int value;
     if(PyBytes_Check(obj) && PyBytes_Size(obj) == 1) {
         value = (unsigned char)PyBytes_AsString(obj)[0];
     }
@@ -275,7 +275,7 @@ PyCurses_ConvertToChtype(PyCursesWindowObject *win, PyObject *obj, chtype *ch)
         return 0;
     }
     *ch = (chtype)value;
-    if ((long)*ch != value)
+    if ((int)*ch != value)
         goto overflow;
     return 1;
 
@@ -304,7 +304,7 @@ PyCurses_ConvertToCchar_t(PyCursesWindowObject *win, PyObject *obj,
 #endif
                           )
 {
-    long value;
+    int value;
 #ifdef HAVE_NCURSESW
     wchar_t buffer[2];
 #endif
@@ -344,7 +344,7 @@ PyCurses_ConvertToCchar_t(PyCursesWindowObject *win, PyObject *obj,
     }
 
     *ch = (chtype)value;
-    if ((long)*ch != value) {
+    if ((int)*ch != value) {
         PyErr_Format(PyExc_OverflowError,
                      "byte doesn't fit in chtype");
         return 0;
@@ -402,7 +402,7 @@ PyCurses_ConvertToString(PyCursesWindowObject *win, PyObject *obj,
 static int
 color_allow_default_converter(PyObject *arg, void *ptr)
 {
-    long color_number;
+    int color_number;
     int overflow;
 
     color_number = PyLong_AsLongAndOverflow(arg, &overflow);
@@ -454,7 +454,7 @@ class color_allow_default_converter(CConverter):
 static int
 pair_converter(PyObject *arg, void *ptr)
 {
-    long pair_number;
+    int pair_number;
     int overflow;
 
     pair_number = PyLong_AsLongAndOverflow(arg, &overflow);
@@ -496,7 +496,7 @@ class pair_converter(CConverter):
 static int
 component_converter(PyObject *arg, void *ptr)
 {
-    long component;
+    int component;
     int overflow;
 
     component = PyLong_AsLongAndOverflow(arg, &overflow);
@@ -722,7 +722,7 @@ _curses.window.addch
         Character to add.
 
     [
-    attr: long(c_default="A_NORMAL") = _curses.A_NORMAL
+    attr: int(c_default="A_NORMAL") = _curses.A_NORMAL
         Attributes for the character.
     ]
     /
@@ -738,7 +738,7 @@ current settings for the window object.
 static PyObject *
 _curses_window_addch_impl(PyCursesWindowObject *self, int group_left_1,
                           int y, int x, PyObject *ch, int group_right_1,
-                          long attr)
+                          int attr)
 /*[clinic end generated code: output=00f4c37af3378f45 input=95ce131578458196]*/
 {
     int coordinates_group = group_left_1;
@@ -795,7 +795,7 @@ _curses.window.addstr
         String to add.
 
     [
-    attr: long
+    attr: int
         Attributes for characters.
     ]
     /
@@ -811,7 +811,7 @@ current settings for the window object.
 static PyObject *
 _curses_window_addstr_impl(PyCursesWindowObject *self, int group_left_1,
                            int y, int x, PyObject *str, int group_right_1,
-                           long attr)
+                           int attr)
 /*[clinic end generated code: output=65a928ea85ff3115 input=ff6cbb91448a22a3]*/
 {
     int rtn;
@@ -878,7 +878,7 @@ _curses.window.addnstr
         Maximal number of characters.
 
     [
-    attr: long
+    attr: int
         Attributes for characters.
     ]
     /
@@ -894,7 +894,7 @@ current settings for the window object.
 static PyObject *
 _curses_window_addnstr_impl(PyCursesWindowObject *self, int group_left_1,
                             int y, int x, PyObject *str, int n,
-                            int group_right_1, long attr)
+                            int group_right_1, int attr)
 /*[clinic end generated code: output=6d21cee2ce6876d9 input=72718415c2744a2a]*/
 {
     int rtn;
@@ -949,7 +949,7 @@ _curses.window.bkgd
 
     ch: object
         Background character.
-    attr: long(c_default="A_NORMAL") = _curses.A_NORMAL
+    attr: int(c_default="A_NORMAL") = _curses.A_NORMAL
         Background attributes.
     /
 
@@ -957,7 +957,7 @@ Set the background property of the window.
 [clinic start generated code]*/
 
 static PyObject *
-_curses_window_bkgd_impl(PyCursesWindowObject *self, PyObject *ch, long attr)
+_curses_window_bkgd_impl(PyCursesWindowObject *self, PyObject *ch, int attr)
 /*[clinic end generated code: output=058290afb2cf4034 input=634015bcb339283d]*/
 {
     chtype bkgd;
@@ -971,14 +971,14 @@ _curses_window_bkgd_impl(PyCursesWindowObject *self, PyObject *ch, long attr)
 /*[clinic input]
 _curses.window.attroff
 
-    attr: long
+    attr: int
     /
 
 Remove attribute attr from the "background" set.
 [clinic start generated code]*/
 
 static PyObject *
-_curses_window_attroff_impl(PyCursesWindowObject *self, long attr)
+_curses_window_attroff_impl(PyCursesWindowObject *self, int attr)
 /*[clinic end generated code: output=8a2fcd4df682fc64 input=786beedf06a7befe]*/
 {
     return PyCursesCheckERR(wattroff(self->win, (attr_t)attr), "attroff");
@@ -987,14 +987,14 @@ _curses_window_attroff_impl(PyCursesWindowObject *self, long attr)
 /*[clinic input]
 _curses.window.attron
 
-    attr: long
+    attr: int
     /
 
 Add attribute attr from the "background" set.
 [clinic start generated code]*/
 
 static PyObject *
-_curses_window_attron_impl(PyCursesWindowObject *self, long attr)
+_curses_window_attron_impl(PyCursesWindowObject *self, int attr)
 /*[clinic end generated code: output=7afea43b237fa870 input=5a88fba7b1524f32]*/
 {
     return PyCursesCheckERR(wattron(self->win, (attr_t)attr), "attron");
@@ -1003,14 +1003,14 @@ _curses_window_attron_impl(PyCursesWindowObject *self, long attr)
 /*[clinic input]
 _curses.window.attrset
 
-    attr: long
+    attr: int
     /
 
 Set the "background" set of attributes.
 [clinic start generated code]*/
 
 static PyObject *
-_curses_window_attrset_impl(PyCursesWindowObject *self, long attr)
+_curses_window_attrset_impl(PyCursesWindowObject *self, int attr)
 /*[clinic end generated code: output=84e379bff20c0433 input=42e400c0d0154ab5]*/
 {
     return PyCursesCheckERR(wattrset(self->win, (attr_t)attr), "attrset");
@@ -1021,7 +1021,7 @@ _curses.window.bkgdset
 
     ch: object
         Background character.
-    attr: long(c_default="A_NORMAL") = _curses.A_NORMAL
+    attr: int(c_default="A_NORMAL") = _curses.A_NORMAL
         Background attributes.
     /
 
@@ -1030,7 +1030,7 @@ Set the window's background.
 
 static PyObject *
 _curses_window_bkgdset_impl(PyCursesWindowObject *self, PyObject *ch,
-                            long attr)
+                            int attr)
 /*[clinic end generated code: output=8cb994fc4d7e2496 input=e09c682425c9e45b]*/
 {
     chtype bkgd;
@@ -1174,7 +1174,7 @@ _curses.window.chgat
     n: int = -1
         Number of characters.
 
-    attr: long
+    attr: int
         Attributes for characters.
     /
 
@@ -1195,7 +1195,7 @@ PyCursesWindow_ChgAt(PyCursesWindowObject *self, PyObject *args)
     int num = -1;
     short color;
     attr_t attr = A_NORMAL;
-    long lattr;
+    int lattr;
     int use_xy = FALSE;
 
     switch (PyTuple_Size(args)) {
@@ -1313,7 +1313,7 @@ _curses.window.echochar
     ch: object
         Character to add.
 
-    attr: long(c_default="A_NORMAL") = _curses.A_NORMAL
+    attr: int(c_default="A_NORMAL") = _curses.A_NORMAL
         Attributes for the character.
     /
 
@@ -1322,7 +1322,7 @@ Add character ch with attribute attr, and refresh.
 
 static PyObject *
 _curses_window_echochar_impl(PyCursesWindowObject *self, PyObject *ch,
-                             long attr)
+                             int attr)
 /*[clinic end generated code: output=13e7dd875d4b9642 input=e7f34b964e92b156]*/
 {
     chtype ch_;
@@ -1363,16 +1363,16 @@ _curses_window_enclose_impl(PyCursesWindowObject *self, int y, int x)
 #endif
 
 /*[clinic input]
-_curses.window.getbkgd -> long
+_curses.window.getbkgd -> int
 
 Return the window's current background character/attribute pair.
 [clinic start generated code]*/
 
-static long
+static int
 _curses_window_getbkgd_impl(PyCursesWindowObject *self)
 /*[clinic end generated code: output=c52b25dc16b215c3 input=a69db882fa35426c]*/
 {
-    return (long) getbkgd(self->win);
+    return (int) getbkgd(self->win);
 }
 
 /*[clinic input]
@@ -1612,7 +1612,7 @@ _curses.window.hline
         Line length.
 
     [
-    attr: long(c_default="A_NORMAL") = _curses.A_NORMAL
+    attr: int(c_default="A_NORMAL") = _curses.A_NORMAL
         Attributes for the characters.
     ]
     /
@@ -1623,7 +1623,7 @@ Display a horizontal line.
 static PyObject *
 _curses_window_hline_impl(PyCursesWindowObject *self, int group_left_1,
                           int y, int x, PyObject *ch, int n,
-                          int group_right_1, long attr)
+                          int group_right_1, int attr)
 /*[clinic end generated code: output=c00d489d61fc9eef input=81a4dea47268163e]*/
 {
     chtype ch_;
@@ -1652,7 +1652,7 @@ _curses.window.insch
         Character to insert.
 
     [
-    attr: long(c_default="A_NORMAL") = _curses.A_NORMAL
+    attr: int(c_default="A_NORMAL") = _curses.A_NORMAL
         Attributes for the character.
     ]
     /
@@ -1666,7 +1666,7 @@ the rightmost characters on the line being lost.
 static PyObject *
 _curses_window_insch_impl(PyCursesWindowObject *self, int group_left_1,
                           int y, int x, PyObject *ch, int group_right_1,
-                          long attr)
+                          int attr)
 /*[clinic end generated code: output=ade8cfe3a3bf3e34 input=336342756ee19812]*/
 {
     int rtn;
@@ -1701,12 +1701,12 @@ Return the character at the given position in the window.
 The bottom 8 bits are the character proper, and upper bits are the attributes.
 [clinic start generated code]*/
 
-static unsigned long
+static unsigned int
 _curses_window_inch_impl(PyCursesWindowObject *self, int group_right_1,
                          int y, int x)
 /*[clinic end generated code: output=6c4719fe978fe86a input=fac23ee11e3b3a66]*/
 {
-    unsigned long rtn;
+    unsigned int rtn;
 
     if (!group_right_1) {
         rtn = winch(self->win);
@@ -1795,7 +1795,7 @@ _curses.window.insstr
         String to insert.
 
     [
-    attr: long
+    attr: int
         Attributes for characters.
     ]
     /
@@ -1812,7 +1812,7 @@ if specified).
 static PyObject *
 _curses_window_insstr_impl(PyCursesWindowObject *self, int group_left_1,
                            int y, int x, PyObject *str, int group_right_1,
-                           long attr)
+                           int attr)
 /*[clinic end generated code: output=c259a5265ad0b777 input=6827cddc6340a7f3]*/
 {
     int rtn;
@@ -1879,7 +1879,7 @@ _curses.window.insnstr
         Maximal number of characters.
 
     [
-    attr: long
+    attr: int
         Attributes for characters.
     ]
     /
@@ -1897,7 +1897,7 @@ specified).
 static PyObject *
 _curses_window_insnstr_impl(PyCursesWindowObject *self, int group_left_1,
                             int y, int x, PyObject *str, int n,
-                            int group_right_1, long attr)
+                            int group_right_1, int attr)
 /*[clinic end generated code: output=971a32ea6328ec8b input=70fa0cd543901a4c]*/
 {
     int rtn;
@@ -2407,7 +2407,7 @@ _curses.window.vline
         Line length.
 
     [
-    attr: long(c_default="A_NORMAL") = _curses.A_NORMAL
+    attr: int(c_default="A_NORMAL") = _curses.A_NORMAL
         Attributes for the character.
     ]
     /
@@ -2418,7 +2418,7 @@ Display a vertical line.
 static PyObject *
 _curses_window_vline_impl(PyCursesWindowObject *self, int group_left_1,
                           int y, int x, PyObject *ch, int n,
-                          int group_right_1, long attr)
+                          int group_right_1, int attr)
 /*[clinic end generated code: output=287ad1cc8982217f input=a6f2dc86a4648b32]*/
 {
     chtype ch_;
@@ -2627,7 +2627,7 @@ PyTypeObject PyCursesWindow_Type = {
 #define NoArgReturnIntFunctionBody(X) \
 { \
  PyCursesInitialised \
- return PyLong_FromLong((long) X()); }
+ return PyLong_FromLong((int) X()); }
 
 
 #define NoArgReturnStringFunctionBody(X) \
@@ -2801,7 +2801,7 @@ _curses_curs_set_impl(PyObject *module, int visibility)
     erg = curs_set(visibility);
     if (erg == ERR) return PyCursesCheckERR(erg, "curs_set");
 
-    return PyLong_FromLong((long) erg);
+    return PyLong_FromLong((int) erg);
 }
 
 /*[clinic input]
@@ -2989,7 +2989,7 @@ _curses_getmouse_impl(PyObject *module)
     return Py_BuildValue("(hiiik)",
                          (short)event.id,
                          (int)event.x, (int)event.y, (int)event.z,
-                         (unsigned long) event.bstate);
+                         (unsigned int) event.bstate);
 }
 
 /*[clinic input]
@@ -3009,7 +3009,7 @@ The following getmouse() will return the given state data.
 
 static PyObject *
 _curses_ungetmouse_impl(PyObject *module, short id, int x, int y, int z,
-                        unsigned long bstate)
+                        unsigned int bstate)
 /*[clinic end generated code: output=3430c9b0fc5c4341 input=fd650b2ca5a01e8f]*/
 {
     MEVENT event;
@@ -3270,7 +3270,7 @@ _curses_initscr_impl(PyObject *module)
    where they're not defined until you've called initscr() */
 #define SetDictInt(string,ch)                                           \
     do {                                                                \
-        PyObject *o = PyLong_FromLong((long) (ch));                     \
+        PyObject *o = PyLong_FromLong((int) (ch));                     \
         if (o && PyDict_SetItemString(ModDict, string, o) == 0)     {   \
             Py_DECREF(o);                                               \
         }                                                               \
@@ -3660,7 +3660,7 @@ If this function is never called, no mouse events are ever reported.
 [clinic start generated code]*/
 
 static PyObject *
-_curses_mousemask_impl(PyObject *module, unsigned long newmask)
+_curses_mousemask_impl(PyObject *module, unsigned int newmask)
 /*[clinic end generated code: output=9406cf1b8a36e485 input=bdf76b7568a3c541]*/
 {
     mmask_t oldmask, availmask;
@@ -3668,7 +3668,7 @@ _curses_mousemask_impl(PyObject *module, unsigned long newmask)
     PyCursesInitialised;
     availmask = mousemask((mmask_t)newmask, &oldmask);
     return Py_BuildValue("(kk)",
-                         (unsigned long)availmask, (unsigned long)oldmask);
+                         (unsigned int)availmask, (unsigned int)oldmask);
 }
 #endif
 
@@ -4205,7 +4205,7 @@ _curses_start_color_impl(PyObject *module)
     code = start_color();
     if (code != ERR) {
         initialisedcolors = TRUE;
-        c = PyLong_FromLong((long) COLORS);
+        c = PyLong_FromLong((int) COLORS);
         if (c == NULL)
             return NULL;
         if (PyDict_SetItemString(ModDict, "COLORS", c) < 0) {
@@ -4213,7 +4213,7 @@ _curses_start_color_impl(PyObject *module)
             return NULL;
         }
         Py_DECREF(c);
-        cp = PyLong_FromLong((long) COLOR_PAIRS);
+        cp = PyLong_FromLong((int) COLOR_PAIRS);
         if (cp == NULL)
             return NULL;
         if (PyDict_SetItemString(ModDict, "COLOR_PAIRS", cp) < 0) {
@@ -4269,7 +4269,7 @@ _curses_tigetflag_impl(PyObject *module, const char *capname)
 {
     PyCursesSetupTermCalled;
 
-    return PyLong_FromLong( (long) tigetflag( (char *)capname ) );
+    return PyLong_FromLong( (int) tigetflag( (char *)capname ) );
 }
 
 /*[clinic input]
@@ -4291,7 +4291,7 @@ _curses_tigetnum_impl(PyObject *module, const char *capname)
 {
     PyCursesSetupTermCalled;
 
-    return PyLong_FromLong( (long) tigetnum( (char *)capname ) );
+    return PyLong_FromLong( (int) tigetnum( (char *)capname ) );
 }
 
 /*[clinic input]
@@ -4453,7 +4453,7 @@ PyCurses_ConvertToWchar_t(PyObject *obj,
         return 2;
     }
     else if (PyLong_CheckExact(obj)) {
-        long value;
+        int value;
         int overflow;
         value = PyLong_AsLongAndOverflow(obj, &overflow);
         if (overflow) {
@@ -4462,7 +4462,7 @@ PyCurses_ConvertToWchar_t(PyObject *obj,
             return 0;
         }
         *wch = (wchar_t)value;
-        if ((long)*wch != value) {
+        if ((int)*wch != value) {
             PyErr_Format(PyExc_OverflowError,
                          "character doesn't fit in wchar_t");
             return 0;

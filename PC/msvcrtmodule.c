@@ -97,7 +97,7 @@ msvcrt.locking
 
     fd: int
     mode: int
-    nbytes: long
+    nbytes: int
     /
 
 Lock part of a file based on file descriptor fd from the C runtime.
@@ -111,7 +111,7 @@ individually.
 [clinic start generated code]*/
 
 static PyObject *
-msvcrt_locking_impl(PyObject *module, int fd, int mode, long nbytes)
+msvcrt_locking_impl(PyObject *module, int fd, int mode, int nbytes)
 /*[clinic end generated code: output=a4a90deca9785a03 input=e97bd15fc4a04fef]*/
 {
     int err;
@@ -132,7 +132,7 @@ msvcrt_locking_impl(PyObject *module, int fd, int mode, long nbytes)
 }
 
 /*[clinic input]
-msvcrt.setmode -> long
+msvcrt.setmode -> int
 
     fd: int
     mode as flags: int
@@ -146,7 +146,7 @@ should be os.O_BINARY.
 Return value is the previous mode.
 [clinic start generated code]*/
 
-static long
+static int
 msvcrt_setmode_impl(PyObject *module, int fd, int flags)
 /*[clinic end generated code: output=24a9be5ea07ccb9b input=76e7c01f6b137f75]*/
 {
@@ -160,7 +160,7 @@ msvcrt_setmode_impl(PyObject *module, int fd, int flags)
 }
 
 /*[clinic input]
-msvcrt.open_osfhandle -> long
+msvcrt.open_osfhandle -> int
 
     handle: HANDLE
     flags: int
@@ -173,7 +173,7 @@ and os.O_TEXT. The returned file descriptor may be used as a parameter
 to os.fdopen() to create a file object.
 [clinic start generated code]*/
 
-static long
+static int
 msvcrt_open_osfhandle_impl(PyObject *module, void *handle, int flags)
 /*[clinic end generated code: output=b2fb97c4b515e4e6 input=d5db190a307cf4bb]*/
 {
@@ -208,12 +208,12 @@ msvcrt_get_osfhandle_impl(PyObject *module, int fd)
 
 /* Console I/O */
 /*[clinic input]
-msvcrt.kbhit -> long
+msvcrt.kbhit -> int
 
 Return true if a keypress is waiting to be read.
 [clinic start generated code]*/
 
-static long
+static int
 msvcrt_kbhit_impl(PyObject *module)
 /*[clinic end generated code: output=940dfce6587c1890 input=e70d678a5c2f6acc]*/
 {
@@ -416,7 +416,7 @@ msvcrt_CrtSetReportFile_impl(PyObject *module, int type, void *file)
 }
 
 /*[clinic input]
-msvcrt.CrtSetReportMode -> long
+msvcrt.CrtSetReportMode -> int
 
     type: int
     mode: int
@@ -427,7 +427,7 @@ Wrapper around _CrtSetReportMode.
 Only available on Debug builds.
 [clinic start generated code]*/
 
-static long
+static int
 msvcrt_CrtSetReportMode_impl(PyObject *module, int type, int mode)
 /*[clinic end generated code: output=b2863761523de317 input=9319d29b4319426b]*/
 {
@@ -442,7 +442,7 @@ msvcrt_CrtSetReportMode_impl(PyObject *module, int type, int mode)
 }
 
 /*[clinic input]
-msvcrt.set_error_mode -> long
+msvcrt.set_error_mode -> int
 
     mode: int
     /
@@ -452,11 +452,11 @@ Wrapper around _set_error_mode.
 Only available on Debug builds.
 [clinic start generated code]*/
 
-static long
+static int
 msvcrt_set_error_mode_impl(PyObject *module, int mode)
 /*[clinic end generated code: output=ac4a09040d8ac4e3 input=046fca59c0f20872]*/
 {
-    long res;
+    int res;
 
     _Py_BEGIN_SUPPRESS_IPH
     res = _set_error_mode(mode);
@@ -551,7 +551,7 @@ static struct PyModuleDef msvcrtmodule = {
 static void
 insertint(PyObject *d, char *name, int value)
 {
-    PyObject *v = PyLong_FromLong((long) value);
+    PyObject *v = PyLong_FromLong((int) value);
     if (v == NULL) {
         /* Don't bother reporting this error */
         PyErr_Clear();

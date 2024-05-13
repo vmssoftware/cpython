@@ -474,10 +474,10 @@ static void LoadPython(void)
 
 /******************************************************************/
 
-long Call_GetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppv)
+int Call_GetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppv)
 {
     PyObject *mod, *func, *result;
-    long retval;
+    int retval;
     static PyObject *context;
 
     if (context == NULL)
@@ -537,7 +537,7 @@ STDAPI DllGetClassObject(REFCLSID rclsid,
                          REFIID riid,
                          LPVOID *ppv)
 {
-    long result;
+    int result;
     PyGILState_STATE state;
 
     LoadPython();
@@ -547,10 +547,10 @@ STDAPI DllGetClassObject(REFCLSID rclsid,
     return result;
 }
 
-long Call_CanUnloadNow(void)
+int Call_CanUnloadNow(void)
 {
     PyObject *mod, *func, *result;
-    long retval;
+    int retval;
     static PyObject *context;
 
     if (context == NULL)
@@ -594,7 +594,7 @@ long Call_CanUnloadNow(void)
 
 STDAPI DllCanUnloadNow(void)
 {
-    long result;
+    int result;
     PyGILState_STATE state = PyGILState_Ensure();
     result = Call_CanUnloadNow();
     PyGILState_Release(state);

@@ -177,7 +177,7 @@ unsigned int _get_string(unsigned int obj, int type, char **str, char *cmp)
     tmp_dsc.dsc$a_pointer = tmp;
 
     status =
-	dtr$get_string(dab, (long *) &type, &tmp_dsc, &len,
+	dtr$get_string(dab, (int *) &type, &tmp_dsc, &len,
 		       cmp ? &cmp_dsc : NULL);
 
     if (OKAY(status)) {
@@ -209,7 +209,7 @@ unsigned int _info(unsigned int obj,
     }
 
     status =
-	dtr$info(dab, (long *) &id, &code, (long *) ret,
+	dtr$info(dab, (int *) &id, &code, (int *) ret,
 		 str ? &tmp_dsc : NULL, index);
 
     if (OKAY(status)) {
@@ -283,7 +283,7 @@ unsigned int _lookup(unsigned int obj, char type, int *id, char *name)
 	name_dsc.dsc$a_pointer = name;
     }
 
-    status = dtr$lookup(dab, &type, (long *) id, name ? &name_dsc : NULL);
+    status = dtr$lookup(dab, &type, (int *) id, name ? &name_dsc : NULL);
     return (status);
 }
 
@@ -455,7 +455,7 @@ unsigned int _dtr(unsigned int obj, int opt)
 {
     DTR_access_block *dab = (DTR_access_block *) obj;
     dtr_Assert(dab);
-    return (dtr$dtr(dab, (long *) &opt));
+    return (dtr$dtr(dab, (int *) &opt));
 }
 
 

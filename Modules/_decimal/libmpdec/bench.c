@@ -55,7 +55,7 @@ new_mpd(void)
 /* Nonsense version of escape-time algorithm for calculating a mandelbrot
  * set. Just for benchmarking. */
 static void
-color_point(mpd_t *x0, mpd_t *y0, long maxiter, mpd_context_t *ctx)
+color_point(mpd_t *x0, mpd_t *y0, int maxiter, mpd_context_t *ctx)
 {
     mpd_t *x, *y, *sq_x, *sq_y;
     mpd_t *two;
@@ -73,7 +73,7 @@ color_point(mpd_t *x0, mpd_t *y0, long maxiter, mpd_context_t *ctx)
     two = new_mpd();
     mpd_set_u32(two, 2, ctx);
 
-    for (long i = 0; i < maxiter; i++) {
+    for (int i = 0; i < maxiter; i++) {
         mpd_mul(y, x, y, ctx);
         mpd_mul(y, y, two, ctx);
         mpd_add(y, y, y0, ctx);
@@ -101,7 +101,7 @@ main(int argc, char **argv)
     mpd_context_t ctx;
     mpd_t *x0, *y0;
     uint32_t prec = 19;
-    long iter = 10000000;
+    int iter = 10000000;
     clock_t start_clock, end_clock;
 
     if (argc != 3) {

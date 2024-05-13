@@ -1274,7 +1274,7 @@ _io_TextIOWrapper___init___impl(textio *self, PyObject *buffer,
 static int
 convert_optional_bool(PyObject *obj, int default_value)
 {
-    long v;
+    int v;
     if (obj == Py_None) {
         v = default_value;
     }

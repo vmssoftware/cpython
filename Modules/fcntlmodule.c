@@ -97,7 +97,7 @@ fcntl_fcntl_impl(PyObject *module, int fd, int code, PyObject *arg)
     if (ret < 0) {
         return !async_err ? PyErr_SetFromErrno(PyExc_OSError) : NULL;
     }
-    return PyLong_FromLong((long)ret);
+    return PyLong_FromLong((int)ret);
 }
 
 
@@ -273,7 +273,7 @@ fcntl_ioctl_impl(PyObject *module, int fd, unsigned int code,
         PyErr_SetFromErrno(PyExc_OSError);
         return NULL;
     }
-    return PyLong_FromLong((long)ret);
+    return PyLong_FromLong((int)ret);
 #undef IOCTL_BUFSZ
 }
 

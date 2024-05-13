@@ -16,7 +16,7 @@ extern "C" {
 static inline int
 _Py_IsMainThread(void)
 {
-    unsigned long thread = PyThread_get_thread_ident();
+    unsigned int thread = PyThread_get_thread_ident();
     return (thread == _PyRuntime.main_thread);
 }
 

@@ -12,7 +12,7 @@ extern "C" {
 PyAPI_FUNC(int) _PyStructSequence_InitType(
     PyTypeObject *type,
     PyStructSequence_Desc *desc,
-    unsigned long tp_flags);
+    unsigned int tp_flags);
 
 
 #ifdef __cplusplus

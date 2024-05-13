@@ -197,7 +197,7 @@ in bounds; that's the responsibility of the caller.
 static PyObject *
 b_getitem(arrayobject *ap, Py_ssize_t i)
 {
-    long x = ((signed char *)ap->ob_item)[i];
+    int x = ((signed char *)ap->ob_item)[i];
     return PyLong_FromLong(x);
 }
 
@@ -228,7 +228,7 @@ b_setitem(arrayobject *ap, Py_ssize_t i, PyObject *v)
 static PyObject *
 BB_getitem(arrayobject *ap, Py_ssize_t i)
 {
-    long x = ((unsigned char *)ap->ob_item)[i];
+    int x = ((unsigned char *)ap->ob_item)[i];
     return PyLong_FromLong(x);
 }
 
@@ -279,7 +279,7 @@ u_setitem(arrayobject *ap, Py_ssize_t i, PyObject *v)
 static PyObject *
 h_getitem(arrayobject *ap, Py_ssize_t i)
 {
-    return PyLong_FromLong((long) ((short *)ap->ob_item)[i]);
+    return PyLong_FromLong((int) ((short *)ap->ob_item)[i]);
 }
 
 
@@ -298,7 +298,7 @@ h_setitem(arrayobject *ap, Py_ssize_t i, PyObject *v)
 static PyObject *
 HH_getitem(arrayobject *ap, Py_ssize_t i)
 {
-    return PyLong_FromLong((long) ((unsigned short *)ap->ob_item)[i]);
+    return PyLong_FromLong((int) ((unsigned short *)ap->ob_item)[i]);
 }
 
 static int
@@ -327,7 +327,7 @@ HH_setitem(arrayobject *ap, Py_ssize_t i, PyObject *v)
 static PyObject *
 i_getitem(arrayobject *ap, Py_ssize_t i)
 {
-    return PyLong_FromLong((long) ((int *)ap->ob_item)[i]);
+    return PyLong_FromLong((int) ((int *)ap->ob_item)[i]);
 }
 
 static int
@@ -346,13 +346,13 @@ static PyObject *
 II_getitem(arrayobject *ap, Py_ssize_t i)
 {
     return PyLong_FromUnsignedLong(
-        (unsigned long) ((unsigned int *)ap->ob_item)[i]);
+        (unsigned int) ((unsigned int *)ap->ob_item)[i]);
 }
 
 static int
 II_setitem(arrayobject *ap, Py_ssize_t i, PyObject *v)
 {
-    unsigned long x;
+    unsigned int x;
     int do_decref = 0; /* if nb_int was called */
 
     if (!PyLong_Check(v)) {
@@ -363,7 +363,7 @@ II_setitem(arrayobject *ap, Py_ssize_t i, PyObject *v)
         do_decref = 1;
     }
     x = PyLong_AsUnsignedLong(v);
-    if (x == (unsigned long)-1 && PyErr_Occurred()) {
+    if (x == (unsigned int)-1 && PyErr_Occurred()) {
         if (do_decref) {
             Py_DECREF(v);
         }
@@ -389,30 +389,30 @@ II_setitem(arrayobject *ap, Py_ssize_t i, PyObject *v)
 static PyObject *
 l_getitem(arrayobject *ap, Py_ssize_t i)
 {
-    return PyLong_FromLong(((long *)ap->ob_item)[i]);
+    return PyLong_FromLong(((int *)ap->ob_item)[i]);
 }
 
 static int
 l_setitem(arrayobject *ap, Py_ssize_t i, PyObject *v)
 {
-    long x;
+    int x;
     if (!PyArg_Parse(v, "l;array item must be integer", &x))
         return -1;
     if (i >= 0)
-                 ((long *)ap->ob_item)[i] = x;
+                 ((int *)ap->ob_item)[i] = x;
     return 0;
 }
 
 static PyObject *
 LL_getitem(arrayobject *ap, Py_ssize_t i)
 {
-    return PyLong_FromUnsignedLong(((unsigned long *)ap->ob_item)[i]);
+    return PyLong_FromUnsignedLong(((unsigned int *)ap->ob_item)[i]);
 }
 
 static int
 LL_setitem(arrayobject *ap, Py_ssize_t i, PyObject *v)
 {
-    unsigned long x;
+    unsigned int x;
     int do_decref = 0; /* if nb_int was called */
 
     if (!PyLong_Check(v)) {
@@ -423,14 +423,14 @@ LL_setitem(arrayobject *ap, Py_ssize_t i, PyObject *v)
         do_decref = 1;
     }
     x = PyLong_AsUnsignedLong(v);
-    if (x == (unsigned long)-1 && PyErr_Occurred()) {
+    if (x == (unsigned int)-1 && PyErr_Occurred()) {
         if (do_decref) {
             Py_DECREF(v);
         }
         return -1;
     }
     if (i >= 0)
-        ((unsigned long *)ap->ob_item)[i] = x;
+        ((unsigned int *)ap->ob_item)[i] = x;
 
     if (do_decref) {
         Py_DECREF(v);
@@ -543,8 +543,8 @@ DEFINE_COMPAREITEMS(h, short)
 DEFINE_COMPAREITEMS(HH, unsigned short)
 DEFINE_COMPAREITEMS(i, int)
 DEFINE_COMPAREITEMS(II, unsigned int)
-DEFINE_COMPAREITEMS(l, long)
-DEFINE_COMPAREITEMS(LL, unsigned long)
+DEFINE_COMPAREITEMS(l, int)
+DEFINE_COMPAREITEMS(LL, unsigned int)
 DEFINE_COMPAREITEMS(q, long long)
 DEFINE_COMPAREITEMS(QQ, unsigned long long)
 
@@ -561,8 +561,8 @@ static const struct arraydescr descriptors[] = {
     {'H', sizeof(short), HH_getitem, HH_setitem, HH_compareitems, "H", 1, 0},
     {'i', sizeof(int), i_getitem, i_setitem, i_compareitems, "i", 1, 1},
     {'I', sizeof(int), II_getitem, II_setitem, II_compareitems, "I", 1, 0},
-    {'l', sizeof(long), l_getitem, l_setitem, l_compareitems, "l", 1, 1},
-    {'L', sizeof(long), LL_getitem, LL_setitem, LL_compareitems, "L", 1, 0},
+    {'l', sizeof(int), l_getitem, l_setitem, l_compareitems, "l", 1, 1},
+    {'L', sizeof(int), LL_getitem, LL_setitem, LL_compareitems, "L", 1, 0},
     {'q', sizeof(long long), q_getitem, q_setitem, q_compareitems, "q", 1, 1},
     {'Q', sizeof(long long), QQ_getitem, QQ_setitem, QQ_compareitems, "Q", 1, 0},
     {'f', sizeof(float), f_getitem, f_setitem, NULL, "f", 0, 0},
@@ -1883,11 +1883,11 @@ typecode_to_mformat_code(char typecode)
         is_signed = 0;
         break;
     case 'l':
-        intsize = sizeof(long);
+        intsize = sizeof(int);
         is_signed = 1;
         break;
     case 'L':
-        intsize = sizeof(long);
+        intsize = sizeof(int);
         is_signed = 0;
         break;
     case 'q':
@@ -2193,7 +2193,7 @@ array_array___reduce_ex__(arrayobject *self, PyObject *value)
     int typecode = self->ob_descr->typecode;
     int mformat_code;
     static PyObject *array_reconstructor = NULL;
-    long protocol;
+    int protocol;
     _Py_IDENTIFIER(_array_reconstructor);
     _Py_IDENTIFIER(__dict__);
 
@@ -2274,7 +2274,7 @@ array_get_typecode(arrayobject *a, void *closure)
 static PyObject *
 array_get_itemsize(arrayobject *a, void *closure)
 {
-    return PyLong_FromLong((long)a->ob_descr->itemsize);
+    return PyLong_FromLong((int)a->ob_descr->itemsize);
 }
 
 static PyGetSetDef array_getsets [] = {

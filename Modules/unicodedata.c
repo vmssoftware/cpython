@@ -136,7 +136,7 @@ unicodedata_UCD_decimal_impl(PyObject *self, int chr,
 /*[clinic end generated code: output=be23376e1a185231 input=933f8107993f23d0]*/
 {
     int have_old = 0;
-    long rc;
+    int rc;
     Py_UCS4 c = (Py_UCS4)chr;
 
     if (UCD_Check(self)) {
@@ -187,7 +187,7 @@ static PyObject *
 unicodedata_UCD_digit_impl(PyObject *self, int chr, PyObject *default_value)
 /*[clinic end generated code: output=96e18c950171fd2f input=e27d6e4565cd29f2]*/
 {
-    long rc;
+    int rc;
     Py_UCS4 c = (Py_UCS4)chr;
     rc = Py_UNICODE_TODIGIT(c);
     if (rc < 0) {
@@ -990,12 +990,12 @@ unicodedata_UCD_normalize_impl(PyObject *self, PyObject *form,
 /* -------------------------------------------------------------------- */
 /* database code (cut and pasted from the unidb package) */
 
-static unsigned long
+static unsigned int
 _gethash(const char *s, int len, int scale)
 {
     int i;
-    unsigned long h = 0;
-    unsigned long ix;
+    unsigned int h = 0;
+    unsigned int ix;
     for (i = 0; i < len; i++) {
         h = (h * scale) + (unsigned char) Py_TOUPPER(s[i]);
         ix = h & 0xff000000;

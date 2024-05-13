@@ -22,7 +22,7 @@ extern "C" {
 
 struct _gil_runtime_state {
     /* microseconds (the Python API uses seconds, though) */
-    unsigned long interval;
+    unsigned int interval;
     /* Last PyThreadState holding / having held the GIL. This helps us
        know whether anyone else was scheduled after we dropped the GIL. */
     _Py_atomic_address last_holder;
@@ -30,7 +30,7 @@ struct _gil_runtime_state {
        atomic because it can be read without any lock taken in ceval.c. */
     _Py_atomic_int locked;
     /* Number of GIL switches since the beginning. */
-    unsigned long switch_number;
+    unsigned int switch_number;
     /* This condition variable allows one or several threads to wait
        until the GIL is released. In addition, the mutex also protects
        the above variables. */

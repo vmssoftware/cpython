@@ -158,10 +158,12 @@ class OpenVMSCCompiler(CCompiler):
         if debug:
             cc_args += ["/DEBUG/NOOPTIMIZE/LIST/SHOW=EXPANSION"]
         else:
-            cc_args += ["/NODEBUG/OPTIMIZE"]
+            cc_args += ["/NODEBUG/NOOPTIMIZE"]
         if VMS64:
             cc_args += ["/POINTER_SIZE=64"]
-        
+        else:
+            cc_args += ["/POINTER_SIZE=32"]
+
         cc_args += ["/L_DOUBLE_SIZE=64"]
 
         if before:
@@ -325,7 +327,8 @@ class OpenVMSCCompiler(CCompiler):
             except DistutilsExecError as msg:
                 raise LinkError(msg)
             finally:
-                os.unlink(opt_file.name)
+                if not os.getenv("PYTH$LINK_NO_DEL_OPT", None):
+                    os.unlink(opt_file.name)
         else:
             log.debug("skipping %s (up-to-date)", output_filename)
 

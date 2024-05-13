@@ -347,13 +347,13 @@ PyDoc_STRVAR(pyexpat_ErrorString__doc__,
     {"ErrorString", (PyCFunction)pyexpat_ErrorString, METH_O, pyexpat_ErrorString__doc__},
 
 static PyObject *
-pyexpat_ErrorString_impl(PyObject *module, long code);
+pyexpat_ErrorString_impl(PyObject *module, int code);
 
 static PyObject *
 pyexpat_ErrorString(PyObject *module, PyObject *arg)
 {
     PyObject *return_value = NULL;
-    long code;
+    int code;
 
     code = PyLong_AsLong(arg);
     if (code == -1 && PyErr_Occurred()) {

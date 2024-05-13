@@ -276,13 +276,13 @@ typedef struct _Py_atomic_int {
 #define _Py_atomic_store_32bit(ATOMIC_VAL, NEW_VAL, ORDER) \
   switch (ORDER) { \
   case _Py_memory_order_acquire: \
-    _InterlockedExchange_HLEAcquire((volatile long*)&((ATOMIC_VAL)->_value), (int)(NEW_VAL)); \
+    _InterlockedExchange_HLEAcquire((volatile int*)&((ATOMIC_VAL)->_value), (int)(NEW_VAL)); \
     break; \
   case _Py_memory_order_release: \
-    _InterlockedExchange_HLERelease((volatile long*)&((ATOMIC_VAL)->_value), (int)(NEW_VAL)); \
+    _InterlockedExchange_HLERelease((volatile int*)&((ATOMIC_VAL)->_value), (int)(NEW_VAL)); \
     break; \
   default: \
-    _InterlockedExchange((volatile long*)&((ATOMIC_VAL)->_value), (int)(NEW_VAL)); \
+    _InterlockedExchange((volatile int*)&((ATOMIC_VAL)->_value), (int)(NEW_VAL)); \
     break; \
   }
 
@@ -330,20 +330,20 @@ inline intptr_t _Py_atomic_load_64bit_impl(volatile uintptr_t* value, int order)
 #endif
 
 inline int _Py_atomic_load_32bit_impl(volatile int* value, int order) {
-    long old;
+    int old;
     switch (order) {
     case _Py_memory_order_acquire:
     {
       do {
         old = *value;
-      } while(_InterlockedCompareExchange_HLEAcquire((volatile long*)value, old, old) != old);
+      } while(_InterlockedCompareExchange_HLEAcquire((volatile int*)value, old, old) != old);
       break;
     }
     case _Py_memory_order_release:
     {
       do {
         old = *value;
-      } while(_InterlockedCompareExchange_HLERelease((volatile long*)value, old, old) != old);
+      } while(_InterlockedCompareExchange_HLERelease((volatile int*)value, old, old) != old);
       break;
     }
     case _Py_memory_order_relaxed:
@@ -353,7 +353,7 @@ inline int _Py_atomic_load_32bit_impl(volatile int* value, int order) {
     {
       do {
         old = *value;
-      } while(_InterlockedCompareExchange((volatile long*)value, old, old) != old);
+      } while(_InterlockedCompareExchange((volatile int*)value, old, old) != old);
       break;
     }
     }
@@ -412,13 +412,13 @@ typedef struct _Py_atomic_int {
 #define _Py_atomic_store_32bit(ATOMIC_VAL, NEW_VAL, ORDER) \
   switch (ORDER) { \
   case _Py_memory_order_acquire: \
-    _InterlockedExchange_acq((volatile long*)&((ATOMIC_VAL)->_value), (int)NEW_VAL); \
+    _InterlockedExchange_acq((volatile int*)&((ATOMIC_VAL)->_value), (int)NEW_VAL); \
     break; \
   case _Py_memory_order_release: \
-    _InterlockedExchange_rel((volatile long*)&((ATOMIC_VAL)->_value), (int)NEW_VAL); \
+    _InterlockedExchange_rel((volatile int*)&((ATOMIC_VAL)->_value), (int)NEW_VAL); \
     break; \
   default: \
-    _InterlockedExchange((volatile long*)&((ATOMIC_VAL)->_value), (int)NEW_VAL); \
+    _InterlockedExchange((volatile int*)&((ATOMIC_VAL)->_value), (int)NEW_VAL); \
     break; \
   }
 

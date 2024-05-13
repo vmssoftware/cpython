@@ -49,7 +49,7 @@ PyDoc_STRVAR(signal_alarm__doc__,
 #define SIGNAL_ALARM_METHODDEF    \
     {"alarm", (PyCFunction)signal_alarm, METH_O, signal_alarm__doc__},
 
-static long
+static int
 signal_alarm_impl(PyObject *module, int seconds);
 
 static PyObject *
@@ -57,7 +57,7 @@ signal_alarm(PyObject *module, PyObject *arg)
 {
     PyObject *return_value = NULL;
     int seconds;
-    long _return_value;
+    int _return_value;
 
     seconds = _PyLong_AsInt(arg);
     if (seconds == -1 && PyErr_Occurred()) {
@@ -562,14 +562,14 @@ PyDoc_STRVAR(signal_pthread_kill__doc__,
     {"pthread_kill", (PyCFunction)(void(*)(void))signal_pthread_kill, METH_FASTCALL, signal_pthread_kill__doc__},
 
 static PyObject *
-signal_pthread_kill_impl(PyObject *module, unsigned long thread_id,
+signal_pthread_kill_impl(PyObject *module, unsigned int thread_id,
                          int signalnum);
 
 static PyObject *
 signal_pthread_kill(PyObject *module, PyObject *const *args, Py_ssize_t nargs)
 {
     PyObject *return_value = NULL;
-    unsigned long thread_id;
+    unsigned int thread_id;
     int signalnum;
 
     if (!_PyArg_CheckPositional("pthread_kill", nargs, 2, 2)) {

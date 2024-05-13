@@ -394,7 +394,7 @@ frame_setlineno(PyFrameObject *f, PyObject* p_new_lineno, void *Py_UNUSED(ignore
     /* Fail if the line falls outside the code block and
         select first line with actual code. */
     int overflow;
-    long l_new_lineno = PyLong_AsLongAndOverflow(p_new_lineno, &overflow);
+    int l_new_lineno = PyLong_AsLongAndOverflow(p_new_lineno, &overflow);
     if (overflow
 #if SIZEOF_LONG > SIZEOF_INT
         || l_new_lineno > INT_MAX

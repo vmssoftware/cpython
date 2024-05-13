@@ -60,7 +60,7 @@ gc_isenabled(PyObject *module, PyObject *Py_UNUSED(ignored))
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -178,7 +178,7 @@ gc_get_debug(PyObject *module, PyObject *Py_UNUSED(ignored))
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromLong((long)_return_value);
+    return_value = PyLong_FromLong((int)_return_value);
 
 exit:
     return return_value;

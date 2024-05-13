@@ -391,7 +391,7 @@ PySymtable_Lookup(struct symtable *st, void *key)
     return (PySTEntryObject *)v;
 }
 
-static long
+static int
 _PyST_GetSymbol(PySTEntryObject *ste, PyObject *name)
 {
     PyObject *v = PyDict_GetItemWithError(ste->ste_symbols, name);
@@ -404,7 +404,7 @@ _PyST_GetSymbol(PySTEntryObject *ste, PyObject *name)
 int
 _PyST_GetScope(PySTEntryObject *ste, PyObject *name)
 {
-    long symbol = _PyST_GetSymbol(ste, name);
+    int symbol = _PyST_GetSymbol(ste, name);
     return (symbol >> SCOPE_OFFSET) & SCOPE_MASK;
 }
 
@@ -498,7 +498,7 @@ error_at_directive(PySTEntryObject *ste, PyObject *name)
 */
 
 static int
-analyze_name(PySTEntryObject *ste, PyObject *scopes, PyObject *name, long flags,
+analyze_name(PySTEntryObject *ste, PyObject *scopes, PyObject *name, int flags,
              PyObject *bound, PyObject *local, PyObject *free,
              PyObject *global)
 {
@@ -585,7 +585,7 @@ analyze_cells(PyObject *scopes, PyObject *free)
     if (!v_cell)
         return 0;
     while (PyDict_Next(scopes, &pos, &name, &v)) {
-        long scope;
+        int scope;
         assert(PyLong_Check(v));
         scope = PyLong_AS_LONG(v);
         if (scope != LOCAL)
@@ -635,7 +635,7 @@ update_symbols(PyObject *symbols, PyObject *scopes,
 
     /* Update scope information for all symbols in this scope */
     while (PyDict_Next(symbols, &pos, &name, &v)) {
-        long scope, flags;
+        int scope, flags;
         assert(PyLong_Check(v));
         flags = PyLong_AS_LONG(v);
         v_scope = PyDict_GetItemWithError(scopes, name);
@@ -674,7 +674,7 @@ update_symbols(PyObject *symbols, PyObject *scopes,
             */
             if  (classflag &&
                  PyLong_AS_LONG(v) & (DEF_BOUND | DEF_GLOBAL)) {
-                long flags = PyLong_AS_LONG(v) | DEF_FREE_CLASS;
+                int flags = PyLong_AS_LONG(v) | DEF_FREE_CLASS;
                 v_new = PyLong_FromLong(flags);
                 if (!v_new) {
                     goto error;
@@ -796,7 +796,7 @@ analyze_block(PySTEntryObject *ste, PyObject *bound, PyObject *free,
     }
 
     while (PyDict_Next(ste->ste_symbols, &pos, &name, &v)) {
-        long flags = PyLong_AS_LONG(v);
+        int flags = PyLong_AS_LONG(v);
         if (!analyze_name(ste, scopes, name, flags,
                           bound, local, free, global))
             goto error;
@@ -1012,13 +1012,13 @@ symtable_enter_block(struct symtable *st, identifier name, _Py_block_ty block,
     return 1;
 }
 
-static long
+static int
 symtable_lookup(struct symtable *st, PyObject *name)
 {
     PyObject *mangled = _Py_Mangle(st->st_private, name);
     if (!mangled)
         return 0;
-    long ret = _PyST_GetSymbol(st->st_cur, mangled);
+    int ret = _PyST_GetSymbol(st->st_cur, mangled);
     Py_DECREF(mangled);
     return ret;
 }
@@ -1028,7 +1028,7 @@ symtable_add_def_helper(struct symtable *st, PyObject *name, int flag, struct _s
 {
     PyObject *o;
     PyObject *dict;
-    long val;
+    int val;
     PyObject *mangled = _Py_Mangle(st->st_private, name);
 
 
@@ -1256,7 +1256,7 @@ symtable_visit_stmt(struct symtable *st, stmt_ty s)
     case AnnAssign_kind:
         if (s->v.AnnAssign.target->kind == Name_kind) {
             expr_ty e_name = s->v.AnnAssign.target;
-            long cur = symtable_lookup(st, e_name->v.Name.id);
+            int cur = symtable_lookup(st, e_name->v.Name.id);
             if (cur < 0) {
                 VISIT_QUIT(st, 0);
             }
@@ -1354,7 +1354,7 @@ symtable_visit_stmt(struct symtable *st, stmt_ty s)
         asdl_identifier_seq *seq = s->v.Global.names;
         for (i = 0; i < asdl_seq_LEN(seq); i++) {
             identifier name = (identifier)asdl_seq_GET(seq, i);
-            long cur = symtable_lookup(st, name);
+            int cur = symtable_lookup(st, name);
             if (cur < 0)
                 VISIT_QUIT(st, 0);
             if (cur & (DEF_PARAM | DEF_LOCAL | USE | DEF_ANNOT)) {
@@ -1390,7 +1390,7 @@ symtable_visit_stmt(struct symtable *st, stmt_ty s)
         asdl_identifier_seq *seq = s->v.Nonlocal.names;
         for (i = 0; i < asdl_seq_LEN(seq); i++) {
             identifier name = (identifier)asdl_seq_GET(seq, i);
-            long cur = symtable_lookup(st, name);
+            int cur = symtable_lookup(st, name);
             if (cur < 0)
                 VISIT_QUIT(st, 0);
             if (cur & (DEF_PARAM | DEF_LOCAL | USE | DEF_ANNOT)) {
@@ -1491,7 +1491,7 @@ symtable_extend_namedexpr_scope(struct symtable *st, expr_ty e)
          * binding conflict with iteration variables, otherwise skip it
          */
         if (ste->ste_comprehension) {
-            long target_in_scope = _PyST_GetSymbol(ste, target_name);
+            int target_in_scope = _PyST_GetSymbol(ste, target_name);
             if (target_in_scope & DEF_COMP_ITER) {
                 PyErr_Format(PyExc_SyntaxError, NAMED_EXPR_COMP_CONFLICT, target_name);
                 PyErr_RangedSyntaxLocationObject(st->st_filename,
@@ -1506,7 +1506,7 @@ symtable_extend_namedexpr_scope(struct symtable *st, expr_ty e)
 
         /* If we find a FunctionBlock entry, add as GLOBAL/LOCAL or NONLOCAL/LOCAL */
         if (ste->ste_type == FunctionBlock) {
-            long target_in_scope = _PyST_GetSymbol(ste, target_name);
+            int target_in_scope = _PyST_GetSymbol(ste, target_name);
             if (target_in_scope & DEF_GLOBAL) {
                 if (!symtable_add_def(st, target_name, DEF_GLOBAL))
                     VISIT_QUIT(st, 0);

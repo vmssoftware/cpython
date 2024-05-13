@@ -3176,7 +3176,7 @@ expat_set_error(enum XML_Error error_code, Py_ssize_t line, Py_ssize_t column,
         return;
 
     /* Add code and position attributes */
-    code = PyLong_FromLong((long)error_code);
+    code = PyLong_FromLong((int)error_code);
     if (!code) {
         Py_DECREF(error);
         return;
@@ -3669,7 +3669,7 @@ _elementtree_XMLParser___init___impl(XMLParserObject *self, PyObject *target,
     /* expat < 2.1.0 has no XML_SetHashSalt() */
     if (EXPAT(SetHashSalt) != NULL) {
         EXPAT(SetHashSalt)(self->parser,
-                           (unsigned long)_Py_HashSecret.expat.hashsalt);
+                           (unsigned int)_Py_HashSecret.expat.hashsalt);
     }
 
     if (target) {

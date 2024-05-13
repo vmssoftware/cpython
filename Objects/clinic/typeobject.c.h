@@ -24,7 +24,7 @@ type___instancecheck__(PyTypeObject *self, PyObject *instance)
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;
@@ -52,7 +52,7 @@ type___subclasscheck__(PyTypeObject *self, PyObject *subclass)
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyBool_FromLong((long)_return_value);
+    return_value = PyBool_FromLong((int)_return_value);
 
 exit:
     return return_value;

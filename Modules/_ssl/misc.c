@@ -12,7 +12,7 @@
 static PyObject *
 _PySSL_BytesFromBIO(_sslmodulestate *state, BIO *bio)
 {
-    long size;
+    int size;
     char *data = NULL;
     size = BIO_get_mem_data(bio, &data);
     if (data == NULL || size < 0) {
@@ -27,7 +27,7 @@ _PySSL_BytesFromBIO(_sslmodulestate *state, BIO *bio)
 static PyObject *
 _PySSL_UnicodeFromBIO(_sslmodulestate *state, BIO *bio, const char *error)
 {
-    long size;
+    int size;
     char *data = NULL;
     size = BIO_get_mem_data(bio, &data);
     if (data == NULL || size < 0) {

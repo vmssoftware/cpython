@@ -231,7 +231,7 @@ typedef struct {
     Py_off_t write_end;
 
     PyThread_type_lock lock;
-    volatile unsigned long owner;
+    volatile unsigned int owner;
 
     Py_ssize_t buffer_size;
     Py_ssize_t buffer_mask;

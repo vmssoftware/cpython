@@ -276,7 +276,7 @@ static int test_bpo20891(void)
 
     _testembed_Py_Initialize();
 
-    unsigned long thrd = PyThread_start_new_thread(bpo20891_thread, &lock);
+    unsigned int thrd = PyThread_start_new_thread(bpo20891_thread, &lock);
     if (thrd == PYTHREAD_INVALID_THREAD_ID) {
         fprintf(stderr, "PyThread_start_new_thread failed!");
         return 1;

@@ -4906,7 +4906,7 @@ PyCArrayType_from_ctype(PyObject *itemtype, Py_ssize_t length)
         ((PyTypeObject *)itemtype)->tp_name, length);
 #else
     sprintf(name, "%.200s_Array_%ld",
-        ((PyTypeObject *)itemtype)->tp_name, (long)length);
+        ((PyTypeObject *)itemtype)->tp_name, (int)length);
 #endif
 
     result = PyObject_CallFunction((PyObject *)&PyCArrayType_Type,

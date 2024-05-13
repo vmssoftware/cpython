@@ -91,7 +91,7 @@ Return a new BLAKE2s hash object.
 static PyObject *
 py_blake2s_new_impl(PyTypeObject *type, PyObject *data, int digest_size,
                     Py_buffer *key, Py_buffer *salt, Py_buffer *person,
-                    int fanout, int depth, unsigned long leaf_size,
+                    int fanout, int depth, unsigned int leaf_size,
                     unsigned long long node_offset, int node_depth,
                     int inner_size, int last_node, int usedforsecurity)
 /*[clinic end generated code: output=556181f73905c686 input=4dda87723f23abb0]*/

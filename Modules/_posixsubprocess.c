@@ -144,10 +144,10 @@ static int
 _sanity_check_python_fd_sequence(PyObject *fd_sequence)
 {
     Py_ssize_t seq_idx;
-    long prev_fd = -1;
+    int prev_fd = -1;
     for (seq_idx = 0; seq_idx < PyTuple_GET_SIZE(fd_sequence); ++seq_idx) {
         PyObject* py_fd = PyTuple_GET_ITEM(fd_sequence, seq_idx);
-        long iter_fd;
+        int iter_fd;
         if (!PyLong_Check(py_fd)) {
             return 1;
         }
@@ -172,8 +172,8 @@ _is_fd_in_sorted_fd_sequence(int fd, PyObject *fd_sequence)
     if (search_max < 0)
         return 0;
     do {
-        long middle = (search_min + search_max) / 2;
-        long middle_fd = PyLong_AsLong(PyTuple_GET_ITEM(fd_sequence, middle));
+        int middle = (search_min + search_max) / 2;
+        int middle_fd = PyLong_AsLong(PyTuple_GET_ITEM(fd_sequence, middle));
         if (fd == middle_fd)
             return 1;
         if (fd > middle_fd)
@@ -192,7 +192,7 @@ make_inheritable(PyObject *py_fds_to_keep, int errpipe_write)
     len = PyTuple_GET_SIZE(py_fds_to_keep);
     for (i = 0; i < len; ++i) {
         PyObject* fdobj = PyTuple_GET_ITEM(py_fds_to_keep, i);
-        long fd = PyLong_AsLong(fdobj);
+        int fd = PyLong_AsLong(fdobj);
         assert(!PyErr_Occurred());
         assert(0 <= fd && fd <= INT_MAX);
         if (fd == errpipe_write) {
@@ -211,10 +211,10 @@ make_inheritable(PyObject *py_fds_to_keep, int errpipe_write)
 /* Get the maximum file descriptor that could be opened by this process.
  * This function is async signal safe for use between fork() and exec().
  */
-static long
+static int
 safe_get_max_fd(void)
 {
-    long local_max_fd;
+    int local_max_fd;
 #if defined(__NetBSD__)
     local_max_fd = fcntl(0, F_MAXFD);
     if (local_max_fd >= 0)
@@ -225,7 +225,7 @@ safe_get_max_fd(void)
     /* Not on the POSIX async signal safe functions list but likely
      * safe.  TODO - Someone should audit OpenBSD to make sure. */
     if (getrlimit(RLIMIT_NOFILE, &rl) >= 0)
-        return (long) rl.rlim_max;
+        return (int) rl.rlim_max;
 #endif
 #ifdef _SC_OPEN_MAX
     local_max_fd = sysconf(_SC_OPEN_MAX);
@@ -245,9 +245,9 @@ safe_get_max_fd(void)
  * is for processes with the capability of raising their maximum.
  */
 static void
-_close_fds_by_brute_force(long start_fd, PyObject *py_fds_to_keep)
+_close_fds_by_brute_force(int start_fd, PyObject *py_fds_to_keep)
 {
-    long end_fd = safe_get_max_fd();
+    int end_fd = safe_get_max_fd();
     Py_ssize_t num_fds_to_keep = PyTuple_GET_SIZE(py_fds_to_keep);
     Py_ssize_t keep_seq_idx;
     /* As py_fds_to_keep is sorted we can loop through the list closing
@@ -351,7 +351,7 @@ _close_open_fds_safe(int start_fd, PyObject* py_fds_to_keep)
  *   http://womble.decadent.org.uk/readdir_r-advisory.html
  */
 static void
-_close_open_fds_maybe_unsafe(long start_fd, PyObject* py_fds_to_keep)
+_close_open_fds_maybe_unsafe(int start_fd, PyObject* py_fds_to_keep)
 {
     DIR *proc_fd_dir;
 #ifndef HAVE_DIRFD
@@ -799,13 +799,13 @@ vms_child_exec(
             _TRACE_LINE_V_("try exec \"%s\"\n", executable);
             if (envp) {
 #if defined(__VMS) && __INITIAL_POINTER_SIZE == 64
-                execve(executable, argv32, envp32);
+                _execve32(executable, argv32, envp32);
 #else
                 execve(executable, argv, envp);
 #endif
             } else {
 #if defined(__VMS) && __INITIAL_POINTER_SIZE == 64
-                execv(executable, argv32);
+                _execv32(executable, argv32);
 #else
                 execv(executable, argv);
 #endif

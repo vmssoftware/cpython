@@ -10,6 +10,12 @@ $ read/end_of_file=file_end test_names name
 $ if do_tests .eq. 1 
 $ then 
 $ show time
+$ if f$search("test_python_*.dir") .nes. ""
+$ then
+$   delete/tree [.test_python_*...]*.*;* /nolog
+$   free$ test_python_*.dir;1
+$   delete test_python_*.dir;1
+$ endif
 $ python -m test -W 'name'
 $ endif
 $ ! skip all until failed test, do the next

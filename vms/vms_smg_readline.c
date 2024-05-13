@@ -13,8 +13,8 @@
 #include <stsdef.h>
 
 /* SMG$ support */
-static unsigned long                             pyvms_gl_keyboard_id;   /* SMG$ */
-static unsigned long                             pyvms_gl_key_table_id;  /* SMG$ */
+static unsigned int                             pyvms_gl_keyboard_id;   /* SMG$ */
+static unsigned int                             pyvms_gl_key_table_id;  /* SMG$ */
 
 #define MAX_LINE_BUFFER 1024
 
@@ -27,7 +27,7 @@ char* vms_SMG_Readline(FILE *stdin, FILE *stdout, const char *prompt) {
     __void_ptr32 promptPtr;
 
     unsigned short int reslen = 0;
-    unsigned long flags = 0;
+    unsigned int flags = 0;
     int status = 0;
 
     if (pyvms_gl_key_table_id == 0) {

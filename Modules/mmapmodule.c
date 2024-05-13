@@ -456,7 +456,7 @@ mmap_size_method(mmap_object *self,
                 return PyErr_SetFromWindowsErr(error);
         }
         if (!high && low < LONG_MAX)
-            return PyLong_FromLong((long)low);
+            return PyLong_FromLong((int)low);
         size = (((long long)high)<<32) + low;
         return PyLong_FromLongLong(size);
     } else {
@@ -1587,11 +1587,11 @@ mmap_exec(PyObject *module)
 #ifdef MAP_POPULATE
     ADD_INT_MACRO(module, MAP_POPULATE);
 #endif
-    if (PyModule_AddIntConstant(module, "PAGESIZE", (long)my_getpagesize()) < 0 ) {
+    if (PyModule_AddIntConstant(module, "PAGESIZE", (int)my_getpagesize()) < 0 ) {
         return -1;
     }
 
-    if (PyModule_AddIntConstant(module, "ALLOCATIONGRANULARITY", (long)my_getallocationgranularity()) < 0 ) {
+    if (PyModule_AddIntConstant(module, "ALLOCATIONGRANULARITY", (int)my_getallocationgranularity()) < 0 ) {
         return -1;
     }
 

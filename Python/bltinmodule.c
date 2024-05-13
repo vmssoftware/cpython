@@ -463,7 +463,7 @@ static PyObject *
 builtin_callable(PyObject *module, PyObject *obj)
 /*[clinic end generated code: output=2b095d59d934cb7e input=1423bab99cc41f58]*/
 {
-    return PyBool_FromLong((long)PyCallable_Check(obj));
+    return PyBool_FromLong((int)PyCallable_Check(obj));
 }
 
 static PyObject *
@@ -585,7 +585,7 @@ filter_next(filterobject *lz)
 {
     PyObject *item;
     PyObject *it = lz->it;
-    long ok;
+    int ok;
     PyObject *(*iternext)(PyObject *);
     int checktrue = lz->func == Py_None || lz->func == (PyObject *)&PyBool_Type;
 
@@ -1877,13 +1877,13 @@ static PyObject *
 builtin_ord(PyObject *module, PyObject *c)
 /*[clinic end generated code: output=4fa5e87a323bae71 input=3064e5d6203ad012]*/
 {
-    long ord;
+    int ord;
     Py_ssize_t size;
 
     if (PyBytes_Check(c)) {
         size = PyBytes_GET_SIZE(c);
         if (size == 1) {
-            ord = (long)((unsigned char)*PyBytes_AS_STRING(c));
+            ord = (int)((unsigned char)*PyBytes_AS_STRING(c));
             return PyLong_FromLong(ord);
         }
     }
@@ -1892,7 +1892,7 @@ builtin_ord(PyObject *module, PyObject *c)
             return NULL;
         size = PyUnicode_GET_LENGTH(c);
         if (size == 1) {
-            ord = (long)PyUnicode_READ_CHAR(c, 0);
+            ord = (int)PyUnicode_READ_CHAR(c, 0);
             return PyLong_FromLong(ord);
         }
     }
@@ -1900,7 +1900,7 @@ builtin_ord(PyObject *module, PyObject *c)
         /* XXX Hopefully this is temporary */
         size = PyByteArray_GET_SIZE(c);
         if (size == 1) {
-            ord = (long)((unsigned char)*PyByteArray_AS_STRING(c));
+            ord = (int)((unsigned char)*PyByteArray_AS_STRING(c));
             return PyLong_FromLong(ord);
         }
     }
@@ -2054,7 +2054,7 @@ builtin_input_impl(PyObject *module, PyObject *prompt)
     PyObject *fout = _PySys_GetObjectId(&PyId_stdout);
     PyObject *ferr = _PySys_GetObjectId(&PyId_stderr);
     PyObject *tmp;
-    long fd;
+    int fd;
     int tty;
 
     /* Check that stdin/out/err are intact */
@@ -2462,7 +2462,7 @@ builtin_sum_impl(PyObject *module, PyObject *iterable, PyObject *start)
     */
     if (PyLong_CheckExact(result)) {
         int overflow;
-        long i_result = PyLong_AsLongAndOverflow(result, &overflow);
+        int i_result = PyLong_AsLongAndOverflow(result, &overflow);
         /* If this already overflowed, don't even enter the loop. */
         if (overflow == 0) {
             Py_DECREF(result);
@@ -2477,7 +2477,7 @@ builtin_sum_impl(PyObject *module, PyObject *iterable, PyObject *start)
                 return PyLong_FromLong(i_result);
             }
             if (PyLong_CheckExact(item) || PyBool_Check(item)) {
-                long b = PyLong_AsLongAndOverflow(item, &overflow);
+                int b = PyLong_AsLongAndOverflow(item, &overflow);
                 if (overflow == 0 &&
                     (i_result >= 0 ? (b <= LONG_MAX - i_result)
                                    : (b >= LONG_MIN - i_result)))
@@ -2523,7 +2523,7 @@ builtin_sum_impl(PyObject *module, PyObject *iterable, PyObject *start)
                 continue;
             }
             if (PyLong_Check(item)) {
-                long value;
+                int value;
                 int overflow;
                 value = PyLong_AsLongAndOverflow(item, &overflow);
                 if (!overflow) {

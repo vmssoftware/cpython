@@ -377,12 +377,12 @@ void AnnotateRWLockCreate(const char *file, int line,
 void AnnotateRWLockDestroy(const char *file, int line,
                            const volatile void *lock);
 void AnnotateRWLockAcquired(const char *file, int line,
-                            const volatile void *lock, long is_w);
+                            const volatile void *lock, int is_w);
 void AnnotateRWLockReleased(const char *file, int line,
-                            const volatile void *lock, long is_w);
+                            const volatile void *lock, int is_w);
 void AnnotateBarrierInit(const char *file, int line,
-                         const volatile void *barrier, long count,
-                         long reinitialization_allowed);
+                         const volatile void *barrier, int count,
+                         int reinitialization_allowed);
 void AnnotateBarrierWaitBefore(const char *file, int line,
                                const volatile void *barrier);
 void AnnotateBarrierWaitAfter(const char *file, int line,
@@ -398,10 +398,10 @@ void AnnotateCondVarSignalAll(const char *file, int line,
                               const volatile void *cv);
 void AnnotatePublishMemoryRange(const char *file, int line,
                                 const volatile void *address,
-                                long size);
+                                int size);
 void AnnotateUnpublishMemoryRange(const char *file, int line,
                                   const volatile void *address,
-                                  long size);
+                                  int size);
 void AnnotatePCQCreate(const char *file, int line,
                        const volatile void *pcq);
 void AnnotatePCQDestroy(const char *file, int line,
@@ -412,7 +412,7 @@ void AnnotatePCQGet(const char *file, int line,
                     const volatile void *pcq);
 void AnnotateNewMemory(const char *file, int line,
                        const volatile void *address,
-                       long size);
+                       int size);
 void AnnotateExpectRace(const char *file, int line,
                         const volatile void *address,
                         const char *description);
@@ -421,7 +421,7 @@ void AnnotateBenignRace(const char *file, int line,
                         const char *description);
 void AnnotateBenignRaceSized(const char *file, int line,
                         const volatile void *address,
-                        long size,
+                        int size,
                         const char *description);
 void AnnotateMutexIsUsedAsCondVar(const char *file, int line,
                                   const volatile void *mu);

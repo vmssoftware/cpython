@@ -133,7 +133,7 @@ _ssl_Certificate_get_info_impl(PySSLCertificate *self)
 }
 
 static PyObject*
-_x509name_print(_sslmodulestate *state, X509_NAME *name, int indent, unsigned long flags)
+_x509name_print(_sslmodulestate *state, X509_NAME *name, int indent, unsigned int flags)
 {
     PyObject *res;
     BIO *biobuf;
@@ -184,7 +184,7 @@ static Py_hash_t
 certificate_hash(PySSLCertificate *self)
 {
     if (self->hash == (Py_hash_t)-1) {
-        unsigned long hash;
+        unsigned int hash;
         hash = X509_subject_name_hash(self->cert);
         if ((Py_hash_t)hash == (Py_hash_t)-1) {
             self->hash = -2;

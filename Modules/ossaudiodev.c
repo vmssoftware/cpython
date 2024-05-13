@@ -38,7 +38,7 @@
 #ifdef __linux__
 
 #ifndef HAVE_STDINT_H
-typedef unsigned long uint32_t;
+typedef unsigned int uint32_t;
 #endif
 
 #elif defined(__FreeBSD__)
@@ -240,7 +240,7 @@ static int _is_fd_valid(int fd)
      arg = dsp.xxx(arg)
 */
 static PyObject *
-_do_ioctl_1(int fd, PyObject *args, char *fname, unsigned long cmd)
+_do_ioctl_1(int fd, PyObject *args, char *fname, unsigned int cmd)
 {
     char argfmt[33] = "i:";
     int arg;
@@ -265,7 +265,7 @@ _do_ioctl_1(int fd, PyObject *args, char *fname, unsigned long cmd)
    way.
 */
 static PyObject *
-_do_ioctl_1_internal(int fd, PyObject *args, char *fname, unsigned long cmd)
+_do_ioctl_1_internal(int fd, PyObject *args, char *fname, unsigned int cmd)
 {
     char argfmt[32] = ":";
     int arg = 0;
@@ -285,7 +285,7 @@ _do_ioctl_1_internal(int fd, PyObject *args, char *fname, unsigned long cmd)
 /* _do_ioctl_0() is a private helper for the no-argument ioctls:
    SNDCTL_DSP_{SYNC,RESET,POST}. */
 static PyObject *
-_do_ioctl_0(int fd, PyObject *args, char *fname, unsigned long cmd)
+_do_ioctl_0(int fd, PyObject *args, char *fname, unsigned int cmd)
 {
     char argfmt[32] = ":";
     int rv;
@@ -1043,7 +1043,7 @@ static PyMethodDef ossaudiodev_methods[] = {
 
 
 #define _EXPORT_INT(mod, name) \
-  if (PyModule_AddIntConstant(mod, #name, (long) (name)) == -1) return NULL;
+  if (PyModule_AddIntConstant(mod, #name, (int) (name)) == -1) return NULL;
 
 
 static char *control_labels[] = SOUND_DEVICE_LABELS;

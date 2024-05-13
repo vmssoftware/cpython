@@ -40,7 +40,7 @@ PyDoc_STRVAR(msvcrt_locking__doc__,
     {"locking", (PyCFunction)(void(*)(void))msvcrt_locking, METH_FASTCALL, msvcrt_locking__doc__},
 
 static PyObject *
-msvcrt_locking_impl(PyObject *module, int fd, int mode, long nbytes);
+msvcrt_locking_impl(PyObject *module, int fd, int mode, int nbytes);
 
 static PyObject *
 msvcrt_locking(PyObject *module, PyObject *const *args, Py_ssize_t nargs)
@@ -48,7 +48,7 @@ msvcrt_locking(PyObject *module, PyObject *const *args, Py_ssize_t nargs)
     PyObject *return_value = NULL;
     int fd;
     int mode;
-    long nbytes;
+    int nbytes;
 
     if (!_PyArg_CheckPositional("locking", nargs, 3, 3)) {
         goto exit;
@@ -85,7 +85,7 @@ PyDoc_STRVAR(msvcrt_setmode__doc__,
 #define MSVCRT_SETMODE_METHODDEF    \
     {"setmode", (PyCFunction)(void(*)(void))msvcrt_setmode, METH_FASTCALL, msvcrt_setmode__doc__},
 
-static long
+static int
 msvcrt_setmode_impl(PyObject *module, int fd, int flags);
 
 static PyObject *
@@ -94,7 +94,7 @@ msvcrt_setmode(PyObject *module, PyObject *const *args, Py_ssize_t nargs)
     PyObject *return_value = NULL;
     int fd;
     int flags;
-    long _return_value;
+    int _return_value;
 
     if (!_PyArg_CheckPositional("setmode", nargs, 2, 2)) {
         goto exit;
@@ -130,7 +130,7 @@ PyDoc_STRVAR(msvcrt_open_osfhandle__doc__,
 #define MSVCRT_OPEN_OSFHANDLE_METHODDEF    \
     {"open_osfhandle", (PyCFunction)(void(*)(void))msvcrt_open_osfhandle, METH_FASTCALL, msvcrt_open_osfhandle__doc__},
 
-static long
+static int
 msvcrt_open_osfhandle_impl(PyObject *module, void *handle, int flags);
 
 static PyObject *
@@ -139,7 +139,7 @@ msvcrt_open_osfhandle(PyObject *module, PyObject *const *args, Py_ssize_t nargs)
     PyObject *return_value = NULL;
     void *handle;
     int flags;
-    long _return_value;
+    int _return_value;
 
     if (!_PyArg_ParseStack(args, nargs, ""_Py_PARSE_UINTPTR"i:open_osfhandle",
         &handle, &flags)) {
@@ -199,14 +199,14 @@ PyDoc_STRVAR(msvcrt_kbhit__doc__,
 #define MSVCRT_KBHIT_METHODDEF    \
     {"kbhit", (PyCFunction)msvcrt_kbhit, METH_NOARGS, msvcrt_kbhit__doc__},
 
-static long
+static int
 msvcrt_kbhit_impl(PyObject *module);
 
 static PyObject *
 msvcrt_kbhit(PyObject *module, PyObject *Py_UNUSED(ignored))
 {
     PyObject *return_value = NULL;
-    long _return_value;
+    int _return_value;
 
     _return_value = msvcrt_kbhit_impl(module);
     if ((_return_value == -1) && PyErr_Occurred()) {
@@ -517,7 +517,7 @@ PyDoc_STRVAR(msvcrt_CrtSetReportMode__doc__,
 #define MSVCRT_CRTSETREPORTMODE_METHODDEF    \
     {"CrtSetReportMode", (PyCFunction)(void(*)(void))msvcrt_CrtSetReportMode, METH_FASTCALL, msvcrt_CrtSetReportMode__doc__},
 
-static long
+static int
 msvcrt_CrtSetReportMode_impl(PyObject *module, int type, int mode);
 
 static PyObject *
@@ -526,7 +526,7 @@ msvcrt_CrtSetReportMode(PyObject *module, PyObject *const *args, Py_ssize_t narg
     PyObject *return_value = NULL;
     int type;
     int mode;
-    long _return_value;
+    int _return_value;
 
     if (!_PyArg_CheckPositional("CrtSetReportMode", nargs, 2, 2)) {
         goto exit;
@@ -564,7 +564,7 @@ PyDoc_STRVAR(msvcrt_set_error_mode__doc__,
 #define MSVCRT_SET_ERROR_MODE_METHODDEF    \
     {"set_error_mode", (PyCFunction)msvcrt_set_error_mode, METH_O, msvcrt_set_error_mode__doc__},
 
-static long
+static int
 msvcrt_set_error_mode_impl(PyObject *module, int mode);
 
 static PyObject *
@@ -572,7 +572,7 @@ msvcrt_set_error_mode(PyObject *module, PyObject *arg)
 {
     PyObject *return_value = NULL;
     int mode;
-    long _return_value;
+    int _return_value;
 
     mode = _PyLong_AsInt(arg);
     if (mode == -1 && PyErr_Occurred()) {

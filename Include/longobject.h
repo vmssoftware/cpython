@@ -15,17 +15,17 @@ PyAPI_DATA(PyTypeObject) PyLong_Type;
         PyType_FastSubclass(Py_TYPE(op), Py_TPFLAGS_LONG_SUBCLASS)
 #define PyLong_CheckExact(op) Py_IS_TYPE(op, &PyLong_Type)
 
-PyAPI_FUNC(PyObject *) PyLong_FromLong(long);
-PyAPI_FUNC(PyObject *) PyLong_FromUnsignedLong(unsigned long);
+PyAPI_FUNC(PyObject *) PyLong_FromLong(int);
+PyAPI_FUNC(PyObject *) PyLong_FromUnsignedLong(unsigned int);
 PyAPI_FUNC(PyObject *) PyLong_FromSize_t(size_t);
 PyAPI_FUNC(PyObject *) PyLong_FromSsize_t(Py_ssize_t);
 PyAPI_FUNC(PyObject *) PyLong_FromDouble(double);
-PyAPI_FUNC(long) PyLong_AsLong(PyObject *);
-PyAPI_FUNC(long) PyLong_AsLongAndOverflow(PyObject *, int *);
+PyAPI_FUNC(int) PyLong_AsLong(PyObject *);
+PyAPI_FUNC(int) PyLong_AsLongAndOverflow(PyObject *, int *);
 PyAPI_FUNC(Py_ssize_t) PyLong_AsSsize_t(PyObject *);
 PyAPI_FUNC(size_t) PyLong_AsSize_t(PyObject *);
-PyAPI_FUNC(unsigned long) PyLong_AsUnsignedLong(PyObject *);
-PyAPI_FUNC(unsigned long) PyLong_AsUnsignedLongMask(PyObject *);
+PyAPI_FUNC(unsigned int) PyLong_AsUnsignedLong(PyObject *);
+PyAPI_FUNC(unsigned int) PyLong_AsUnsignedLongMask(PyObject *);
 #ifndef Py_LIMITED_API
 PyAPI_FUNC(int) _PyLong_AsInt(PyObject *);
 #endif
@@ -201,8 +201,8 @@ PyAPI_FUNC(int) _PyLong_FormatAdvancedWriter(
 /* These aren't really part of the int object, but they're handy. The
    functions are in Python/mystrtoul.c.
  */
-PyAPI_FUNC(unsigned long) PyOS_strtoul(const char *, char **, int);
-PyAPI_FUNC(long) PyOS_strtol(const char *, char **, int);
+PyAPI_FUNC(unsigned int) PyOS_strtoul(const char *, char **, int);
+PyAPI_FUNC(int) PyOS_strtol(const char *, char **, int);
 
 #ifndef Py_LIMITED_API
 /* For use by the gcd function in mathmodule.c */

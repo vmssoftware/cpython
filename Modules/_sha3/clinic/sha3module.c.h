@@ -121,13 +121,13 @@ PyDoc_STRVAR(_sha3_shake_128_digest__doc__,
     {"digest", (PyCFunction)_sha3_shake_128_digest, METH_O, _sha3_shake_128_digest__doc__},
 
 static PyObject *
-_sha3_shake_128_digest_impl(SHA3object *self, unsigned long length);
+_sha3_shake_128_digest_impl(SHA3object *self, unsigned int length);
 
 static PyObject *
 _sha3_shake_128_digest(SHA3object *self, PyObject *arg)
 {
     PyObject *return_value = NULL;
-    unsigned long length;
+    unsigned int length;
 
     if (!_PyLong_UnsignedLong_Converter(arg, &length)) {
         goto exit;
@@ -148,13 +148,13 @@ PyDoc_STRVAR(_sha3_shake_128_hexdigest__doc__,
     {"hexdigest", (PyCFunction)_sha3_shake_128_hexdigest, METH_O, _sha3_shake_128_hexdigest__doc__},
 
 static PyObject *
-_sha3_shake_128_hexdigest_impl(SHA3object *self, unsigned long length);
+_sha3_shake_128_hexdigest_impl(SHA3object *self, unsigned int length);
 
 static PyObject *
 _sha3_shake_128_hexdigest(SHA3object *self, PyObject *arg)
 {
     PyObject *return_value = NULL;
-    unsigned long length;
+    unsigned int length;
 
     if (!_PyLong_UnsignedLong_Converter(arg, &length)) {
         goto exit;

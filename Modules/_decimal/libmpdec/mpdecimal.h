@@ -756,7 +756,7 @@ int mpd_iseven(const mpd_t *dec);
 EXTINLINE uint8_t mpd_sign(const mpd_t *dec);
 /* 1 if dec is positive, -1 if dec is negative */
 EXTINLINE int mpd_arith_sign(const mpd_t *dec);
-EXTINLINE long mpd_radix(void);
+EXTINLINE int mpd_radix(void);
 EXTINLINE int mpd_isdynamic(const mpd_t *dec);
 EXTINLINE int mpd_isstatic(const mpd_t *dec);
 EXTINLINE int mpd_isdynamic_data(const mpd_t *dec);

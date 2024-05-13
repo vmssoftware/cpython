@@ -63,7 +63,7 @@ main(int argc, char *argv[])
     text_size = (size_t)stat.st_size;
     text = (char *) malloc(text_size + 1);
     if (text == NULL) {
-        fprintf(stderr, "could not allocate %ld bytes\n", (long) text_size);
+        fprintf(stderr, "could not allocate %ld bytes\n", (int) text_size);
         goto error;
     }
     n = fread(text, 1, text_size, infile);
@@ -71,7 +71,7 @@ main(int argc, char *argv[])
     infile = NULL;
     if (n < text_size) {
         fprintf(stderr, "read too short: got %ld instead of %ld bytes\n",
-                (long) n, (long) text_size);
+                (int) n, (int) text_size);
         goto error;
     }
     text[text_size] = '\0';

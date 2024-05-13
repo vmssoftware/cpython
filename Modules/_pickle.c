@@ -1143,7 +1143,7 @@ _Pickler_New(void)
 static int
 _Pickler_SetProtocol(PicklerObject *self, PyObject *protocol, int fix_imports)
 {
-    long proto;
+    int proto;
 
     if (protocol == Py_None) {
         proto = DEFAULT_PROTOCOL;
@@ -2076,12 +2076,12 @@ save_long(PicklerObject *self, PyObject *obj)
 {
     PyObject *repr = NULL;
     Py_ssize_t size;
-    long val;
+    int val;
     int overflow;
     int status = 0;
 
     val= PyLong_AsLongAndOverflow(obj, &overflow);
-    if (!overflow && (sizeof(long) <= 4 ||
+    if (!overflow && (sizeof(int) <= 4 ||
             (val <= 0x7fffffffL && val >= (-0x7fffffffL - 1))))
     {
         /* result fits in a signed 4-byte integer.
@@ -3652,7 +3652,7 @@ save_global(PicklerObject *self, PyObject *obj, PyObject *name)
          */
         PyObject *extension_key;
         PyObject *code_obj;      /* extension code as Python object */
-        long code;               /* extension code as C value */
+        int code;               /* extension code as C value */
         char pdata[5];
         Py_ssize_t n;
 
@@ -5157,7 +5157,7 @@ load_int(UnpicklerObject *self)
     PyObject *value;
     char *endptr, *s;
     Py_ssize_t len;
-    long x;
+    int x;
 
     if ((len = _Unpickler_Readline(self, &s)) < 0)
         return -1;
@@ -5239,15 +5239,15 @@ calc_binsize(char *bytes, int nbytes)
  * int, but when x is 4 it's a signed one.  This is a historical source
  * of x-platform bugs.
  */
-static long
+static int
 calc_binint(char *bytes, int nbytes)
 {
     unsigned char *s = (unsigned char *)bytes;
     Py_ssize_t i;
-    long x = 0;
+    int x = 0;
 
     for (i = 0; i < nbytes; i++) {
-        x |= (long)s[i] << (8 * i);
+        x |= (int)s[i] << (8 * i);
     }
 
     /* Unlike BININT1 and BININT2, BININT (more accurately BININT4)
@@ -5265,7 +5265,7 @@ static int
 load_binintx(UnpicklerObject *self, char *s, int size)
 {
     PyObject *value;
-    long x;
+    int x;
 
     x = calc_binint(s, size);
 
@@ -6262,7 +6262,7 @@ static int
 load_extension(UnpicklerObject *self, int nbytes)
 {
     char *codebytes;            /* the nbytes bytes after the opcode */
-    long code;                  /* calc_binint returns long */
+    int code;                  /* calc_binint returns int */
     PyObject *py_code;          /* code as a Python int */
     PyObject *obj;              /* the object to push */
     PyObject *pair;             /* (module_name, class_name) */

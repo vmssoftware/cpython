@@ -1162,7 +1162,7 @@ newxmlparseobject(pyexpat_state *state, const char *encoding,
 #if XML_COMBINED_VERSION >= 20100
     /* This feature was added upstream in libexpat 2.1.0. */
     XML_SetHashSalt(self->itself,
-                    (unsigned long)_Py_HashSecret.expat.hashsalt);
+                    (unsigned int)_Py_HashSecret.expat.hashsalt);
 #endif
     XML_SetUserData(self->itself, (void *)self);
     XML_SetUnknownEncodingHandler(self->itself,
@@ -1284,7 +1284,7 @@ xmlparse_handler_setter(xmlparseobject *self, PyObject *v, struct HandlerInfo *h
     static PyObject * \
     xmlparse_##name##_getter(xmlparseobject *self, void *closure) \
     { \
-        return PyLong_FromLong((long) XML_Get##name(self->itself)); \
+        return PyLong_FromLong((int) XML_Get##name(self->itself)); \
     }
 INT_GETTER(ErrorCode)
 INT_GETTER(ErrorLineNumber)
@@ -1334,7 +1334,7 @@ xmlparse_buffer_text_setter(xmlparseobject *self, PyObject *v, void *closure)
 static PyObject *
 xmlparse_buffer_size_getter(xmlparseobject *self, void *closure)
 {
-    return PyLong_FromLong((long) self->buffer_size);
+    return PyLong_FromLong((int) self->buffer_size);
 }
 
 static int
@@ -1344,7 +1344,7 @@ xmlparse_buffer_size_setter(xmlparseobject *self, PyObject *v, void *closure)
         PyErr_SetString(PyExc_RuntimeError, "Cannot delete attribute");
         return -1;
     }
-    long new_buffer_size;
+    int new_buffer_size;
     if (!PyLong_Check(v)) {
         PyErr_SetString(PyExc_TypeError, "buffer_size must be an integer");
         return -1;
@@ -1392,7 +1392,7 @@ xmlparse_buffer_size_setter(xmlparseobject *self, PyObject *v, void *closure)
 static PyObject *
 xmlparse_buffer_used_getter(xmlparseobject *self, void *closure)
 {
-    return PyLong_FromLong((long) self->buffer_used);
+    return PyLong_FromLong((int) self->buffer_used);
 }
 
 static PyObject *
@@ -1439,7 +1439,7 @@ xmlparse_ordered_attributes_setter(xmlparseobject *self, PyObject *v, void *clos
 static PyObject *
 xmlparse_specified_attributes_getter(xmlparseobject *self, void *closure)
 {
-    return PyBool_FromLong((long) self->specified_attributes);
+    return PyBool_FromLong((int) self->specified_attributes);
 }
 
 static int
@@ -1562,14 +1562,14 @@ pyexpat_ParserCreate_impl(PyObject *module, const char *encoding,
 /*[clinic input]
 pyexpat.ErrorString
 
-    code: long
+    code: int
     /
 
 Returns string error for given number.
 [clinic start generated code]*/
 
 static PyObject *
-pyexpat_ErrorString_impl(PyObject *module, long code)
+pyexpat_ErrorString_impl(PyObject *module, int code)
 /*[clinic end generated code: output=2feae50d166f2174 input=cc67de010d9e62b3]*/
 {
     return Py_BuildValue("z", XML_ErrorString((int)code));

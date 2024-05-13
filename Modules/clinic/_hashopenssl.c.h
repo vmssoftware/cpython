@@ -878,7 +878,7 @@ PyDoc_STRVAR(pbkdf2_hmac__doc__,
 
 static PyObject *
 pbkdf2_hmac_impl(PyObject *module, const char *hash_name,
-                 Py_buffer *password, Py_buffer *salt, long iterations,
+                 Py_buffer *password, Py_buffer *salt, int iterations,
                  PyObject *dklen_obj);
 
 static PyObject *
@@ -892,7 +892,7 @@ pbkdf2_hmac(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject 
     const char *hash_name;
     Py_buffer password = {NULL, NULL};
     Py_buffer salt = {NULL, NULL};
-    long iterations;
+    int iterations;
     PyObject *dklen_obj = Py_None;
 
     args = _PyArg_UnpackKeywords(args, nargs, NULL, kwnames, &_parser, 4, 5, 0, argsbuf);
@@ -965,7 +965,7 @@ PyDoc_STRVAR(_hashlib_scrypt__doc__,
 static PyObject *
 _hashlib_scrypt_impl(PyObject *module, Py_buffer *password, Py_buffer *salt,
                      PyObject *n_obj, PyObject *r_obj, PyObject *p_obj,
-                     long maxmem, long dklen);
+                     int maxmem, int dklen);
 
 static PyObject *
 _hashlib_scrypt(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames)
@@ -980,8 +980,8 @@ _hashlib_scrypt(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObj
     PyObject *n_obj = Py_None;
     PyObject *r_obj = Py_None;
     PyObject *p_obj = Py_None;
-    long maxmem = 0;
-    long dklen = 64;
+    int maxmem = 0;
+    int dklen = 64;
 
     args = _PyArg_UnpackKeywords(args, nargs, NULL, kwnames, &_parser, 1, 1, 0, argsbuf);
     if (!args) {
@@ -1304,7 +1304,7 @@ _hashlib_get_fips_mode(PyObject *module, PyObject *Py_UNUSED(ignored))
     if ((_return_value == -1) && PyErr_Occurred()) {
         goto exit;
     }
-    return_value = PyLong_FromLong((long)_return_value);
+    return_value = PyLong_FromLong((int)_return_value);
 
 exit:
     return return_value;

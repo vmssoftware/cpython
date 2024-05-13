@@ -2393,7 +2393,7 @@ get_contiguous(PyObject *self, PyObject *args)
     PyObject *obj;
     PyObject *buffertype;
     PyObject *order;
-    long type;
+    int type;
     char ord;
 
     if (!PyArg_ParseTuple(args, "OOO", &obj, &buffertype, &order)) {

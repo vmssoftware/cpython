@@ -130,7 +130,7 @@ LIB_get_hostname(
         Py_RETURN_NONE;
     }
 
-    unsigned long flags = 0, *pflags = NULL;
+    unsigned int flags = 0, *pflags = NULL;
     if (nargs > 0 && args[0] != Py_None) {
         ConvertArgToLong(args[0], flags, "get_hostname");
     }
@@ -183,7 +183,7 @@ LIB_getjpi(
     int item = 0, *pitem = NULL;
     ConvertArgToLong(args[0], item, "getsyi");
 
-    unsigned long pid = 0, *ppid = NULL;
+    unsigned int pid = 0, *ppid = NULL;
     if (nargs > 1 && args[1] != Py_None) {
         ConvertArgToLong(args[1], pid, "getsyi");
     }
@@ -274,7 +274,7 @@ LIB_getsyi(
     $DESCRIPTOR(node_dsc, "");
     __void_ptr32 pnode_dsc = NULL;
 
-    long csid = 0;
+    int csid = 0;
 
     if (node && node_size) {
         node_dsc.dsc$w_length = node_size;
@@ -559,7 +559,7 @@ LIB_create_dir(
 
     ConvertArgToStr(args[0], spec, spec_size, "create_dir");
 
-    unsigned long uic = 0, *puic = NULL;
+    unsigned int uic = 0, *puic = NULL;
     if (nargs > 1 && args[1] != Py_None) {
         ConvertArgToLong(args[1], uic, "create_dir");
     }

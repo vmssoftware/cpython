@@ -152,7 +152,7 @@ mpd_bsf(mpd_size_t a)
 static inline int __cdecl
 mpd_bsr(mpd_size_t a)
 {
-    unsigned long retval;
+    unsigned int retval;
 
 #ifdef CONFIG_64
     _BitScanReverse64(&retval, a);
@@ -169,7 +169,7 @@ mpd_bsr(mpd_size_t a)
 static inline int __cdecl
 mpd_bsf(mpd_size_t a)
 {
-    unsigned long retval;
+    unsigned int retval;
 
 #ifdef CONFIG_64
     _BitScanForward64(&retval, a);

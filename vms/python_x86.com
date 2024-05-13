@@ -45,6 +45,6 @@ $
 $ backup 'vms_pat'constraints.txt python$root:[lib]
 $
 $ backup 'dyn_pat'*.* python$root:[lib.python3^.10.lib-dynload...]*.*
-$ backup 'vms_pat'_sysconfigdata__OpenVMS_cpython-310-x86_64-openvms.py python$root:[lib.python3^.10]
+$ backup 'bld_pat'_sysconfigdata__OpenVMS_cpython*.py python$root:[lib.python3^.10]*.*
 $
 $ SET PROCESS/PARSE_STYLE='original_style'

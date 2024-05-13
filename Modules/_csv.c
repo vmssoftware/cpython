@@ -21,7 +21,7 @@ typedef struct {
     PyTypeObject *dialect_type;
     PyTypeObject *reader_type;
     PyTypeObject *writer_type;
-    long field_limit;   /* max parsed field size */
+    int field_limit;   /* max parsed field size */
 } _csvstate;
 
 static struct PyModuleDef _csvmodule;
@@ -114,7 +114,7 @@ typedef struct {
     Py_ssize_t field_size;      /* size of allocated buffer */
     Py_ssize_t field_len;       /* length of current field */
     int numeric_field;          /* treat field as numeric */
-    unsigned long line_num;     /* Source-file line number */
+    unsigned int line_num;     /* Source-file line number */
 } ReaderObj;
 
 typedef struct {
@@ -1499,7 +1499,7 @@ csv_field_size_limit(PyObject *module, PyObject *args)
 {
     PyObject *new_limit = NULL;
     _csvstate *module_state = get_csv_state(module);
-    long old_limit = module_state->field_limit;
+    int old_limit = module_state->field_limit;
 
     if (!PyArg_UnpackTuple(args, "field_size_limit", 0, 1, &new_limit))
         return NULL;

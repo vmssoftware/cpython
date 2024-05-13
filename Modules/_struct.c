@@ -73,7 +73,7 @@ typedef struct {
 
 typedef struct { char c; short x; } st_short;
 typedef struct { char c; int x; } st_int;
-typedef struct { char c; long x; } st_long;
+typedef struct { char c; int x; } st_long;
 typedef struct { char c; float x; } st_float;
 typedef struct { char c; double x; } st_double;
 typedef struct { char c; void *x; } st_void_p;
@@ -82,7 +82,7 @@ typedef struct { char c; _Bool x; } st_bool;
 
 #define SHORT_ALIGN (sizeof(st_short) - sizeof(short))
 #define INT_ALIGN (sizeof(st_int) - sizeof(int))
-#define LONG_ALIGN (sizeof(st_long) - sizeof(long))
+#define LONG_ALIGN (sizeof(st_long) - sizeof(int))
 #define FLOAT_ALIGN (sizeof(st_float) - sizeof(float))
 #define DOUBLE_ALIGN (sizeof(st_double) - sizeof(double))
 #define VOID_P_ALIGN (sizeof(st_void_p) - sizeof(void *))
@@ -152,9 +152,9 @@ get_pylong(_structmodulestate *state, PyObject *v)
    one */
 
 static int
-get_long(_structmodulestate *state, PyObject *v, long *p)
+get_long(_structmodulestate *state, PyObject *v, int *p)
 {
-    long x;
+    int x;
 
     v = get_pylong(state, v);
     if (v == NULL)
@@ -162,7 +162,7 @@ get_long(_structmodulestate *state, PyObject *v, long *p)
     assert(PyLong_Check(v));
     x = PyLong_AsLong(v);
     Py_DECREF(v);
-    if (x == (long)-1 && PyErr_Occurred()) {
+    if (x == (int)-1 && PyErr_Occurred()) {
         if (PyErr_ExceptionMatches(PyExc_OverflowError))
             PyErr_SetString(state->StructError,
                             "argument out of range");
@@ -176,9 +176,9 @@ get_long(_structmodulestate *state, PyObject *v, long *p)
 /* Same, but handling unsigned long */
 
 static int
-get_ulong(_structmodulestate *state, PyObject *v, unsigned long *p)
+get_ulong(_structmodulestate *state, PyObject *v, unsigned int *p)
 {
-    unsigned long x;
+    unsigned int x;
 
     v = get_pylong(state, v);
     if (v == NULL)
@@ -186,7 +186,7 @@ get_ulong(_structmodulestate *state, PyObject *v, unsigned long *p)
     assert(PyLong_Check(v));
     x = PyLong_AsUnsignedLong(v);
     Py_DECREF(v);
-    if (x == (unsigned long)-1 && PyErr_Occurred()) {
+    if (x == (unsigned int)-1 && PyErr_Occurred()) {
         if (PyErr_ExceptionMatches(PyExc_OverflowError))
             PyErr_SetString(state->StructError,
                             "argument out of range");
@@ -407,13 +407,13 @@ nu_char(_structmodulestate *state, const char *p, const formatdef *f)
 static PyObject *
 nu_byte(_structmodulestate *state, const char *p, const formatdef *f)
 {
-    return PyLong_FromLong((long) *(signed char *)p);
+    return PyLong_FromLong((int) *(signed char *)p);
 }
 
 static PyObject *
 nu_ubyte(_structmodulestate *state, const char *p, const formatdef *f)
 {
-    return PyLong_FromLong((long) *(unsigned char *)p);
+    return PyLong_FromLong((int) *(unsigned char *)p);
 }
 
 static PyObject *
@@ -421,7 +421,7 @@ nu_short(_structmodulestate *state, const char *p, const formatdef *f)
 {
     short x;
     memcpy((char *)&x, p, sizeof x);
-    return PyLong_FromLong((long)x);
+    return PyLong_FromLong((int)x);
 }
 
 static PyObject *
@@ -429,7 +429,7 @@ nu_ushort(_structmodulestate *state, const char *p, const formatdef *f)
 {
     unsigned short x;
     memcpy((char *)&x, p, sizeof x);
-    return PyLong_FromLong((long)x);
+    return PyLong_FromLong((int)x);
 }
 
 static PyObject *
@@ -437,7 +437,7 @@ nu_int(_structmodulestate *state, const char *p, const formatdef *f)
 {
     int x;
     memcpy((char *)&x, p, sizeof x);
-    return PyLong_FromLong((long)x);
+    return PyLong_FromLong((int)x);
 }
 
 static PyObject *
@@ -445,13 +445,13 @@ nu_uint(_structmodulestate *state, const char *p, const formatdef *f)
 {
     unsigned int x;
     memcpy((char *)&x, p, sizeof x);
-    return PyLong_FromUnsignedLong((unsigned long)x);
+    return PyLong_FromUnsignedLong((unsigned int)x);
 }
 
 static PyObject *
 nu_long(_structmodulestate *state, const char *p, const formatdef *f)
 {
-    long x;
+    int x;
     memcpy((char *)&x, p, sizeof x);
     return PyLong_FromLong(x);
 }
@@ -459,7 +459,7 @@ nu_long(_structmodulestate *state, const char *p, const formatdef *f)
 static PyObject *
 nu_ulong(_structmodulestate *state, const char *p, const formatdef *f)
 {
-    unsigned long x;
+    unsigned int x;
     memcpy((char *)&x, p, sizeof x);
     return PyLong_FromUnsignedLong(x);
 }
@@ -542,7 +542,7 @@ nu_void_p(_structmodulestate *state, const char *p, const formatdef *f)
 static int
 np_byte(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 {
-    long x;
+    int x;
     if (get_long(state, v, &x) < 0)
         return -1;
     if (x < -128 || x > 127) {
@@ -557,7 +557,7 @@ np_byte(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 static int
 np_ubyte(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 {
-    long x;
+    int x;
     if (get_long(state, v, &x) < 0)
         return -1;
     if (x < 0 || x > 255) {
@@ -584,7 +584,7 @@ np_char(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 static int
 np_short(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 {
-    long x;
+    int x;
     short y;
     if (get_long(state, v, &x) < 0)
         return -1;
@@ -602,7 +602,7 @@ np_short(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 static int
 np_ushort(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 {
-    long x;
+    int x;
     unsigned short y;
     if (get_long(state, v, &x) < 0)
         return -1;
@@ -620,12 +620,12 @@ np_ushort(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 static int
 np_int(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 {
-    long x;
+    int x;
     int y;
     if (get_long(state, v, &x) < 0)
         return -1;
 #if (SIZEOF_LONG > SIZEOF_INT)
-    if ((x < ((long)INT_MIN)) || (x > ((long)INT_MAX)))
+    if ((x < ((int)INT_MIN)) || (x > ((int)INT_MAX)))
         RANGE_ERROR(state, x, f, 0, -1);
 #endif
     y = (int)x;
@@ -636,13 +636,13 @@ np_int(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 static int
 np_uint(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 {
-    unsigned long x;
+    unsigned int x;
     unsigned int y;
     if (get_ulong(state, v, &x) < 0)
         return -1;
     y = (unsigned int)x;
 #if (SIZEOF_LONG > SIZEOF_INT)
-    if (x > ((unsigned long)UINT_MAX))
+    if (x > ((unsigned int)UINT_MAX))
         RANGE_ERROR(state, y, f, 1, -1);
 #endif
     memcpy(p, (char *)&y, sizeof y);
@@ -652,7 +652,7 @@ np_uint(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 static int
 np_long(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 {
-    long x;
+    int x;
     if (get_long(state, v, &x) < 0)
         return -1;
     memcpy(p, (char *)&x, sizeof x);
@@ -662,7 +662,7 @@ np_long(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 static int
 np_ulong(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 {
-    unsigned long x;
+    unsigned int x;
     if (get_ulong(state, v, &x) < 0)
         return -1;
     memcpy(p, (char *)&x, sizeof x);
@@ -787,8 +787,8 @@ static const formatdef native_table[] = {
     {'H',       sizeof(short),  SHORT_ALIGN,    nu_ushort,      np_ushort},
     {'i',       sizeof(int),    INT_ALIGN,      nu_int,         np_int},
     {'I',       sizeof(int),    INT_ALIGN,      nu_uint,        np_uint},
-    {'l',       sizeof(long),   LONG_ALIGN,     nu_long,        np_long},
-    {'L',       sizeof(long),   LONG_ALIGN,     nu_ulong,       np_ulong},
+    {'l',       sizeof(int),   LONG_ALIGN,     nu_long,        np_long},
+    {'L',       sizeof(int),   LONG_ALIGN,     nu_ulong,       np_ulong},
     {'n',       sizeof(size_t), SIZE_T_ALIGN,   nu_ssize_t,     np_ssize_t},
     {'N',       sizeof(size_t), SIZE_T_ALIGN,   nu_size_t,      np_size_t},
     {'q',       sizeof(long long), LONG_LONG_ALIGN, nu_longlong, np_longlong},
@@ -806,7 +806,7 @@ static const formatdef native_table[] = {
 static PyObject *
 bu_int(_structmodulestate *state, const char *p, const formatdef *f)
 {
-    long x = 0;
+    int x = 0;
     Py_ssize_t i = f->size;
     const unsigned char *bytes = (const unsigned char *)p;
     do {
@@ -821,7 +821,7 @@ bu_int(_structmodulestate *state, const char *p, const formatdef *f)
 static PyObject *
 bu_uint(_structmodulestate *state, const char *p, const formatdef *f)
 {
-    unsigned long x = 0;
+    unsigned int x = 0;
     Py_ssize_t i = f->size;
     const unsigned char *bytes = (const unsigned char *)p;
     do {
@@ -884,7 +884,7 @@ bu_bool(_structmodulestate *state, const char *p, const formatdef *f)
 static int
 bp_int(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 {
-    long x;
+    int x;
     Py_ssize_t i;
     unsigned char *q = (unsigned char *)p;
     if (get_long(state, v, &x) < 0)
@@ -908,15 +908,15 @@ bp_int(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 static int
 bp_uint(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 {
-    unsigned long x;
+    unsigned int x;
     Py_ssize_t i;
     unsigned char *q = (unsigned char *)p;
     if (get_ulong(state, v, &x) < 0)
         return -1;
     i = f->size;
     if (i != SIZEOF_LONG) {
-        unsigned long maxint = 1;
-        maxint <<= (unsigned long)(i * 8);
+        unsigned int maxint = 1;
+        maxint <<= (unsigned int)(i * 8);
         if (x >= maxint)
             RANGE_ERROR(state, x, f, 1, maxint - 1);
     }
@@ -1027,7 +1027,7 @@ static formatdef bigendian_table[] = {
 static PyObject *
 lu_int(_structmodulestate *state, const char *p, const formatdef *f)
 {
-    long x = 0;
+    int x = 0;
     Py_ssize_t i = f->size;
     const unsigned char *bytes = (const unsigned char *)p;
     do {
@@ -1042,7 +1042,7 @@ lu_int(_structmodulestate *state, const char *p, const formatdef *f)
 static PyObject *
 lu_uint(_structmodulestate *state, const char *p, const formatdef *f)
 {
-    unsigned long x = 0;
+    unsigned int x = 0;
     Py_ssize_t i = f->size;
     const unsigned char *bytes = (const unsigned char *)p;
     do {
@@ -1099,7 +1099,7 @@ lu_double(_structmodulestate *state, const char *p, const formatdef *f)
 static int
 lp_int(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 {
-    long x;
+    int x;
     Py_ssize_t i;
     unsigned char *q = (unsigned char *)p;
     if (get_long(state, v, &x) < 0)
@@ -1123,15 +1123,15 @@ lp_int(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 static int
 lp_uint(_structmodulestate *state, char *p, PyObject *v, const formatdef *f)
 {
-    unsigned long x;
+    unsigned int x;
     Py_ssize_t i;
     unsigned char *q = (unsigned char *)p;
     if (get_ulong(state, v, &x) < 0)
         return -1;
     i = f->size;
     if (i != SIZEOF_LONG) {
-        unsigned long maxint = 1;
-        maxint <<= (unsigned long)(i * 8);
+        unsigned int maxint = 1;
+        maxint <<= (unsigned int)(i * 8);
         if (x >= maxint)
             RANGE_ERROR(state, x, f, 1, maxint - 1);
     }

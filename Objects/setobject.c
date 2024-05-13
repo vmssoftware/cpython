@@ -1831,7 +1831,7 @@ set_contains(PySetObject *so, PyObject *key)
 static PyObject *
 set_direct_contains(PySetObject *so, PyObject *key)
 {
-    long result;
+    int result;
 
     result = set_contains(so, key);
     if (result < 0)

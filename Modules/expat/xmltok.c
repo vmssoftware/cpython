@@ -429,7 +429,7 @@ utf8_toUtf16(const ENCODING *enc, const char **fromP, const char *fromLim,
       from += 3;
       break;
     case BT_LEAD4: {
-      unsigned long n;
+      unsigned int n;
       if (toLim - to < 2) {
         res = XML_CONVERT_OUTPUT_EXHAUSTED;
         goto after;

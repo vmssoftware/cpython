@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-PyAPI_FUNC(long) PyImport_GetMagicNumber(void);
+PyAPI_FUNC(int) PyImport_GetMagicNumber(void);
 PyAPI_FUNC(const char *) PyImport_GetMagicTag(void);
 PyAPI_FUNC(PyObject *) PyImport_ExecCodeModule(
     const char *name,           /* UTF-8 encoded string */

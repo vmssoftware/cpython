@@ -1273,7 +1273,7 @@ typedef struct {
     PyObject_HEAD
     PyObject *func;
     PyObject *it;
-    long start;
+    int start;
 } dropwhileobject;
 
 /*[clinic input]
@@ -1335,7 +1335,7 @@ dropwhile_next(dropwhileobject *lz)
 {
     PyObject *item, *good;
     PyObject *it = lz->it;
-    long ok;
+    int ok;
     PyObject *(*iternext)(PyObject *);
 
     iternext = *Py_TYPE(it)->tp_iternext;
@@ -1438,7 +1438,7 @@ typedef struct {
     PyObject_HEAD
     PyObject *func;
     PyObject *it;
-    long stop;
+    int stop;
 } takewhileobject;
 
 /*[clinic input]
@@ -1498,7 +1498,7 @@ takewhile_next(takewhileobject *lz)
 {
     PyObject *item, *good;
     PyObject *it = lz->it;
-    long ok;
+    int ok;
 
     if (lz->stop == 1)
         return NULL;
@@ -4038,7 +4038,7 @@ filterfalse_next(filterfalseobject *lz)
 {
     PyObject *item;
     PyObject *it = lz->it;
-    long ok;
+    int ok;
     PyObject *(*iternext)(PyObject *);
 
     iternext = *Py_TYPE(it)->tp_iternext;
@@ -4173,7 +4173,7 @@ itertools_count_impl(PyTypeObject *type, PyObject *long_cnt,
     countobject *lz;
     int fast_mode;
     Py_ssize_t cnt = 0;
-    long step;
+    int step;
 
     if ((long_cnt != NULL && !PyNumber_Check(long_cnt)) ||
         (long_step != NULL && !PyNumber_Check(long_step))) {
@@ -4298,7 +4298,7 @@ count_repr(countobject *lz)
                                     _PyType_Name(Py_TYPE(lz)), lz->cnt);
 
     if (PyLong_Check(lz->long_step)) {
-        long step = PyLong_AsLong(lz->long_step);
+        int step = PyLong_AsLong(lz->long_step);
         if (step == -1 && PyErr_Occurred()) {
             PyErr_Clear();
         }

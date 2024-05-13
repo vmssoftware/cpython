@@ -102,16 +102,16 @@ ffi_prep_args(
 
 	/*	Cast the stack arg from int* to long*. sizeof(long) == 4 in 32-bit mode
 		and 8 in 64-bit mode.	*/
-	unsigned long *const longStack	= (unsigned long *const)stack;
+	unsigned int *const longStack	= (unsigned int *const)stack;
 
 	/* 'stacktop' points at the previous backchain pointer.	*/
 #if defined(__ppc64__)
 	//	In ppc-darwin.s, an extra 96 bytes is reserved for the linkage area,
 	//	saved registers, and an extra FPR.
-	unsigned long *const stacktop	=
-		(unsigned long *)(unsigned long)((char*)longStack + bytes + 96);
+	unsigned int *const stacktop	=
+		(unsigned int *)(unsigned int)((char*)longStack + bytes + 96);
 #elif defined(__ppc__)
-	unsigned long *const stacktop	= longStack + (bytes / sizeof(long));
+	unsigned int *const stacktop	= longStack + (bytes / sizeof(int));
 #else
 #error undefined architecture
 #endif
@@ -130,12 +130,12 @@ ffi_prep_args(
 	unsigned int	fparg_count = 0;
 
 	/* 'next_arg' grows up as we put parameters in it.  */
-	unsigned long*	next_arg = longStack + 6; /* 6 reserved positions.  */
+	unsigned int*	next_arg = longStack + 6; /* 6 reserved positions.  */
 
 	int				i;
 	double			double_tmp;
 	void**			p_argv = ecif->avalue;
-	unsigned long	gprvalue;
+	unsigned int	gprvalue;
 	ffi_type**		ptr = ecif->cif->arg_types;
 
 	/* Check that everything starts aligned properly.  */
@@ -148,7 +148,7 @@ ffi_prep_args(
 		Return values are referenced by r3, so r4 is the first parameter.  */
 
 	if (flags & FLAG_RETVAL_REFERENCE)
-		*next_arg++ = (unsigned long)(char*)ecif->rvalue;
+		*next_arg++ = (unsigned int)(char*)ecif->rvalue;
 
 	/* Now for the arguments.  */
 	for (i = ecif->cif->nargs; i > 0; i--, ptr++, p_argv++)
@@ -224,7 +224,7 @@ ffi_prep_args(
 #endif
 
 			case FFI_TYPE_POINTER:
-				gprvalue = *(unsigned long*)*p_argv;
+				gprvalue = *(unsigned int*)*p_argv;
 				goto putgpr;
 
 			case FFI_TYPE_UINT8:
@@ -251,7 +251,7 @@ ffi_prep_args(
 
 				ffi64_struct_to_reg_form(*ptr, (char*)*p_argv, NULL, &fparg_count,
 					(char*)next_arg, &gprSize, (char*)fpr_base, &fprSize);
-				next_arg += gprSize / sizeof(long);
+				next_arg += gprSize / sizeof(int);
 				fpr_base += fprSize / sizeof(double);
 
 #elif defined(__ppc__)
@@ -344,7 +344,7 @@ ffi_prep_cif_machdep(
 
 	/*	Space for the frame pointer, callee's LR, CR, etc, and for
 		the asm's temp regs.  */
-	unsigned int	bytes = (6 + ASM_NEEDS_REGISTERS) * sizeof(long);
+	unsigned int	bytes = (6 + ASM_NEEDS_REGISTERS) * sizeof(int);
 
 	/*	Return value handling.  The rules are as follows:
 		- 32-bit (or less) integer values are returned in gpr3;
@@ -536,15 +536,15 @@ ffi_prep_cif_machdep(
 	/* Stack space.  */
 #if defined(__ppc64__)
 	if ((intarg_count + fparg_count) > NUM_GPR_ARG_REGISTERS)
-		bytes += (intarg_count + fparg_count) * sizeof(long);
+		bytes += (intarg_count + fparg_count) * sizeof(int);
 #elif defined(__ppc__)
 	if ((intarg_count + 2 * fparg_count) > NUM_GPR_ARG_REGISTERS)
-		bytes += (intarg_count + 2 * fparg_count) * sizeof(long);
+		bytes += (intarg_count + 2 * fparg_count) * sizeof(int);
 #else
 #error undefined architecture
 #endif
 	else
-		bytes += NUM_GPR_ARG_REGISTERS * sizeof(long);
+		bytes += NUM_GPR_ARG_REGISTERS * sizeof(int);
 
 	/* The stack space allocated needs to be a multiple of 16/32 bytes.  */
 	bytes = SF_ROUND(bytes);
@@ -569,7 +569,7 @@ ffi_call_AIX(
 extern void
 ffi_call_DARWIN(
 /*@out@*/	extended_cif*,
-			unsigned long,
+			unsigned int,
 			unsigned,
 /*@out@*/	unsigned*,
 			void (*fn)(void),
@@ -612,7 +612,7 @@ ffi_call(
 
 		case FFI_DARWIN:
 			/*@-usedef@*/
-			ffi_call_DARWIN(&ecif, -(long)cif->bytes,
+			ffi_call_DARWIN(&ecif, -(int)cif->bytes,
 				cif->flags, ecif.rvalue, fn, ffi_prep_args);
 			/*@=usedef@*/
 			break;
@@ -734,8 +734,8 @@ ffi_prep_closure(
 			tramp[5] = 0x7d8903a6;	//	mtctr	r12
 			tramp[6] = 0xe96b0020;	//	ld		r11,32(r11)
 			tramp[7] = 0x4e800420;	//	bctr
-			*(unsigned long*)&tramp[8] = (unsigned long)ffi_closure_ASM;
-			*(unsigned long*)&tramp[10] = (unsigned long)closure;
+			*(unsigned int*)&tramp[8] = (unsigned int)ffi_closure_ASM;
+			*(unsigned int*)&tramp[10] = (unsigned int)closure;
 #elif defined(__ppc__)
 			tramp[0] = 0x7c0802a6;	//	mflr	r0
 			tramp[1] = 0x429f0005;	//	bcl		20,31,+0x8
@@ -745,8 +745,8 @@ ffi_prep_closure(
 			tramp[5] = 0x7d8903a6;	//	mtctr	r12
 			tramp[6] = 0x816b001c;	//	lwz		r11,28(r11)
 			tramp[7] = 0x4e800420;	//	bctr
-			tramp[8] = (unsigned long)ffi_closure_ASM;
-			tramp[9] = (unsigned long)closure;
+			tramp[8] = (unsigned int)ffi_closure_ASM;
+			tramp[9] = (unsigned int)closure;
 #else
 #error undefined architecture
 #endif
@@ -814,7 +814,7 @@ int
 ffi_closure_helper_DARWIN(
 	ffi_closure*	closure,
 	void*			rvalue,
-	unsigned long*	pgr,
+	unsigned int*	pgr,
 	ffi_dblfl*		pfr)
 {
 	/*	rvalue is the pointer to space for return value in closure assembly
@@ -830,7 +830,7 @@ ffi_closure_helper_DARWIN(
 	unsigned int		nf = 0;	/* number of FPRs already used.  */
 	unsigned int		ng = 0;	/* number of GPRs already used.  */
 	ffi_cif*			cif = closure->cif;
-	long				avn = cif->nargs;
+	int				avn = cif->nargs;
 	void**				avalue = alloca(cif->nargs * sizeof(void*));
 	ffi_type**			arg_types = cif->arg_types;
 
@@ -892,8 +892,8 @@ ffi_closure_helper_DARWIN(
 					ffi64_struct_to_ram_form(arg_types[i], (const char*)pgr,
 						&gprSize, (const char*)pfr, &fprSize, &nf, avalue[i], NULL);
  
-					ng	+= gprSize / sizeof(long);
-					pgr	+= gprSize / sizeof(long);
+					ng	+= gprSize / sizeof(int);
+					pgr	+= gprSize / sizeof(int);
 					pfr	+= (fprSize - savedFPRSize) / sizeof(double);
 
 #elif defined(__ppc__)
@@ -911,8 +911,8 @@ ffi_closure_helper_DARWIN(
 					else
 						avalue[i] = (void*)pgr;
 
-					ng	+= (size_al + 3) / sizeof(long);
-					pgr += (size_al + 3) / sizeof(long);
+					ng	+= (size_al + 3) / sizeof(int);
+					pgr += (size_al + 3) / sizeof(int);
 #else
 #error undefined architecture
 #endif
@@ -1472,9 +1472,9 @@ ffi64_struct_to_reg_form(
 						if (outGPRs != NULL && inStruct != NULL)
 						{
 							// Avoid memcpy for small chunks.
-							if (inType->size <= sizeof(long))
-								*(long*)&outGPRs[destGMarker] =
-									*(long*)&inStruct[srcMarker];
+							if (inType->size <= sizeof(int))
+								*(int*)&outGPRs[destGMarker] =
+									*(int*)&inStruct[srcMarker];
 							else
 								memcpy(&outGPRs[destGMarker],
 									&inStruct[srcMarker], inType->size);

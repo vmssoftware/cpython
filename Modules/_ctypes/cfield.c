@@ -350,9 +350,9 @@ PyTypeObject PyCField_Type = {
    if it isn't one */
 
 static int
-get_long(PyObject *v, long *p)
+get_long(PyObject *v, int *p)
 {
-    long x = PyLong_AsUnsignedLongMask(v);
+    int x = PyLong_AsUnsignedLongMask(v);
     if (x == -1 && PyErr_Occurred())
         return -1;
     *p = x;
@@ -362,10 +362,10 @@ get_long(PyObject *v, long *p)
 /* Same, but handling unsigned long */
 
 static int
-get_ulong(PyObject *v, unsigned long *p)
+get_ulong(PyObject *v, unsigned int *p)
 {
-    unsigned long x = PyLong_AsUnsignedLongMask(v);
-    if (x == (unsigned long)-1 && PyErr_Occurred())
+    unsigned int x = PyLong_AsUnsignedLongMask(v);
+    if (x == (unsigned int)-1 && PyErr_Occurred())
         return -1;
     *p = x;
     return 0;
@@ -474,7 +474,7 @@ get_ulonglong(PyObject *v, unsigned long long *p)
 static PyObject *
 b_set(void *ptr, PyObject *value, Py_ssize_t size)
 {
-    long val;
+    int val;
     if (get_long(value, &val) < 0)
         return NULL;
     *(signed char *)ptr = SET(signed char, *(signed char *)ptr, val, size);
@@ -493,7 +493,7 @@ b_get(void *ptr, Py_ssize_t size)
 static PyObject *
 B_set(void *ptr, PyObject *value, Py_ssize_t size)
 {
-    unsigned long val;
+    unsigned int val;
     if (get_ulong(value, &val) < 0)
         return NULL;
     *(unsigned char *)ptr = SET(unsigned char, *(unsigned char*)ptr, val, size);
@@ -512,7 +512,7 @@ B_get(void *ptr, Py_ssize_t size)
 static PyObject *
 h_set(void *ptr, PyObject *value, Py_ssize_t size)
 {
-    long val;
+    int val;
     short x;
     if (get_long(value, &val) < 0)
         return NULL;
@@ -526,7 +526,7 @@ h_set(void *ptr, PyObject *value, Py_ssize_t size)
 static PyObject *
 h_set_sw(void *ptr, PyObject *value, Py_ssize_t size)
 {
-    long val;
+    int val;
     short field;
     if (get_long(value, &val) < 0) {
         return NULL;
@@ -545,7 +545,7 @@ h_get(void *ptr, Py_ssize_t size)
     short val;
     memcpy(&val, ptr, sizeof(val));
     GET_BITFIELD(val, size);
-    return PyLong_FromLong((long)val);
+    return PyLong_FromLong((int)val);
 }
 
 static PyObject *
@@ -561,7 +561,7 @@ h_get_sw(void *ptr, Py_ssize_t size)
 static PyObject *
 H_set(void *ptr, PyObject *value, Py_ssize_t size)
 {
-    unsigned long val;
+    unsigned int val;
     unsigned short x;
     if (get_ulong(value, &val) < 0)
         return NULL;
@@ -574,7 +574,7 @@ H_set(void *ptr, PyObject *value, Py_ssize_t size)
 static PyObject *
 H_set_sw(void *ptr, PyObject *value, Py_ssize_t size)
 {
-    unsigned long val;
+    unsigned int val;
     unsigned short field;
     if (get_ulong(value, &val) < 0) {
         return NULL;
@@ -610,7 +610,7 @@ H_get_sw(void *ptr, Py_ssize_t size)
 static PyObject *
 i_set(void *ptr, PyObject *value, Py_ssize_t size)
 {
-    long val;
+    int val;
     int x;
     if (get_long(value, &val) < 0)
         return NULL;
@@ -623,7 +623,7 @@ i_set(void *ptr, PyObject *value, Py_ssize_t size)
 static PyObject *
 i_set_sw(void *ptr, PyObject *value, Py_ssize_t size)
 {
-    long val;
+    int val;
     int field;
     if (get_long(value, &val) < 0) {
         return NULL;
@@ -680,7 +680,7 @@ vBOOL_set(void *ptr, PyObject *value, Py_ssize_t size)
 static PyObject *
 vBOOL_get(void *ptr, Py_ssize_t size)
 {
-    return PyBool_FromLong((long)*(short int *)ptr);
+    return PyBool_FromLong((int)*(short int *)ptr);
 }
 
 static PyObject *
@@ -701,13 +701,13 @@ bool_set(void *ptr, PyObject *value, Py_ssize_t size)
 static PyObject *
 bool_get(void *ptr, Py_ssize_t size)
 {
-    return PyBool_FromLong((long)*(_Bool *)ptr);
+    return PyBool_FromLong((int)*(_Bool *)ptr);
 }
 
 static PyObject *
 I_set(void *ptr, PyObject *value, Py_ssize_t size)
 {
-    unsigned long val;
+    unsigned int val;
     unsigned int x;
     if (get_ulong(value, &val) < 0)
         return  NULL;
@@ -720,7 +720,7 @@ I_set(void *ptr, PyObject *value, Py_ssize_t size)
 static PyObject *
 I_set_sw(void *ptr, PyObject *value, Py_ssize_t size)
 {
-    unsigned long val;
+    unsigned int val;
     unsigned int field;
     if (get_ulong(value, &val) < 0) {
         return  NULL;
@@ -756,12 +756,12 @@ I_get_sw(void *ptr, Py_ssize_t size)
 static PyObject *
 l_set(void *ptr, PyObject *value, Py_ssize_t size)
 {
-    long val;
-    long x;
+    int val;
+    int x;
     if (get_long(value, &val) < 0)
         return NULL;
     memcpy(&x, ptr, sizeof(x));
-    x = SET(long, x, val, size);
+    x = SET(int, x, val, size);
     memcpy(ptr, &x, sizeof(x));
     _RET(value);
 }
@@ -769,14 +769,14 @@ l_set(void *ptr, PyObject *value, Py_ssize_t size)
 static PyObject *
 l_set_sw(void *ptr, PyObject *value, Py_ssize_t size)
 {
-    long val;
-    long field;
+    int val;
+    int field;
     if (get_long(value, &val) < 0) {
         return NULL;
     }
     memcpy(&field, ptr, sizeof(field));
     field = SWAP_LONG(field);
-    field = SET(long, field, val, size);
+    field = SET(int, field, val, size);
     field = SWAP_LONG(field);
     memcpy(ptr, &field, sizeof(field));
     _RET(value);
@@ -786,7 +786,7 @@ l_set_sw(void *ptr, PyObject *value, Py_ssize_t size)
 static PyObject *
 l_get(void *ptr, Py_ssize_t size)
 {
-    long val;
+    int val;
     memcpy(&val, ptr, sizeof(val));
     GET_BITFIELD(val, size);
     return PyLong_FromLong(val);
@@ -795,7 +795,7 @@ l_get(void *ptr, Py_ssize_t size)
 static PyObject *
 l_get_sw(void *ptr, Py_ssize_t size)
 {
-    long val;
+    int val;
     memcpy(&val, ptr, sizeof(val));
     val = SWAP_LONG(val);
     GET_BITFIELD(val, size);
@@ -805,12 +805,12 @@ l_get_sw(void *ptr, Py_ssize_t size)
 static PyObject *
 L_set(void *ptr, PyObject *value, Py_ssize_t size)
 {
-    unsigned long val;
-    unsigned long x;
+    unsigned int val;
+    unsigned int x;
     if (get_ulong(value, &val) < 0)
         return  NULL;
     memcpy(&x, ptr, sizeof(x));
-    x = SET(unsigned long, x, val, size);
+    x = SET(unsigned int, x, val, size);
     memcpy(ptr, &x, sizeof(x));
     _RET(value);
 }
@@ -818,14 +818,14 @@ L_set(void *ptr, PyObject *value, Py_ssize_t size)
 static PyObject *
 L_set_sw(void *ptr, PyObject *value, Py_ssize_t size)
 {
-    unsigned long val;
-    unsigned long field;
+    unsigned int val;
+    unsigned int field;
     if (get_ulong(value, &val) < 0) {
         return  NULL;
     }
     memcpy(&field, ptr, sizeof(field));
     field = SWAP_LONG(field);
-    field = SET(unsigned long, field, val, size);
+    field = SET(unsigned int, field, val, size);
     field = SWAP_LONG(field);
     memcpy(ptr, &field, sizeof(field));
     _RET(value);
@@ -835,7 +835,7 @@ L_set_sw(void *ptr, PyObject *value, Py_ssize_t size)
 static PyObject *
 L_get(void *ptr, Py_ssize_t size)
 {
-    unsigned long val;
+    unsigned int val;
     memcpy(&val, ptr, sizeof(val));
     GET_BITFIELD(val, size);
     return PyLong_FromUnsignedLong(val);
@@ -844,7 +844,7 @@ L_get(void *ptr, Py_ssize_t size)
 static PyObject *
 L_get_sw(void *ptr, Py_ssize_t size)
 {
-    unsigned long val;
+    unsigned int val;
     memcpy(&val, ptr, sizeof(val));
     val = SWAP_LONG(val);
     GET_BITFIELD(val, size);
@@ -1116,7 +1116,7 @@ c_set(void *ptr, PyObject *value, Py_ssize_t size)
     }
     if (PyLong_Check(value))
     {
-        long longval = PyLong_AsLong(value);
+        int longval = PyLong_AsLong(value);
         if (longval < 0 || longval >= 256)
             goto error;
         *(char *)ptr = (char)longval;
@@ -1542,7 +1542,7 @@ _ctypes_get_fielddesc(const char *fmt)
             _ctypes_get_fielddesc("u")->pffi_type = &ffi_type_sshort;
         else if (sizeof(wchar_t) == sizeof(int))
             _ctypes_get_fielddesc("u")->pffi_type = &ffi_type_sint;
-        else if (sizeof(wchar_t) == sizeof(long))
+        else if (sizeof(wchar_t) == sizeof(int))
             _ctypes_get_fielddesc("u")->pffi_type = &ffi_type_slong;
     }
 
@@ -1556,7 +1556,7 @@ _ctypes_get_fielddesc(const char *fmt)
 typedef struct { char c; char x; } s_char;
 typedef struct { char c; short x; } s_short;
 typedef struct { char c; int x; } s_int;
-typedef struct { char c; long x; } s_long;
+typedef struct { char c; int x; } s_long;
 typedef struct { char c; float x; } s_float;
 typedef struct { char c; double x; } s_double;
 typedef struct { char c; long double x; } s_long_double;

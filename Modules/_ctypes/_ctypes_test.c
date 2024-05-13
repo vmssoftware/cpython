@@ -29,9 +29,9 @@ _testfunc_cbk_reg_double(double a, double b, double c, double d, double e,
  */
 
 typedef struct {
-    unsigned long first;
-    unsigned long second;
-    unsigned long third;
+    unsigned int first;
+    unsigned int second;
+    unsigned int third;
 } Test;
 
 EXPORT(void)
@@ -132,7 +132,7 @@ _testfunc_array_in_struct2a(Test3B in)
 }
 
 typedef union {
-    long a_long;
+    int a_long;
     struct {
         int an_int;
         int another_int;
@@ -148,9 +148,9 @@ typedef struct {
     int another_int;
 } Test5;
 
-EXPORT(long)
+EXPORT(int)
 _testfunc_union_by_value1(Test4 in) {
-    long result = in.a_long + in.a_struct.an_int + in.a_struct.another_int;
+    int result = in.a_long + in.a_struct.an_int + in.a_struct.another_int;
 
     /* As the union/struct are passed by value, changes to them shouldn't be
      * reflected in the caller.
@@ -159,9 +159,9 @@ _testfunc_union_by_value1(Test4 in) {
     return result;
 }
 
-EXPORT(long)
+EXPORT(int)
 _testfunc_union_by_value2(Test5 in) {
-    long result = in.an_int + in.nested.an_int;
+    int result = in.an_int + in.nested.an_int;
 
     /* As the union/struct are passed by value, changes to them shouldn't be
      * reflected in the caller.
@@ -170,25 +170,25 @@ _testfunc_union_by_value2(Test5 in) {
     return result;
 }
 
-EXPORT(long)
+EXPORT(int)
 _testfunc_union_by_reference1(Test4 *in) {
-    long result = in->a_long;
+    int result = in->a_long;
 
     memset(in, 0, sizeof(Test4));
     return result;
 }
 
-EXPORT(long)
+EXPORT(int)
 _testfunc_union_by_reference2(Test4 *in) {
-    long result = in->a_struct.an_int + in->a_struct.another_int;
+    int result = in->a_struct.an_int + in->a_struct.another_int;
 
     memset(in, 0, sizeof(Test4));
     return result;
 }
 
-EXPORT(long)
+EXPORT(int)
 _testfunc_union_by_reference3(Test5 *in) {
-    long result = in->an_int + in->nested.an_int + in->another_int;
+    int result = in->an_int + in->nested.an_int + in->another_int;
 
     memset(in, 0, sizeof(Test5));
     return result;
@@ -198,9 +198,9 @@ typedef struct {
     signed int A: 1, B:2, C:3, D:2;
 } Test6;
 
-EXPORT(long)
+EXPORT(int)
 _testfunc_bitfield_by_value1(Test6 in) {
-    long result = in.A + in.B + in.C + in.D;
+    int result = in.A + in.B + in.C + in.D;
 
     /* As the struct is passed by value, changes to it shouldn't be
      * reflected in the caller.
@@ -209,9 +209,9 @@ _testfunc_bitfield_by_value1(Test6 in) {
     return result;
 }
 
-EXPORT(long)
+EXPORT(int)
 _testfunc_bitfield_by_reference1(Test6 *in) {
-    long result = in->A + in->B + in->C + in->D;
+    int result = in->A + in->B + in->C + in->D;
 
     memset(in, 0, sizeof(Test6));
     return result;
@@ -221,9 +221,9 @@ typedef struct {
     unsigned int A: 1, B:2, C:3, D:2;
 } Test7;
 
-EXPORT(long)
+EXPORT(int)
 _testfunc_bitfield_by_reference2(Test7 *in) {
-    long result = in->A + in->B + in->C + in->D;
+    int result = in->A + in->B + in->C + in->D;
 
     memset(in, 0, sizeof(Test7));
     return result;
@@ -233,9 +233,9 @@ typedef union {
     signed int A: 1, B:2, C:3, D:2;
 } Test8;
 
-EXPORT(long)
+EXPORT(int)
 _testfunc_bitfield_by_value2(Test8 in) {
-    long result = in.A + in.B + in.C + in.D;
+    int result = in.A + in.B + in.C + in.D;
 
     /* As the struct is passed by value, changes to it shouldn't be
      * reflected in the caller.
@@ -317,7 +317,7 @@ EXPORT(void) _testfunc_v(int a, int b, int *presult)
     *presult = a + b;
 }
 
-EXPORT(int) _testfunc_i_bhilfd(signed char b, short h, int i, long l, float f, double d)
+EXPORT(int) _testfunc_i_bhilfd(signed char b, short h, int i, int l, float f, double d)
 {
 /*      printf("_testfunc_i_bhilfd got %d %d %d %ld %f %f\n",
                b, h, i, l, f, d);
@@ -325,7 +325,7 @@ EXPORT(int) _testfunc_i_bhilfd(signed char b, short h, int i, long l, float f, d
     return (int)(b + h + i + l + f + d);
 }
 
-EXPORT(float) _testfunc_f_bhilfd(signed char b, short h, int i, long l, float f, double d)
+EXPORT(float) _testfunc_f_bhilfd(signed char b, short h, int i, int l, float f, double d)
 {
 /*      printf("_testfunc_f_bhilfd got %d %d %d %ld %f %f\n",
                b, h, i, l, f, d);
@@ -333,7 +333,7 @@ EXPORT(float) _testfunc_f_bhilfd(signed char b, short h, int i, long l, float f,
     return (float)(b + h + i + l + f + d);
 }
 
-EXPORT(double) _testfunc_d_bhilfd(signed char b, short h, int i, long l, float f, double d)
+EXPORT(double) _testfunc_d_bhilfd(signed char b, short h, int i, int l, float f, double d)
 {
 /*      printf("_testfunc_d_bhilfd got %d %d %d %ld %f %f\n",
                b, h, i, l, f, d);
@@ -341,7 +341,7 @@ EXPORT(double) _testfunc_d_bhilfd(signed char b, short h, int i, long l, float f
     return (double)(b + h + i + l + f + d);
 }
 
-EXPORT(long double) _testfunc_D_bhilfD(signed char b, short h, int i, long l, float f, long double d)
+EXPORT(long double) _testfunc_D_bhilfD(signed char b, short h, int i, int l, float f, long double d)
 {
 /*      printf("_testfunc_d_bhilfd got %d %d %d %ld %f %f\n",
                b, h, i, l, f, d);
@@ -433,13 +433,13 @@ EXPORT(int) _testfunc_callback_with_pointer(int (*func)(int *))
     return (*func)(table);
 }
 
-EXPORT(long long) _testfunc_q_bhilfdq(signed char b, short h, int i, long l, float f,
+EXPORT(long long) _testfunc_q_bhilfdq(signed char b, short h, int i, int l, float f,
                                       double d, long long q)
 {
     return (long long)(b + h + i + l + f + d + q);
 }
 
-EXPORT(long long) _testfunc_q_bhilfd(signed char b, short h, int i, long l, float f, double d)
+EXPORT(long long) _testfunc_q_bhilfd(signed char b, short h, int i, int l, float f, double d)
 {
     return (long long)(b + h + i + l + f + d);
 }
@@ -514,7 +514,7 @@ EXPORT(int) get_an_integer(void)
 }
 
 EXPORT(double)
-integrate(double a, double b, double (*f)(double), long nstep)
+integrate(double a, double b, double (*f)(double), int nstep)
 {
     double x, sum=0.0, dx=(b-a)/(double)nstep;
     for(x=a+0.5*dx; (b-x)*(x-a)>0.0; x+=dx)
@@ -638,8 +638,8 @@ EXPORT(short) tf_h(short c) { S; return c/3; }
 EXPORT(unsigned short) tf_H(unsigned short c) { U; return c/3; }
 EXPORT(int) tf_i(int c) { S; return c/3; }
 EXPORT(unsigned int) tf_I(unsigned int c) { U; return c/3; }
-EXPORT(long) tf_l(long c) { S; return c/3; }
-EXPORT(unsigned long) tf_L(unsigned long c) { U; return c/3; }
+EXPORT(int) tf_l(int c) { S; return c/3; }
+EXPORT(unsigned int) tf_L(unsigned int c) { U; return c/3; }
 EXPORT(long long) tf_q(long long c) { S; return c/3; }
 EXPORT(unsigned long long) tf_Q(unsigned long long c) { U; return c/3; }
 EXPORT(float) tf_f(float c) { S; return c/3; }
@@ -653,8 +653,8 @@ EXPORT(short) __stdcall s_tf_h(short c) { S; return c/3; }
 EXPORT(unsigned short) __stdcall s_tf_H(unsigned short c) { U; return c/3; }
 EXPORT(int) __stdcall s_tf_i(int c) { S; return c/3; }
 EXPORT(unsigned int) __stdcall s_tf_I(unsigned int c) { U; return c/3; }
-EXPORT(long) __stdcall s_tf_l(long c) { S; return c/3; }
-EXPORT(unsigned long) __stdcall s_tf_L(unsigned long c) { U; return c/3; }
+EXPORT(int) __stdcall s_tf_l(int c) { S; return c/3; }
+EXPORT(unsigned int) __stdcall s_tf_L(unsigned int c) { U; return c/3; }
 EXPORT(long long) __stdcall s_tf_q(long long c) { S; return c/3; }
 EXPORT(unsigned long long) __stdcall s_tf_Q(unsigned long long c) { U; return c/3; }
 EXPORT(float) __stdcall s_tf_f(float c) { S; return c/3; }
@@ -669,8 +669,8 @@ EXPORT(short) tf_bh(signed char x, short c) { S; return c/3; }
 EXPORT(unsigned short) tf_bH(signed char x, unsigned short c) { U; return c/3; }
 EXPORT(int) tf_bi(signed char x, int c) { S; return c/3; }
 EXPORT(unsigned int) tf_bI(signed char x, unsigned int c) { U; return c/3; }
-EXPORT(long) tf_bl(signed char x, long c) { S; return c/3; }
-EXPORT(unsigned long) tf_bL(signed char x, unsigned long c) { U; return c/3; }
+EXPORT(int) tf_bl(signed char x, int c) { S; return c/3; }
+EXPORT(unsigned int) tf_bL(signed char x, unsigned int c) { U; return c/3; }
 EXPORT(long long) tf_bq(signed char x, long long c) { S; return c/3; }
 EXPORT(unsigned long long) tf_bQ(signed char x, unsigned long long c) { U; return c/3; }
 EXPORT(float) tf_bf(signed char x, float c) { S; return c/3; }
@@ -685,8 +685,8 @@ EXPORT(short) __stdcall s_tf_bh(signed char x, short c) { S; return c/3; }
 EXPORT(unsigned short) __stdcall s_tf_bH(signed char x, unsigned short c) { U; return c/3; }
 EXPORT(int) __stdcall s_tf_bi(signed char x, int c) { S; return c/3; }
 EXPORT(unsigned int) __stdcall s_tf_bI(signed char x, unsigned int c) { U; return c/3; }
-EXPORT(long) __stdcall s_tf_bl(signed char x, long c) { S; return c/3; }
-EXPORT(unsigned long) __stdcall s_tf_bL(signed char x, unsigned long c) { U; return c/3; }
+EXPORT(int) __stdcall s_tf_bl(signed char x, int c) { S; return c/3; }
+EXPORT(unsigned int) __stdcall s_tf_bL(signed char x, unsigned int c) { U; return c/3; }
 EXPORT(long long) __stdcall s_tf_bq(signed char x, long long c) { S; return c/3; }
 EXPORT(unsigned long long) __stdcall s_tf_bQ(signed char x, unsigned long long c) { U; return c/3; }
 EXPORT(float) __stdcall s_tf_bf(signed char x, float c) { S; return c/3; }
@@ -700,15 +700,15 @@ EXPORT(void) __stdcall s_tv_i(int c) { S; return; }
 #ifndef MS_WIN32
 
 typedef struct {
-    long x;
-    long y;
+    int x;
+    int y;
 } POINT;
 
 typedef struct {
-    long left;
-    long top;
-    long right;
-    long bottom;
+    int left;
+    int top;
+    int right;
+    int bottom;
 } RECT;
 
 #endif
@@ -726,10 +726,10 @@ EXPORT(int) PointInRect(RECT *prc, POINT pt)
     return 1;
 }
 
-EXPORT(long left = 10);
-EXPORT(long top = 20);
-EXPORT(long right = 30);
-EXPORT(long bottom = 40);
+EXPORT(int left = 10);
+EXPORT(int top = 20);
+EXPORT(int right = 30);
+EXPORT(int bottom = 40);
 
 EXPORT(RECT) ReturnRect(int i, RECT ar, RECT* br, POINT cp, RECT dr,
                         RECT *er, POINT fp, RECT gr)

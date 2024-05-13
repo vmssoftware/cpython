@@ -8,8 +8,8 @@ unsigned int    _pid[MAX_SPAWN];
 int             _status[MAX_SPAWN];
 unsigned int    _finished[MAX_SPAWN];
 
-static unsigned long _finished_counter = 1;
-static unsigned long _initialized = 0;   // 0 - uninitialized, 1 - initialization, 2 - initializes
+static unsigned int _finished_counter = 1;
+static unsigned int _initialized = 0;   // 0 - uninitialized, 1 - initialization, 2 - initializes
 
 static int _init_pos(int pos, unsigned int **pppid, int **ppstatus, unsigned int **ppfinished) {
     _pid[pos] = -1;

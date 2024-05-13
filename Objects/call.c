@@ -932,7 +932,7 @@ _PyStack_UnpackDict(PyThreadState *tstate,
        called in the performance critical hot code. */
     Py_ssize_t pos = 0, i = 0;
     PyObject *key, *value;
-    unsigned long keys_are_strings = Py_TPFLAGS_UNICODE_SUBCLASS;
+    unsigned int keys_are_strings = Py_TPFLAGS_UNICODE_SUBCLASS;
     while (PyDict_Next(kwargs, &pos, &key, &value)) {
         keys_are_strings &= Py_TYPE(key)->tp_flags;
         Py_INCREF(key);

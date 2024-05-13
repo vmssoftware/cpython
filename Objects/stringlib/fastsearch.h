@@ -518,7 +518,7 @@ FASTSEARCH(const STRINGLIB_CHAR* s, Py_ssize_t n,
            const STRINGLIB_CHAR* p, Py_ssize_t m,
            Py_ssize_t maxcount, int mode)
 {
-    unsigned long mask;
+    unsigned int mask;
     Py_ssize_t skip, count = 0;
     Py_ssize_t i, j, mlast, w;
 

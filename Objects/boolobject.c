@@ -25,7 +25,7 @@ bool_repr(PyObject *self)
 
 /* Function to return a bool from a C long */
 
-PyObject *PyBool_FromLong(long ok)
+PyObject *PyBool_FromLong(int ok)
 {
     PyObject *result;
 
@@ -43,7 +43,7 @@ static PyObject *
 bool_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     PyObject *x = Py_False;
-    long ok;
+    int ok;
 
     if (!_PyArg_NoKeywords("bool", kwds))
         return NULL;
@@ -59,7 +59,7 @@ static PyObject *
 bool_vectorcall(PyObject *type, PyObject * const*args,
                 size_t nargsf, PyObject *kwnames)
 {
-    long ok = 0;
+    int ok = 0;
     if (!_PyArg_NoKwnames("bool", kwnames)) {
         return NULL;
     }

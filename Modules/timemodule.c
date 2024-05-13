@@ -180,7 +180,7 @@ time_clock_gettime(PyObject *self, PyObject *args)
     struct timespec tp;
 
 #if defined(_AIX) && (SIZEOF_LONG == 8)
-    long clk_id;
+    int clk_id;
     if (!PyArg_ParseTuple(args, "l:clock_gettime", &clk_id)) {
 #else
     int clk_id;
@@ -332,7 +332,7 @@ Return the resolution (precision) of the specified clock clk_id.");
 static PyObject *
 time_pthread_getcpuclockid(PyObject *self, PyObject *args)
 {
-    unsigned long thread_id;
+    unsigned int thread_id;
     int err;
     clockid_t clk_id;
     if (!PyArg_ParseTuple(args, "k:pthread_getcpuclockid", &thread_id)) {
@@ -421,7 +421,7 @@ tmtotuple(struct tm *p
     if (v == NULL)
         return NULL;
 
-#define SET(i,val) PyStructSequence_SET_ITEM(v, i, PyLong_FromLong((long) val))
+#define SET(i,val) PyStructSequence_SET_ITEM(v, i, PyLong_FromLong((int) val))
 
     SET(0, p->tm_year + 1900);
     SET(1, p->tm_mon + 1);         /* Want January == 1 */
@@ -1340,10 +1340,10 @@ _PyTime_GetProcessTimeWithInfo(_PyTime_t *tp, _Py_clock_info_t *info)
     struct tms t;
 
     if (times(&t) != (clock_t)-1) {
-        static long ticks_per_second = -1;
+        static int ticks_per_second = -1;
 
         if (ticks_per_second == -1) {
-            long freq;
+            int freq;
 #if defined(HAVE_SYSCONF) && defined(_SC_CLK_TCK)
             freq = sysconf(_SC_CLK_TCK);
             if (freq < 1) {
@@ -2110,7 +2110,7 @@ pysleep(_PyTime_t secs)
     int err = 0;
 #else
     _PyTime_t millisecs;
-    unsigned long ul_millis;
+    unsigned int ul_millis;
     DWORD rc;
     HANDLE hInterruptEvent;
 #endif
@@ -2147,7 +2147,7 @@ pysleep(_PyTime_t secs)
         /* Allow sleep(0) to maintain win32 semantics, and as decreed
          * by Guido, only the main thread can be interrupted.
          */
-        ul_millis = (unsigned long)millisecs;
+        ul_millis = (unsigned int)millisecs;
         if (ul_millis == 0 || !_PyOS_IsMainThread()) {
             Py_BEGIN_ALLOW_THREADS
             Sleep(ul_millis);

@@ -393,7 +393,7 @@ _random_Random_getstate_impl(RandomObject *self)
             goto Fail;
         PyTuple_SET_ITEM(state, i, element);
     }
-    element = PyLong_FromLong((long)(self->index));
+    element = PyLong_FromLong((int)(self->index));
     if (element == NULL)
         goto Fail;
     PyTuple_SET_ITEM(state, i, element);
@@ -420,8 +420,8 @@ _random_Random_setstate(RandomObject *self, PyObject *state)
 /*[clinic end generated code: output=fd1c3cd0037b6681 input=b3b4efbb1bc66af8]*/
 {
     int i;
-    unsigned long element;
-    long index;
+    unsigned int element;
+    int index;
     uint32_t new_state[N];
 
     if (!PyTuple_Check(state)) {
@@ -437,7 +437,7 @@ _random_Random_setstate(RandomObject *self, PyObject *state)
 
     for (i=0; i<N ; i++) {
         element = PyLong_AsUnsignedLong(PyTuple_GET_ITEM(state, i));
-        if (element == (unsigned long)-1 && PyErr_Occurred())
+        if (element == (unsigned int)-1 && PyErr_Occurred())
             return NULL;
         new_state[i] = (uint32_t)element;
     }

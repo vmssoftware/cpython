@@ -123,7 +123,7 @@ typedef off_t Py_off_t;
 # define PyLong_FromOff_t   PyLong_FromLong
 # define PY_OFF_T_MAX       LONG_MAX
 # define PY_OFF_T_MIN       LONG_MIN
-# define PY_OFF_T_COMPAT    long
+# define PY_OFF_T_COMPAT    int
 # define PY_PRIdOFF         "ld"
 #else
 # error off_t does not match either size_t, long, or long long!

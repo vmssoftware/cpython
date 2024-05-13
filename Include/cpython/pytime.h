@@ -60,7 +60,7 @@ PyAPI_FUNC(int) _PyTime_ObjectToTime_t(
 PyAPI_FUNC(int) _PyTime_ObjectToTimeval(
     PyObject *obj,
     time_t *sec,
-    long *usec,
+    int *usec,
     _PyTime_round_t);
 
 /* Convert a number of seconds, int or float, to a timespec structure.
@@ -69,7 +69,7 @@ PyAPI_FUNC(int) _PyTime_ObjectToTimeval(
 PyAPI_FUNC(int) _PyTime_ObjectToTimespec(
     PyObject *obj,
     time_t *sec,
-    long *nsec,
+    int *nsec,
     _PyTime_round_t);
 
 

@@ -899,7 +899,7 @@ XML_SetParamEntityParsing(XML_Parser parser,
    Note: If parser == NULL, the function will do nothing and return 0.
 */
 XMLPARSEAPI(int)
-XML_SetHashSalt(XML_Parser parser, unsigned long hash_salt);
+XML_SetHashSalt(XML_Parser parser, unsigned int hash_salt);
 
 /* If XML_Parse or XML_ParseBuffer have returned XML_STATUS_ERROR, then
    XML_GetErrorCode returns information about the error.
@@ -1018,7 +1018,7 @@ enum XML_FeatureEnum {
 typedef struct {
   enum XML_FeatureEnum feature;
   const XML_LChar *name;
-  long int value;
+  int value;
 } XML_Feature;
 
 XMLPARSEAPI(const XML_Feature *)

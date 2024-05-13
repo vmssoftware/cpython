@@ -18,7 +18,7 @@
 #include <stdlib.h>
 
 #ifndef LONG_BIT
-#define LONG_BIT (CHAR_BIT*sizeof(long))
+#define LONG_BIT (CHAR_BIT*sizeof(int))
 #endif
 
 #ifndef __STDINT_LOADED
@@ -132,13 +132,13 @@ static inline const char *skipspace(const char *p)
 }
 
 #undef set_bit
-static inline void set_bit(unsigned long *bitmap, unsigned int bit)
+static inline void set_bit(unsigned int *bitmap, unsigned int bit)
 {
 	bitmap[bit / LONG_BIT] |= 1UL << (bit % LONG_BIT);
 }
 
 #undef test_bit
-static inline int test_bit(unsigned long *bitmap, unsigned int bit)
+static inline int test_bit(unsigned int *bitmap, unsigned int bit)
 {
 	return (int)(bitmap[bit / LONG_BIT] >> (bit % LONG_BIT)) & 1;
 }
@@ -168,7 +168,7 @@ int rsscanf(const char *buffer, const char *format, char ***argv)
 	enum bail bail = bail_none;
 	int sign;
 	int converted = 0;	/* Successful conversions */
-	unsigned long matchmap[((1 << CHAR_BIT) + (LONG_BIT - 1)) / LONG_BIT];
+	unsigned int matchmap[((1 << CHAR_BIT) + (LONG_BIT - 1)) / LONG_BIT];
 	int matchinv = 0;	/* Is match map inverted? */
 	unsigned char range_start = 0;
 	(void)sign;
@@ -338,7 +338,7 @@ int rsscanf(const char *buffer, const char *format, char ***argv)
 							(*argv)[converted - 1] = strdup(tmp);
 							break;
 						case rank_long:
-							sprintf(tmp, "%ld", *(long*)&val);
+							sprintf(tmp, "%ld", *(int*)&val);
 							*argv = realloc(*argv, (converted + 1) * sizeof(char *));
 							(*argv)[converted - 1] = strdup(tmp);
 							break;

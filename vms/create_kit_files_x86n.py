@@ -27,23 +27,23 @@ def create_content(type, major, minor, level, edit):
                 '" source "' + \
                 kit_dir + file_name + file_ext + \
                 '";')
-            if file == '_sysconfigdata__OpenVMS_cpython-310-x86_64-openvms.py':
-                full_name = os.path.join(root, file)
-                with open(full_name, 'r') as file_:
-                    lines = file_.readlines()
-                rewrite = False
-                for idx, line in enumerate(lines):
-                    if 'SIZEOF_VOID_P' in line:
-                        if line != " 'SIZEOF_VOID_P': 4,\n":
-                            lines[idx] = " 'SIZEOF_VOID_P': 4,\n"
-                            rewrite = True
-                        break
-                if rewrite:
-                    with open(full_name, 'w') as file_:
-                        file_.writelines(lines)
+            # if file == '_sysconfigdata__OpenVMS_cpython-310-x86_64-openvms.py':
+            #     full_name = os.path.join(root, file)
+            #     with open(full_name, 'r') as file_:
+            #         lines = file_.readlines()
+            #     rewrite = False
+            #     for idx, line in enumerate(lines):
+            #         if 'SIZEOF_VOID_P' in line:
+            #             if line != " 'SIZEOF_VOID_P': 4,\n":
+            #                 lines[idx] = " 'SIZEOF_VOID_P': 4,\n"
+            #                 rewrite = True
+            #             break
+            #     if rewrite:
+            #         with open(full_name, 'w') as file_:
+            #             file_.writelines(lines)
 
     kit_template = '''--
--- (C) Copyright 2023 VMS Software Inc.
+-- (C) Copyright 2024 VMS Software Inc.
 --
 product VSI X86VMS PYTHON {type}{major}.{minor}-{level}{edit} FULL ;
 
@@ -140,11 +140,11 @@ end product;
 =prompt VMS Software Inc.
 
 1 'NOTICE
-=prompt (C) Copyright 2023 VMS Software Inc.
+=prompt (C) Copyright 2024 VMS Software Inc.
 
 1 NO_MIN_VMS
 =prompt Minimum OpenVMS software version not found on this system, abort instalation
-This kit requires a minimum of OpenVMS X86 V9.2-1.
+This kit requires a minimum of OpenVMS X86 V9.2-2.
 
 1 NO_ODS5_DISKS
 =prompt ODS-5 disk(s) not found on this system, abort installation
@@ -181,7 +181,7 @@ if __name__ == "__main__":
     major = '3'
     minor = '10'
     level = '0'
-    edit = 'release007'
+    edit = 'release008'
 
     for opt, optarg in opts:
         if opt in ['--type']:

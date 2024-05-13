@@ -921,7 +921,7 @@ _overlapped_Overlapped_getresult_impl(OverlappedObject *self, BOOL wait)
             Py_INCREF(self->read_from.result);
             return self->read_from.result;
         default:
-            return PyLong_FromUnsignedLong((unsigned long) transferred);
+            return PyLong_FromUnsignedLong((unsigned int) transferred);
     }
 }
 
@@ -1309,8 +1309,8 @@ parse_address(PyObject *obj, SOCKADDR *Address, int Length)
     PyObject *Host_obj;
     Py_UNICODE *Host;
     unsigned short Port;
-    unsigned long FlowInfo;
-    unsigned long ScopeId;
+    unsigned int FlowInfo;
+    unsigned int ScopeId;
 
     memset(Address, 0, Length);
 

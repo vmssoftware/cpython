@@ -84,7 +84,7 @@ typedef struct {
 /* The maximum number of frames is either:
  - The maximum number of frames we can store in `traceback_t.nframe`
  - The maximum memory size_t we can allocate */
-static const unsigned long MAX_NFRAME = Py_MIN(UINT16_MAX, ((SIZE_MAX - sizeof(traceback_t)) / sizeof(frame_t) + 1));
+static const unsigned int MAX_NFRAME = Py_MIN(UINT16_MAX, ((SIZE_MAX - sizeof(traceback_t)) / sizeof(frame_t) + 1));
 
 
 static PyObject *unknown_filename = NULL;
@@ -957,7 +957,7 @@ tracemalloc_start(int max_nframe)
     PyMemAllocatorEx alloc;
     size_t size;
 
-    if (max_nframe < 1 || (unsigned long) max_nframe > MAX_NFRAME) {
+    if (max_nframe < 1 || (unsigned int) max_nframe > MAX_NFRAME) {
         PyErr_Format(PyExc_ValueError,
                      "the number of frames must be in range [1; %lu]",
                      MAX_NFRAME);

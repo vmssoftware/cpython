@@ -9,12 +9,12 @@ extern "C" {
 
 #define Py_MARSHAL_VERSION 4
 
-PyAPI_FUNC(void) PyMarshal_WriteLongToFile(long, FILE *, int);
+PyAPI_FUNC(void) PyMarshal_WriteLongToFile(int, FILE *, int);
 PyAPI_FUNC(void) PyMarshal_WriteObjectToFile(PyObject *, FILE *, int);
 PyAPI_FUNC(PyObject *) PyMarshal_WriteObjectToString(PyObject *, int);
 
 #ifndef Py_LIMITED_API
-PyAPI_FUNC(long) PyMarshal_ReadLongFromFile(FILE *);
+PyAPI_FUNC(int) PyMarshal_ReadLongFromFile(FILE *);
 PyAPI_FUNC(int) PyMarshal_ReadShortFromFile(FILE *);
 PyAPI_FUNC(PyObject *) PyMarshal_ReadObjectFromFile(FILE *);
 PyAPI_FUNC(PyObject *) PyMarshal_ReadLastObjectFromFile(FILE *);

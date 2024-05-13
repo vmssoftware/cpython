@@ -262,8 +262,8 @@ Return the sum of i and j.");
 static PyObject *
 xx_foo(PyObject *module, PyObject *args)
 {
-    long i, j;
-    long res;
+    int i, j;
+    int res;
     if (!PyArg_ParseTuple(args, "ll:foo", &i, &j))
         return NULL;
     res = i+j; /* XXX Do something here */

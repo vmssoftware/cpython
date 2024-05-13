@@ -34,8 +34,8 @@
 
 #ifndef LIBFFI_ASM
 
-typedef unsigned long	ffi_arg;
-typedef signed long		ffi_sarg;
+typedef unsigned int	ffi_arg;
+typedef signed int		ffi_sarg;
 
 typedef enum ffi_abi {
 	FFI_FIRST_ABI = 0,

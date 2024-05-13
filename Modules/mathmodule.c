@@ -1545,10 +1545,10 @@ math_fsum(PyObject *module, PyObject *seq)
 #undef NUM_PARTIALS
 
 
-static unsigned long
-count_set_bits(unsigned long n)
+static unsigned int
+count_set_bits(unsigned int n)
 {
-    unsigned long count = 0;
+    unsigned int count = 0;
     while (n != 0) {
         ++count;
         n &= n - 1; /* clear least significant bit */
@@ -1923,10 +1923,10 @@ math_isqrt(PyObject *module, PyObject *n)
  * max_bits must be >= bit_length(stop - 2). */
 
 static PyObject *
-factorial_partial_product(unsigned long start, unsigned long stop,
-                          unsigned long max_bits)
+factorial_partial_product(unsigned int start, unsigned int stop,
+                          unsigned int max_bits)
 {
-    unsigned long midpoint, num_operands;
+    unsigned int midpoint, num_operands;
     PyObject *left = NULL, *right = NULL, *result = NULL;
 
     /* If the return value will fit an unsigned long, then we can
@@ -1950,7 +1950,7 @@ factorial_partial_product(unsigned long start, unsigned long stop,
      * unlikely case of an overflow in num_operands * max_bits. */
     if (num_operands <= 8 * SIZEOF_LONG &&
         num_operands * max_bits <= 8 * SIZEOF_LONG) {
-        unsigned long j, total;
+        unsigned int j, total;
         for (total = start, j = start + 2; j < stop; j += 2)
             total *= j;
         return PyLong_FromUnsignedLong(total);
@@ -1976,10 +1976,10 @@ factorial_partial_product(unsigned long start, unsigned long stop,
 /* factorial_odd_part:  compute the odd part of factorial(n). */
 
 static PyObject *
-factorial_odd_part(unsigned long n)
+factorial_odd_part(unsigned int n)
 {
-    long i;
-    unsigned long v, lower, upper;
+    int i;
+    unsigned int v, lower, upper;
     PyObject *partial, *tmp, *inner, *outer;
 
     inner = PyLong_FromLong(1);
@@ -2031,7 +2031,7 @@ factorial_odd_part(unsigned long n)
 
 /* Lookup table for small factorial values */
 
-static const unsigned long SmallFactorials[] = {
+static const unsigned int SmallFactorials[] = {
     1, 1, 2, 6, 24, 120, 720, 5040, 40320,
     362880, 3628800, 39916800, 479001600,
 #if SIZEOF_LONG >= 8
@@ -2056,7 +2056,7 @@ static PyObject *
 math_factorial(PyObject *module, PyObject *arg)
 /*[clinic end generated code: output=6686f26fae00e9ca input=6d1c8105c0d91fb4]*/
 {
-    long x, two_valuation;
+    int x, two_valuation;
     int overflow;
     PyObject *result, *odd_part;
 
@@ -2077,7 +2077,7 @@ math_factorial(PyObject *module, PyObject *arg)
     }
 
     /* use lookup table if x is small */
-    if (x < (long)Py_ARRAY_LENGTH(SmallFactorials))
+    if (x < (int)Py_ARRAY_LENGTH(SmallFactorials))
         return PyLong_FromUnsignedLong(SmallFactorials[x]);
 
     /* else express in the form odd_part * 2**two_valuation, and compute as
@@ -2179,7 +2179,7 @@ math_ldexp_impl(PyObject *module, double x, PyObject *i)
 /*[clinic end generated code: output=b6892f3c2df9cc6a input=17d5970c1a40a8c1]*/
 {
     double r;
-    long exp;
+    int exp;
     int overflow;
 
     if (PyLong_Check(i)) {
@@ -2895,7 +2895,7 @@ static PyObject *
 math_isfinite_impl(PyObject *module, double x)
 /*[clinic end generated code: output=8ba1f396440c9901 input=46967d254812e54a]*/
 {
-    return PyBool_FromLong((long)Py_IS_FINITE(x));
+    return PyBool_FromLong((int)Py_IS_FINITE(x));
 }
 
 
@@ -2912,7 +2912,7 @@ static PyObject *
 math_isnan_impl(PyObject *module, double x)
 /*[clinic end generated code: output=f537b4d6df878c3e input=935891e66083f46a]*/
 {
-    return PyBool_FromLong((long)Py_IS_NAN(x));
+    return PyBool_FromLong((int)Py_IS_NAN(x));
 }
 
 
@@ -2929,7 +2929,7 @@ static PyObject *
 math_isinf_impl(PyObject *module, double x)
 /*[clinic end generated code: output=9f00cbec4de7b06b input=32630e4212cf961f]*/
 {
-    return PyBool_FromLong((long)Py_IS_INFINITY(x));
+    return PyBool_FromLong((int)Py_IS_INFINITY(x));
 }
 
 
@@ -3002,7 +3002,7 @@ math_isclose_impl(PyObject *module, double a, double b, double rel_tol,
 }
 
 static inline int
-_check_long_mult_overflow(long a, long b) {
+_check_long_mult_overflow(int a, int b) {
 
     /* From Python2's int_mul code:
 
@@ -3032,7 +3032,7 @@ _check_long_mult_overflow(long a, long b) {
 
     */
 
-    long longprod = (long)((unsigned long)a * b);
+    int longprod = (int)((unsigned int)a * b);
     double doubleprod = (double)a * (double)b;
     double doubled_longprod = (double)longprod;
 
@@ -3096,7 +3096,7 @@ math_prod_impl(PyObject *module, PyObject *iterable, PyObject *start)
     */
     if (PyLong_CheckExact(result)) {
         int overflow;
-        long i_result = PyLong_AsLongAndOverflow(result, &overflow);
+        int i_result = PyLong_AsLongAndOverflow(result, &overflow);
         /* If this already overflowed, don't even enter the loop. */
         if (overflow == 0) {
             Py_DECREF(result);
@@ -3114,9 +3114,9 @@ math_prod_impl(PyObject *module, PyObject *iterable, PyObject *start)
                 return PyLong_FromLong(i_result);
             }
             if (PyLong_CheckExact(item)) {
-                long b = PyLong_AsLongAndOverflow(item, &overflow);
+                int b = PyLong_AsLongAndOverflow(item, &overflow);
                 if (overflow == 0 && !_check_long_mult_overflow(i_result, b)) {
-                    long x = i_result * b;
+                    int x = i_result * b;
                     i_result = x;
                     Py_DECREF(item);
                     continue;
@@ -3164,7 +3164,7 @@ math_prod_impl(PyObject *module, PyObject *iterable, PyObject *start)
                 continue;
             }
             if (PyLong_CheckExact(item)) {
-                long value;
+                int value;
                 int overflow;
                 value = PyLong_AsLongAndOverflow(item, &overflow);
                 if (!overflow) {
