@@ -682,7 +682,7 @@ class _Environ(MutableMapping):
         try:
             value = self._data[self.encodekey(key)]
         except KeyError:
-            if sys.platform == 'OpenVMS':
+            if key and sys.platform == 'OpenVMS':
                 import _decc
                 v = _decc.getenv(key, None) # in case of default is not a string
                 if v != None:

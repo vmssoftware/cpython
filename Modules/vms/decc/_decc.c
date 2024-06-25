@@ -327,15 +327,19 @@ DECC_getenv(
     char *name = NULL;
     Py_ssize_t name_size = 0;
 
-    ConvertArgToStr(args[0], name, name_size, "getenv");
+    if (PyUnicode_CheckExact(args[0])) {
+        (name) = (char*)PyUnicode_AsUTF8AndSize(args[0], &(name_size));
+    } else if (PyBytes_CheckExact(args[0])) {
+        PyBytes_AsStringAndSize(args[0], &(name), &(name_size));
+    }
 
     char *val = NULL;
 
-    Py_BEGIN_ALLOW_THREADS
-
-    val = getenv(name);
-
-    Py_END_ALLOW_THREADS
+    if ((name) && (name_size)) {
+        Py_BEGIN_ALLOW_THREADS
+        val = getenv(name);
+        Py_END_ALLOW_THREADS
+    }
 
     if (!val) {
         if (nargs > 1 && args[1] != Py_None) {
