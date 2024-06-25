@@ -682,6 +682,11 @@ class _Environ(MutableMapping):
         try:
             value = self._data[self.encodekey(key)]
         except KeyError:
+            if sys.platform == 'OpenVMS':
+                import _decc
+                v = _decc.getenv(key, None) # in case of default is not a string
+                if v != None:
+                    return v
             # raise KeyError with the original key value
             raise KeyError(key) from None
         return self.decodevalue(value)
@@ -779,16 +784,7 @@ def getenv(key, default=None):
     """Get an environment variable, return None if it doesn't exist.
     The optional second argument can specify an alternate default.
     key, default and the result are str."""
-    if sys.platform == 'OpenVMS':
-        v = environ.get(key, None)
-        if v == None:
-            import _decc
-            v = _decc.getenv(key, None) # in case of default is not a string
-            if v == None:
-                v = default
-        return v
-    else:
-        return environ.get(key, default)
+    return environ.get(key, default)
 
 supports_bytes_environ = (name != 'nt')
 __all__.extend(("getenv", "supports_bytes_environ"))
