@@ -202,7 +202,7 @@ static PyMethodDef DESC_methods[] = {
 };
 
 static PyMemberDef DESC_members[] = {
-    {"buffer", T_LONG, offsetof(DESCObject, buffer), READONLY,
+    {"_as_parameter_", T_LONG, offsetof(DESCObject, buffer), READONLY,
      "Address of the descriptor, 32-bit long"},
     {NULL}
 };

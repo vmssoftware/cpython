@@ -457,7 +457,7 @@ static PyMethodDef ILE3_methods[] = {
 static PyMemberDef ILE3_members[] = {
     {"size", T_INT, offsetof(ILE3Object, size), READONLY,
      "Number of items in the item list."},
-    {"buffer", T_LONG, offsetof(ILE3Object, plist), READONLY,
+    {"_as_parameter_", T_LONG, offsetof(ILE3Object, plist), READONLY,
      "Address of the item list, it is only valid while this item list is not modified."},
     {NULL}
 };
