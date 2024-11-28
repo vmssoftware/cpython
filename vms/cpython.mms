@@ -12,6 +12,7 @@ PLATFORM = OpenVMS
 
 .IF X86_64
 LINK_ADD=/SEGMENT=CODE=P0
+! if you do not need to setup compilers, remove this line (or create empty setup_compilers.com in your login directory)
 X86_64_START= @sys$login:setup_compilers
 .ENDIF
 

@@ -9,6 +9,10 @@
 #include <ssdef.h>
 #include <iledef.h>
 
+#ifdef __x86_64
+#include <alloca.h>
+#endif
+
 #ifndef MIN
 #define MIN(a,b) ((a)<(b)?(a):(b))
 #endif
@@ -490,6 +494,23 @@ static struct PyModuleDef _module_definition = {
 
 PyMODINIT_FUNC PyInit__ile3(void)
 {
+    // #define my_offset(a,b) (((unsigned long long)&a)-((unsigned long long)&b))
+
+    // printf("my_offset(m_name, _module_definition) %lli = %s\n", my_offset(_module_definition.m_name, _module_definition), _module_definition.m_name);
+    // printf("my_offset(m_doc, _module_definition) %lli = %s\n", my_offset(_module_definition.m_doc, _module_definition), _module_definition.m_doc);
+    // printf("my_offset(m_methods, _module_definition) %lli = %llx\n", my_offset(_module_definition.m_methods, _module_definition), _module_definition.m_methods);
+
+    // printf("my_offset(tp_name, ILE3_Type) %lli = %s\n", my_offset(ILE3_Type.tp_name, ILE3_Type), ILE3_Type.tp_name);
+    // printf("my_offset(tp_weaklistoffset, ILE3_Type) %lli = %llx\n", my_offset(ILE3_Type.tp_weaklistoffset, ILE3_Type), ILE3_Type.tp_weaklistoffset);
+    // printf("my_offset(tp_base, ILE3_Type) %lli = %llx\n", my_offset(ILE3_Type.tp_base, ILE3_Type), ILE3_Type.tp_base);
+    // printf("my_offset(tp_vectorcall, ILE3_Type) %lli = %llx\n", my_offset(ILE3_Type.tp_vectorcall, ILE3_Type), ILE3_Type.tp_vectorcall);
+    // printf("sizeof(int) %lli\n", sizeof(int));
+    // printf("sizeof(long) %lli\n", sizeof(long));
+    // printf("sizeof(long long) %lli\n", sizeof(long long));
+    // printf("sizeof(ssize_t) %lli\n", sizeof(ssize_t));
+
+    // printf("sizeof(pthread_t) %lli\n", sizeof(pthread_t));
+
     if (PyType_Ready(&ILE3_Type) < 0) {
         return NULL;
     }
