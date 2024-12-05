@@ -817,7 +817,7 @@ static PyMethodDef _module_methods[] = {
     {"set_symbol", (PyCFunction) LIB_set_symbol, METH_FASTCALL,
         PyDoc_STR("set_symbol(name: str, value: str)->status: number   Sets DCL local symbol")},
     {"delete_symbol", (PyCFunction) LIB_delete_symbol, METH_O,
-        PyDoc_STR("delete_symbol(name: str)->status: number   Returns DCL symbol")},
+        PyDoc_STR("delete_symbol(name: str)->status: number   Deletes DCL symbol")},
     {"shorten_name", (PyCFunction) LIB_shorten_name, METH_O,
         PyDoc_STR("shorten_name(name: str)->short_name: str   Shorten the name for LINK")},
     {NULL, NULL}
