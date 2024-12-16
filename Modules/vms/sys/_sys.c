@@ -844,12 +844,12 @@ SYS_getjpi(
     }
     ILE3Object *pILE3 = (ILE3Object *)args[0];
 
-    unsigned int pid = 0, *ppid = &pid;
+    int pid = 0, *ppid = &pid;
     char *prcnam = NULL;
     Py_ssize_t prcnam_size = 0;
     if (nargs > 1 && args[1] != Py_None) {
         if (PyLong_Check(args[1])) {
-            pid = PyLong_AsUnsignedLong(args[1]);
+            pid = PyLong_AsLong(args[1]);
         } else if (PyUnicode_CheckExact(args[1])) {
             prcnam = (char*)PyUnicode_AsUTF8AndSize(args[1], &prcnam_size);
         } else if (PyBytes_CheckExact(args[1])) {
@@ -886,7 +886,7 @@ SYS_getjpi(
         }
     }
 
-    return Py_BuildValue("(i,I)", status, pid);
+    return Py_BuildValue("(i,i)", status, pid);
 }
 
 
