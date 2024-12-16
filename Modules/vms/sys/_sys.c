@@ -873,7 +873,7 @@ SYS_getjpi(
     }
 
     Py_BEGIN_ALLOW_THREADS
-    status = sys$getjpiw(EFN$C_ENF, ppid, pprcnam_dsc, pILE3->plist, &iosb, NULL, 0);
+    status = sys$getjpiw(EFN$C_ENF, (unsigned int*)ppid, pprcnam_dsc, pILE3->plist, &iosb, NULL, 0);
     Py_END_ALLOW_THREADS
 
     if (prcnam && prcnam_size) {
