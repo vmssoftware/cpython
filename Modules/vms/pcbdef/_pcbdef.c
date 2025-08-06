@@ -21,6 +21,38 @@ PyInit__pcbdef(void) {
     if (m == NULL) {
         return NULL;
     }
+
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_RES", 0x1UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_DELPEN", 0x2UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_FORCPEN", 0x4UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_INQUAN", 0x8UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_PSWAPM", 0x10UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_RESPEN", 0x20UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_SSFEXC", 0x40UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_SSFEXCE", 0x80UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_SSFEXCS", 0x100UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_SSFEXCU", 0x200UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_SSRWAIT", 0x400UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_SUSPEN", 0x800UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_WALL", 0x2000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_BATCH", 0x4000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_NOACNT", 0x8000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_NOSUSPEND", 0x10000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_ASTPEN", 0x20000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_PHDRES", 0x40000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_HIBER", 0x80000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_LOGIN", 0x100000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_NETWRK", 0x200000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_PWRAST", 0x400000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_NODELET", 0x800000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_DISAWS", 0x1000000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_INTER", 0x2000000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_RECOVER", 0x4000000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_HARDAFF", 0x10000000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_ERDACT", 0x20000000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_SOFTSUSP", 0x40000000UL);
+    PyModule_AddUnsignedLongConstant(m, "PCB_V_PREEMPTED", 0x80000000UL);
+
     PyModule_AddUnsignedLongConstant(m, "PCB_M_RES", 0x1UL);
     PyModule_AddUnsignedLongConstant(m, "PCB_M_DELPEN", 0x2UL);
     PyModule_AddUnsignedLongConstant(m, "PCB_M_FORCPEN", 0x4UL);
