@@ -43,8 +43,8 @@
 
 typedef struct {
     PyObject_HEAD
-    int                 status;
-    int                 finished;
+    long                 status;
+    long                 finished;
     DTR_access_block    dab;
 } DTRObject;
 
@@ -92,10 +92,10 @@ DTR_dealloc(DTRObject *self)
     PyObject_Del(self);
 }
 
-int decc$feature_set(const char* __name, int __mode, int __value);
+long decc$feature_set(const char* __name, long __mode, long __value);
 void vms_set_crtl_values(void);
 
-// unsigned int _init(unsigned int *obj, int size, int options)
+// unsigned long _init(unsigned long *obj, long size, long options)
 static int
 DTR_init(
     DTRObject *self,
@@ -103,8 +103,8 @@ DTR_init(
     PyObject *kwds)
 {
     static char *kwlist[] = {"size", "options", NULL};
-    int size = 0;
-    int options = 0;
+    long size = 0;
+    long options = 0;
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|ii", kwlist, &size, &options)) {
         return -1;
     }
@@ -125,7 +125,7 @@ DTR_init(
     return 0;
 }
 
-// unsigned int _finish(unsigned int obj)
+// unsigned long _finish(unsigned long obj)
 static PyObject*
 DTR_finish(
     DTRObject * self,
@@ -139,7 +139,7 @@ DTR_finish(
     return PyLong_FromLong(self->status);
 }
 
-// unsigned int _command(unsigned int obj, char *str, int *condition, unsigned short *state)
+// unsigned long _command(unsigned long obj, char *str, long *condition, unsigned short *state)
 static PyObject*
 DTR_command(
     DTRObject *self,
@@ -200,7 +200,7 @@ DTR_get_aux_buf(DTRObject *self, void *closure)
     return PyUnicode_FromString(self->dab.dab$a_aux_buf);
 }
 
-// unsigned int _continue(unsigned int obj, int *condition, unsigned short *state)
+// unsigned long _continue(unsigned long obj, long *condition, unsigned short *state)
 static PyObject*
 DTR_continue(
     DTRObject *self,
@@ -220,7 +220,7 @@ DTR_skip(
     PyObject *const *args,
     Py_ssize_t nargs)
 {
-    int rows = 1;
+    long rows = 1;
     if (nargs > 0 && args[0] != Py_None) {
         if (!PyLong_Check(args)) {
             _PyArg_BadArgument("skip", "args[0]", "long", args[0]);
@@ -229,7 +229,7 @@ DTR_skip(
         rows = PyLong_AsLong(args[0]);
     }
 
-    int skipped = 0;
+    long skipped = 0;
     self->status = 0;
     Py_BEGIN_ALLOW_THREADS
     while(skipped < rows && self->dab.dab$w_state == DTR$K_STL_LINE) {
@@ -244,7 +244,7 @@ DTR_skip(
     return PyLong_FromLong(skipped);
 }
 
-// unsigned int _create_udk(unsigned int obj, char *str, short index, short context)
+// unsigned long _create_udk(unsigned long obj, char *str, short index, short context)
 static PyObject*
 DTR_create_udk(
     DTRObject *self,
@@ -278,7 +278,7 @@ DTR_create_udk(
     return PyLong_FromLong(self->status);
 }
 
-// unsigned int _end_udk(unsigned int obj)
+// unsigned long _end_udk(unsigned long obj)
 static PyObject*
 DTR_end_udk(
     DTRObject *self,
@@ -291,7 +291,7 @@ DTR_end_udk(
     return PyLong_FromLong(self->status);
 }
 
-// unsigned int _get_port(unsigned int obj, void *loc)
+// unsigned long _get_port(unsigned long obj, void *loc)
 static PyObject *
 DTR_get_port(DTRObject *self, void *closure)
 {
@@ -334,7 +334,7 @@ DTR_set_port(DTRObject *self, PyObject *value, void *closure)
     return 0;
 }
 
-// unsigned int _get_string(unsigned int obj, int type, char **str, char *cmp)
+// unsigned long _get_string(unsigned long obj, long type, char **str, char *cmp)
 static PyObject*
 DTR_get_string(
     DTRObject *self,
@@ -344,7 +344,7 @@ DTR_get_string(
     if (!_PyArg_CheckPositional("get_string", nargs, 1, 2)) {
         return NULL;
     }
-    int type = 0, *ptype = NULL;
+    long type = 0, *ptype = NULL;
     ConvertPosArgToLongP(0, type, "get_string");
 
     char *cmp = NULL;
@@ -384,7 +384,7 @@ DTR_get_string(
     return PyUnicode_FromString(buffer);
 }
 
-// unsigned int _info(unsigned int obj, int id, char code, int *ret, char **str, int index)
+// unsigned long _info(unsigned long obj, long id, char code, long *ret, char **str, long index)
 static PyObject*
 DTR_info(
     DTRObject *self,
@@ -394,9 +394,9 @@ DTR_info(
     if (!_PyArg_CheckPositional("info", nargs, 2, 3)) {
         return NULL;
     }
-    int id = 0, *pid = NULL;
+    long id = 0, *pid = NULL;
     ConvertPosArgToLongP(0, id, "info");
-    unsigned int code = 0;
+    unsigned long code = 0;
     char *pcode = NULL;
     Py_ssize_t size = 0;
     if (PyUnicode_CheckExact(args[1])) {
@@ -416,7 +416,7 @@ DTR_info(
         PyErr_SetString(PyExc_ValueError, "One char string is allowed");
         return NULL;
     }
-    int index = 0, *pindex = NULL;
+    long index = 0, *pindex = NULL;
     ConvertPosArgToLongP(2, index, "info");
 
     char buffer[TMP_BUF_LEN + 1];
@@ -428,7 +428,7 @@ DTR_info(
     tmp_dsc.dsc$b_dtype = DSC$K_DTYPE_T;
     tmp_dsc.dsc$a_pointer = buffer;
 
-    int ret = 0;
+    long ret = 0;
     self->status = 0;
     Py_BEGIN_ALLOW_THREADS
     self->status = dtr$info(&self->dab, &id, pcode, &ret, &tmp_dsc, index);
@@ -442,7 +442,7 @@ DTR_info(
 }
 
 
-// unsigned int _lookup(unsigned int obj, char type, int *id, char *name)
+// unsigned long _lookup(unsigned long obj, char type, long *id, char *name)
 static PyObject*
 DTR_lookup(
     DTRObject *self,
@@ -452,7 +452,7 @@ DTR_lookup(
     if (!_PyArg_CheckPositional("lookup", nargs, 2, 3)) {
         return NULL;
     }
-    unsigned int code = 0;
+    unsigned long code = 0;
     char *pcode = NULL;
     Py_ssize_t size = 0;
     if (PyUnicode_CheckExact(args[0])) {
@@ -488,7 +488,7 @@ DTR_lookup(
         pname_dsc = &name_dsc;
     }
 
-    int id = 0;
+    long id = 0;
     self->status = 0;
     Py_BEGIN_ALLOW_THREADS
     self->status = dtr$lookup(&self->dab, pcode, &id, pname_dsc);
@@ -497,7 +497,7 @@ DTR_lookup(
     return PyLong_FromLong(id);
 }
 
-// unsigned int _port_eof(unsigned int obj)
+// unsigned long _port_eof(unsigned long obj)
 static PyObject*
 DTR_port_eof(
     DTRObject * self,
@@ -511,7 +511,7 @@ DTR_port_eof(
 }
 
 
-// unsigned int _put_value(unsigned int obj, char *val)
+// unsigned long _put_value(unsigned long obj, char *val)
 static PyObject*
 DTR_put_value(
     DTRObject *self,
@@ -542,7 +542,7 @@ DTR_put_value(
     return PyLong_FromLong(self->status);
 }
 
-// unsigned int _unwind(unsigned int obj)
+// unsigned long _unwind(unsigned long obj)
 static PyObject*
 DTR_unwind(
     DTRObject * self,
@@ -555,7 +555,7 @@ DTR_unwind(
     return PyLong_FromLong(self->status);
 }
 
-// unsigned int _dtr(unsigned int obj, int opt)
+// unsigned long _dtr(unsigned long obj, long opt)
 static PyObject*
 DTR_dtr(
     DTRObject *self,
@@ -565,7 +565,7 @@ DTR_dtr(
         _PyArg_BadArgument("dtr", "args", "long", args);
         return NULL;
     }
-    int opt = PyLong_AsLong(args);
+    long opt = PyLong_AsLong(args);
     self->status = 0;
     Py_BEGIN_ALLOW_THREADS
     self->status = dtr$dtr(&self->dab, &opt);
@@ -574,9 +574,9 @@ DTR_dtr(
 }
 
 
-// extern int rsscanf(const char *buffer, const char *format, char ***argv);
+// extern long rsscanf(const char *buffer, const char *format, char ***argv);
 
-// char **_row(unsigned int obj, char *fmt)
+// char **_row(unsigned long obj, char *fmt)
 // {
 //     DTR_access_block *dab = (DTR_access_block *) obj;
 //     char **arr = NULL;
