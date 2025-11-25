@@ -518,7 +518,7 @@ static void child_complete(int arg) {
 }
 
 static int
-exec_dcl(char *const argv[], int p2cread, int c2pwrite) {
+exec_dcl(char *const argv[], int p2cread, int c2pwrite, const char *cwd) {
     int status = -1;
     int pid = -1;
     unsigned char efn = EFN$C_ENF;
@@ -549,16 +549,18 @@ exec_dcl(char *const argv[], int p2cread, int c2pwrite) {
 
     // TODO: enclose each parameter in quotes, tripling existing quotes
     int i = 1;  // skip DCL
-    int exec_len = 0;
+    int exec_len = cwd ? 24 + strlen(cwd) : 0;
     while (argv[i]) {
         exec_len += strlen(argv[i]) + 1;
         ++i;
     }
 
     char *execute_str = alloca(exec_len + 1);
-
-    i = 1;
     execute_str[0] = 0;
+    if (cwd) {
+        sprintf(execute_str, "pipe set def %s && ", cwd);
+    }
+    i = 1;
     while (argv[i]) {
         if (i > 1) {
             strcat(execute_str, " ");
@@ -566,7 +568,9 @@ exec_dcl(char *const argv[], int p2cread, int c2pwrite) {
         strcat(execute_str, argv[i]);
         ++i;
     }
-
+#ifdef _DO_TRACE_FILE_
+    _TRACE_LINE_V_("execute_str \"%s\"\n", execute_str);
+#endif
     execute.dsc$w_length = strlen(execute_str);
     set_dsc_string(execute, execute_str);
 
@@ -722,7 +726,7 @@ vms_child_exec(
 #endif
 
     if (argv && *argv && strcmp(*argv, "DCL") == 0) {
-        pid = exec_dcl(argv, p2cread, c2pwrite);
+        pid = exec_dcl(argv, p2cread, c2pwrite, cwd);
         if (pid > 0) {
             map_fd_to_child(c2pread, -pid);
             map_fd_to_child(errread, -pid);
