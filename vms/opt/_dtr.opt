@@ -2,6 +2,8 @@ sys$library:pthread$rtl.exe/SHARE
 python$build_out:[000000]python$shr.exe/SHARE
 sys$library:dtrshr.exe/SHARE
 dtr$library:termserve.olb/lib
+sys$library:DECW$XMLIBSHR12.EXE/share
+sys$library:DECW$XTLIBSHRR5.EXE/share
 GSMATCH=LEQUAL,1,0
 CASE_SENSITIVE=YES
 SYMBOL_VECTOR=(PyInit__dtr=PROCEDURE)
