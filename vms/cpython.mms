@@ -1782,9 +1782,8 @@ DECIMAL_HEADERS = -
 [.$(OBJ_DIR).modules.rdb]sql.obj : [.modules.rdb]sql.sqlmod
     sqlmod [.modules.rdb]sql.sqlmod
     rename sql.obj python$build_obj:[modules.rdb]
+
 [.$(OBJ_DIR).modules.rdb]_rdb.obm : [.modules.rdb]_rdb.c $(PYTHON_HEADERS)
-    @ pipe create/dir $(DIR $(MMS$TARGET)) | copy SYS$INPUT nl:
-    $(CC) $(CC_CORE_MODULE_CFLAGS)/LIST /OBJECT=$(MMS$TARGET) $(MMS$SOURCE)
 
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_accdef.exe : [.$(OBJ_DIR).modules.vms.accdef]_accdef.obm
 [.$(OUT_DIR).$(DYNLOAD_DIR)]_acldef.exe : [.$(OBJ_DIR).modules.vms.acldef]_acldef.obm
