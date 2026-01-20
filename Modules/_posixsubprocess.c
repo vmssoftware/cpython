@@ -592,6 +592,8 @@ exec_dcl(char *const argv[], int p2cread, int c2pwrite, const char *cwd) {
 
         if ($VMS_STATUS_SUCCESS(status)) {
             pid = (int)*ppid;
+        } else {
+            errno = status;
         }
     }
 

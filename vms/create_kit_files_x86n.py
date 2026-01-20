@@ -43,7 +43,7 @@ def create_content(type, major, minor, level, edit):
             #             file_.writelines(lines)
 
     kit_template = '''--
--- (C) Copyright 2025 VMS Software Inc.
+-- (C) Copyright 2026 VMS Software Inc.
 --
 product VSI X86VMS PYTHON {type}{major}.{minor}-{level}{edit} FULL ;
 
@@ -177,7 +177,7 @@ if __name__ == "__main__":
 
     opts, args = getopt.getopt(sys.argv[1:], '', ['type=', 'major=', 'minor=', 'level=', 'edit='])
 
-    type = 'A'
+    type = 'V'
     major = '3'
     minor = '10'
     level = '010'

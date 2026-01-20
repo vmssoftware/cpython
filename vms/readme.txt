@@ -16,7 +16,8 @@ Creating python kit (do not forget change the version in create_kit_files.py if 
 Creating wheels kit (do not forget change the version in wheels_create_kit_files[64].py if it is required)
 
 0. clear pip cache: $ python -m pip cache purge
-1. install wheel: $ python -m pip install wheel
+1. NO ----------> install wheel: $ python -m pip install wheel <------- NO
+1.1 If Python or Wheels are already installed, re-define PIP_NO_INDEX and PIP_FIND_LINKS
 2. see instruction in _[abcde]_*.txt
 3. $ define /tran=conc python_wheels$root <wheels folder>
 4. $ python wheels_create_kit_files.py

@@ -1,6 +1,7 @@
 # Requires repository and build on VILE
 # --no-index
 # def pyth$whl_built work7:[vorfolomeev.pyth$whl_built.]
+# -- Run from sys$login folder to shorter path --- 
 # python -m pip wheel -w /PYTH$WHL_BUILT -f /PYTH$WHL_BUILT -f /pyth$whl -f /pyth$rep --no-cache-dir --no-index --no-deps <NAME>
 Brotli
 # requires 64-bit libraries, valid oss$root (define OSS$ROOT WORK7:[VORFOLOMEEV.OSS.X86.])

@@ -289,13 +289,13 @@ int read_mbx(int fd, char *buf, int size) {
         }
         if (size > 0) {
             if (fd_pid >= -1) {
-#ifdef __x86_64
+//#ifdef __x86_64
                 // in x86 mailbox strips CR from message and split it?
                 fd_pid = -fd_pid;
-#else
-                // no lib$spawn(), use channel as regular stream
-                op |= IO$M_STREAM;
-#endif
+// #else
+//                 // no lib$spawn(), use channel as regular stream
+//                 op |= IO$M_STREAM;
+// #endif
             }
             int status = sys$qiow(EFN$C_ENF, channel, op, &iosb, NULL, 0, buf, size, 0, 0, 0, 0);
             if ($VMS_STATUS_SUCCESS(status)) {
