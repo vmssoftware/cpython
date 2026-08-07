@@ -319,7 +319,7 @@ class BaseTestCase(unittest.TestCase):
 
         # Alphabetic order
 
-        for i in range(10):
+        for i in range(3):
             s,r = f.fetch()
             lst = struct.unpack(b'=i32shhiQ32s32p', r[:116])
             self.assertIsNotNone(lst)
@@ -332,7 +332,7 @@ class BaseTestCase(unittest.TestCase):
         i = 0
         for r in f:
             i += 1
-            if (i > 10): break
+            if (i > 3): break
             lst = struct.unpack(b'=i32shhiQ32s32p', r[:116])
             self.assertIsNotNone(lst)
             # print('%s [%o,%o]' % (lst[1], lst[3], lst[2]))

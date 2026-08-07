@@ -449,7 +449,9 @@ class HandlerExceptionTest(unittest.TestCase):
         fullpath = entry[0]
         if (sys.platform == 'OpenVMS'):
             if any(a in ':[]' for a in fullpath):
-                fullpath = _decc.from_vms(fullpath)[0]
+                unix_path = _decc.from_vms(fullpath)
+                if len(unix_path) > 0:
+                    fullpath = unix_path[0]
         self.assertEqual(os.path.basename(fullpath), filename)
         self.assertEqual(entry[2], funcname)
 
