@@ -900,9 +900,21 @@ SYS_getdvi(
     if (!_PyArg_CheckPositional("getdvi", nargs, 2, 2)) {
         return NULL;
     }
-    char *dev = NULL;
-    Py_ssize_t dev_size = 0;
-    ConvertArgToStr(args[0], dev, dev_size, "getdvi");
+
+    long chan = 0;
+    struct dsc$descriptor_s *p_dev_dsc = NULL;
+    $DESCRIPTOR(dev_dsc, "");
+
+    if (PyLong_Check(args[0])) {
+        chan = PyLong_AsUnsignedLong(args[0]);
+    } else {
+        char *dev = NULL;
+        Py_ssize_t dev_size = 0;
+        ConvertArgToStr(args[0], dev, dev_size, "getdvi");
+        dev_dsc.dsc$w_length = dev_size;
+        set_dsc_string(dev_dsc, dev);
+        p_dev_dsc = &dev_dsc;
+    }
 
     if (strcmp(Py_TYPE(args[1])->tp_name, ILE3_MODULE_NAME "." ILE3_TYPE_NAME) != 0) {
         _PyArg_BadArgument("getdvi", "args[1]", ILE3_MODULE_NAME "." ILE3_TYPE_NAME, args[1]);
@@ -910,18 +922,16 @@ SYS_getdvi(
     }
     ILE3Object *pILE3 = (ILE3Object *)args[1];
 
-    $DESCRIPTOR(dev_dsc, "");
     IOSB iosb;
     int status = 0;
 
-    dev_dsc.dsc$w_length = dev_size;
-    set_dsc_string(dev_dsc, dev);
-
     Py_BEGIN_ALLOW_THREADS
-    status = sys$getdviw(EFN$C_ENF, 0, &dev_dsc, pILE3->plist, &iosb, NULL, 0, NULL);
+    status = sys$getdviw(EFN$C_ENF, chan, p_dev_dsc, pILE3->plist, &iosb, NULL, 0, NULL);
     Py_END_ALLOW_THREADS
 
-    free_dsc_string(dev_dsc);
+    if (p_dev_dsc) {
+        free_dsc_string(dev_dsc);
+    }
 
     if ($VMS_STATUS_SUCCESS(status)) {
         if (!$VMS_STATUS_SUCCESS(iosb.iosb$l_getxxi_status)) {
@@ -1837,7 +1847,7 @@ static PyMethodDef _module_methods[] = {
     {"getsyi", (PyCFunction) SYS_getsyi, METH_FASTCALL,
         PyDoc_STR("getsyi(list: ile3list, ?node: int | str)->[status: int, csid: int]   Returns information about the system")},
     {"getdvi", (PyCFunction) SYS_getdvi, METH_FASTCALL,
-        PyDoc_STR("getdvi(dev: str, list: ile3list)->status: int   Returns device information")},
+        PyDoc_STR("getdvi(dev: str | int, list: ile3list)->status: int   Returns device/channel information")},
     {"device_scan", (PyCFunction) SYS_device_scan, METH_FASTCALL,
         PyDoc_STR("device_scan(?patt: str, ?list: ile3list, ?ctxt: int)->[status: int, dev: str, ctxt: int]   Scans devices")},
     {"dellnm", (PyCFunction) SYS_dellnm, METH_FASTCALL,

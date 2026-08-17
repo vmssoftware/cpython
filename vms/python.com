@@ -9,20 +9,21 @@ $   CONFIG := 'P1'
 $ endif
 $ write sys$output "Prepare for ''CONFIG'"
 $
-$ com_nam = f$environment("procedure")
-$ com_dir = f$parse(com_nam,,,"directory")
-$ com_dev = f$parse(com_nam,,,"device")
+$ com_nam = f$edit(f$environment("PROCEDURE"),"UPCASE")
+$ com_dir = f$edit(f$parse(com_nam,,,"DIRECTORY"),"UPCASE")
+$ com_dev = f$edit(f$parse(com_nam,,,"DEVICE"),"UPCASE")
+$
 $ com_pat = com_dev + com_dir
-$ prj_pat = com_pat - ".vms]"
-$ bld_pat = prj_pat + ".out.''CONFIG']"
-$ inc_pat = prj_pat + ".include]"
-$ cpy_pat = prj_pat + ".include.cpython]"
-$ lib_pat = prj_pat + ".lib...]"
-$ vms_py_pat = prj_pat + ".modules.vms...]"
-$ rdb_py_pat = prj_pat + ".modules.rdb...]"
-$ vms_pat = prj_pat + ".vms]"
-$ dyn_pat = prj_pat + ".out.'CONFIG'.lib-dynload...]"
-$ @'com_pat'Python^.def.com
+$ prj_pat = com_pat - ".VMS]"
+$ bld_pat = prj_pat + ".OUT.''CONFIG']"
+$ inc_pat = prj_pat + ".INCLUDE]"
+$ cpy_pat = prj_pat + ".INCLUDE.CPYTHON]"
+$ lib_pat = prj_pat + ".LIB...]"
+$ vms_py_pat = prj_pat + ".MODULES.VMS...]"
+$ rdb_py_pat = prj_pat + ".MODULES.RDB...]"
+$ vms_pat = prj_pat + ".VMS]"
+$ dyn_pat = prj_pat + ".OUT.'CONFIG'.LIB-DYNLOAD...]"
+$ @'com_pat'python_def.com
 $
 $ pipe delete/tree python$root:[000000...]*.*;* | copy SYS$INPUT nl:
 $
