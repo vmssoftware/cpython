@@ -107,6 +107,9 @@ static int cb_from_vms(__char_ptr32 name, __void_ptr32 user_data)
         PyObject *pList = PyTuple_GetItem(pTuple, 0);
         if (pList && pList != Py_None && PyList_CheckExact(pList)) {
             PyObject *pName = PyUnicode_FromString(name);
+            if (PyErr_Occurred()) {
+                return 0;
+            }
             PyObject *pFunction = PyTuple_GetItem(pTuple, 1);
             if (pFunction && pFunction != Py_None && PyCallable_Check(pFunction)) {
                 // call pFunction
