@@ -8675,26 +8675,30 @@ os_waitpid_impl(PyObject *module, pid_t pid, int options)
     unsigned int finished = 0;
     if (pid > 0 && (-1 != vms_spawn_status(pid, &status, &finished, 0))) {
         // the child is spawned by lib$spawn
-        if (finished) {
-            if (status == -1) {
-                return NULL;
+        if (!finished) {
+            if (options & WNOHANG) {
+                // status is not set, return (0,0)
+                return Py_BuildValue("Ni", PyLong_FromPid(0), 0);
             }
-            // status is set, return (pid, status)
-            return Py_BuildValue("Ni", PyLong_FromPid(pid), WAIT_STATUS_INT(status));
-        }
-        if (options & WNOHANG) {
-            // status is not set, return (0,0)
-            return Py_BuildValue("Ni", PyLong_FromPid(0), 0);
-        }
-        while (finished == 0) {
-            Py_BEGIN_ALLOW_THREADS
-            vms_sleep(100); // 100 microseconds
-            Py_END_ALLOW_THREADS
-            vms_spawn_status(pid, &status, &finished, 0);
+            while (finished == 0) {
+                Py_BEGIN_ALLOW_THREADS
+                vms_sleep(100); // 100 microseconds
+                Py_END_ALLOW_THREADS
+                if (PyErr_CheckSignals()) {
+                    return NULL;
+                }
+                if (-1 == vms_spawn_status(pid, &status, &finished, 0)) {
+                    // the slot is reused by another process, status is lost
+                    errno = ECHILD;
+                    return posix_error();
+                }
+            }
         }
         if (status == -1) {
-            return NULL;
+            errno = ECHILD;
+            return posix_error();
         }
+        // status is set, return (pid, status)
         return Py_BuildValue("Ni", PyLong_FromPid(pid), WAIT_STATUS_INT(status));
     }
 #endif

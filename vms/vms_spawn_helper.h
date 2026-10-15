@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 int vms_spawn_alloc(unsigned int **pppid, int **ppstatus, unsigned int **ppfinished);
+void vms_spawn_release(int idx);
 int vms_spawn_finish(unsigned int *pfinished);
 int vms_spawn_status(unsigned int pid, int *pstatus, unsigned int *pfinished, int free);
 

@@ -2068,3 +2068,4 @@ vms_sleep=PROCEDURE
 vms_spawn_alloc=PROCEDURE
 vms_spawn_finish=PROCEDURE
 vms_spawn_status=PROCEDURE
+vms_spawn_release=PROCEDURE

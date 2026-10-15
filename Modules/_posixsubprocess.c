@@ -577,7 +577,8 @@ exec_dcl(char *const argv[], int p2cread, int c2pwrite, const char *cwd) {
     unsigned int *ppid, *pfinished;
     int *pstatus;
 
-    if (vms_spawn_alloc(&ppid, &pstatus, &pfinished) != -1) {
+    int spawn_idx = vms_spawn_alloc(&ppid, &pstatus, &pfinished);
+    if (spawn_idx != -1) {
         status = lib$spawn(
             &execute,
             input_ptr,
@@ -593,6 +594,8 @@ exec_dcl(char *const argv[], int p2cread, int c2pwrite, const char *cwd) {
         if ($VMS_STATUS_SUCCESS(status)) {
             pid = (int)*ppid;
         } else {
+            // AST will not be called, so free the slot
+            vms_spawn_release(spawn_idx);
             errno = status;
         }
     }
