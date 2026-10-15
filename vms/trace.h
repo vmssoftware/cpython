@@ -4,6 +4,9 @@
 #else
 #include <fcntl.h>
 #include <unixlib.h>
+#include <stdio.h>
+#include <unistd.h>
+
 #define _TRACE_LINE_(line) \
     do {    \
         char _TRACE_LINE_name[64];  \
