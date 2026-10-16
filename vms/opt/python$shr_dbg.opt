@@ -2185,5 +2185,5 @@ vms_waiter_init=PROCEDURE,-
 vms_waiter_set=PROCEDURE,-
 vms_waiter_wait=PROCEDURE,-
 write_mbx_eof=PROCEDURE-,
-vms_spawn_release=PROCEDURE
+vms_spawn_release=PROCEDURE-
 )
