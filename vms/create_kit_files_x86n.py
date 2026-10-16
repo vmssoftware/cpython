@@ -140,7 +140,7 @@ end product;
 =prompt VMS Software Inc.
 
 1 'NOTICE
-=prompt (C) Copyright 2025 VMS Software Inc.
+=prompt (C) Copyright 2026 VMS Software Inc.
 
 1 NO_MIN_VMS
 =prompt Minimum OpenVMS software version not found on this system, abort instalation
@@ -180,7 +180,7 @@ if __name__ == "__main__":
     type = 'V'
     major = '3'
     minor = '10'
-    level = '010'
+    level = '011'
     edit = ''
 
     for opt, optarg in opts:
